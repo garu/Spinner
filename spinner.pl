@@ -1,7 +1,7 @@
 
 =pod
 
-=head1 NAME Spinner.pl
+=head1 NAME spinner.pl
 
 A quick game for CeBIT
 
@@ -194,7 +194,7 @@ warn 'main' if $DEBUG;
 # Calculate the new velocities
 sub iterate_step {
     my $dt = shift;
-    if ($ball->{wheel}) #stuck on a wheel
+    if ($ball->{wheel} != -1) #stuck on a wheel
     {
          my $wheel = $particles->[$ball->{wheel}];
          
@@ -204,11 +204,13 @@ sub iterate_step {
         
          $ball->{x} = $wheel->{x} + sin($ball->{rad} * 3.14/180)*($wheel->{m}/2 + 8) ; 
          $ball->{y} = $wheel->{y} + cos($ball->{rad} * 3.14/180)*($wheel->{m}/2 + 8) ; 
-        
-        
-        
-        
+ 
     }    
+    else
+    {
+                $ball->{x} += $ball->{vx} * $dt;
+                $ball->{y} += $ball->{vy} * $dt;
+    }
   
 }
 
@@ -257,35 +259,42 @@ sub check_mouse {
 
     # If we have a click
     if ( $mouse->{click} ) {
-        my $count_part = $#{$particles}; # Count the number of particles we have
-        foreach ( 0 .. $count_part ) {
-            warn 'mouse' if $DEBUG;
-            my $p = @{$particles}[$_];
-            next if !$p;    # If the particle has been splice out don't continue
-
-           # Check if our mouse rectangle collides with the particle's rectangle
-            if (   ( $mouse->{x} - 10 < $p->{x} + $p->{m} )
-                && ( $mouse->{x} + 10 > $p->{x} )
-                && ( $mouse->{y} - 10 < $p->{y} + $p->{m} )
-                && ( $mouse->{y} + 10 > $p->{y} ) )
-            {
-
-                #We got that sucker!!
-                #Get rid of the particle for us
-                splice( @{$particles}, $_, 1 );
-
-                # We are done no more particles left lets get outta here
-                return if $#{$particles} == -1;
-
-            }
-            else {
-
-           #Crap we missed the guy
-           #Make a rectangle there to remind us of our horrible horrible failure
-                push @shots, SDL::Rect->new( $mouse->{x}, $mouse->{y}, 2, 2 );
-
-            }
-        }
+        my $w = $particles->[$ball->{wheel}];
+        $ball->{wheel} = -1;
+        
+        $ball->{vx} = sin( $ball->{rad} * 3.14/180 ) * 0.1;
+        $ball->{vy} = cos( $ball->{rad}  * 3.14/180) * 0.1;
+        
+        
+#        my $count_part = $#{$particles}; # Count the number of particles we have
+#        foreach ( 0 .. $count_part ) {
+#            warn 'mouse' if $DEBUG;
+#            my $p = @{$particles}[$_];
+#            next if !$p;    # If the particle has been splice out don't continue
+#
+#           # Check if our mouse rectangle collides with the particle's rectangle
+#            if (   ( $mouse->{x} - 10 < $p->{x} + $p->{m} )
+#                && ( $mouse->{x} + 10 > $p->{x} )
+#                && ( $mouse->{y} - 10 < $p->{y} + $p->{m} )
+#                && ( $mouse->{y} + 10 > $p->{y} ) )
+#            {
+#
+#                #We got that sucker!!
+#                #Get rid of the particle for us
+#                splice( @{$particles}, $_, 1 );
+#
+#                # We are done no more particles left lets get outta here
+#                return if $#{$particles} == -1;
+#
+#            }
+#            else {
+#
+#           #Crap we missed the guy
+#           #Make a rectangle there to remind us of our horrible horrible failure
+#                push @shots, SDL::Rect->new( $mouse->{x}, $mouse->{y}, 2, 2 );
+#
+#            }
+#        }
 
     }
 
