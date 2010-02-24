@@ -210,6 +210,36 @@ sub iterate_step {
     {
                 $ball->{x} += $ball->{vx} * $dt;
                 $ball->{y} += $ball->{vy} * $dt;
+                
+                # Bounce our velocities components if we are going off the screen
+        $ball->{vx} *= -1
+          if $ball->{x} > ( $app->w - ( 13  ) ) && $ball->{vx} > 0;
+        $ball->{vy} *= -1
+          if $ball->{y} > ( $app->h - ( 13  ) ) && $ball->{vy} > 0;
+        $ball->{vx} *= -1 if $ball->{x} < ( 0 + ( 13 ) ) && $ball->{vx} < 0;
+        $ball->{vy} *= -1 if $ball->{y} < ( 0 + ( 13 ) ) && $ball->{vy} < 0;
+        
+        foreach ( 0 ..  $#{$particles} ) {
+            warn 'mouse' if $DEBUG;
+            my $p = @{$particles}[$_];
+            
+
+           # Check if our mouse rectangle collides with the particle's rectangle
+            if (   ( $ball->{x} - 15 < $p->{x} + ($p->{m} /2 ) )
+                && ( $ball->{x} + 15 > $p->{x} )
+                && ( $ball->{y} - 15 < $p->{y} +( $p->{m} /2) )
+                && ( $ball->{y} + 15 > $p->{y} ) )
+            {
+
+                #We got that sucker!!
+                #Get rid of the particle for us
+                $ball->{wheel} = $_;
+
+                # We are done no more particles left lets get outta here
+                #return if $#{$particles} == -1;
+
+           }
+       }
     }
   
 }
@@ -253,7 +283,7 @@ sub check_win {
 
 # Check if the mouse hit or misses
 sub check_mouse {
-
+    return if  $ball->{wheel} == -1;
     # A hash to simplify accessing the mouse
     my $mouse = { click => $_[0]->[0], x => $_[0]->[1], y => $_[0]->[2] };
 
@@ -266,35 +296,6 @@ sub check_mouse {
         $ball->{vy} = cos( $ball->{rad}  * 3.14/180) * 0.1;
         
         
-#        my $count_part = $#{$particles}; # Count the number of particles we have
-#        foreach ( 0 .. $count_part ) {
-#            warn 'mouse' if $DEBUG;
-#            my $p = @{$particles}[$_];
-#            next if !$p;    # If the particle has been splice out don't continue
-#
-#           # Check if our mouse rectangle collides with the particle's rectangle
-#            if (   ( $mouse->{x} - 10 < $p->{x} + $p->{m} )
-#                && ( $mouse->{x} + 10 > $p->{x} )
-#                && ( $mouse->{y} - 10 < $p->{y} + $p->{m} )
-#                && ( $mouse->{y} + 10 > $p->{y} ) )
-#            {
-#
-#                #We got that sucker!!
-#                #Get rid of the particle for us
-#                splice( @{$particles}, $_, 1 );
-#
-#                # We are done no more particles left lets get outta here
-#                return if $#{$particles} == -1;
-#
-#            }
-#            else {
-#
-#           #Crap we missed the guy
-#           #Make a rectangle there to remind us of our horrible horrible failure
-#                push @shots, SDL::Rect->new( $mouse->{x}, $mouse->{y}, 2, 2 );
-#
-#            }
-#        }
 
     }
 
