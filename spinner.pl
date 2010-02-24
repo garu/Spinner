@@ -1,9 +1,9 @@
 
 =pod
 
-=head1 NAME Shooter.pl
+=head1 NAME Spinner.pl
 
-A quick game to demonstrate the new SDL perl api for Toronto Perl Mongers, Feb 25, 2010.
+A quick game for CeBIT
 
 =head2 AUTHOR 
 
@@ -59,7 +59,7 @@ croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() if !($app);
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
 my $fps = 30;
-my $ball = { wheel=> 0, x=>0, y=>0, rad=>0, surf=> init_particle_surf(25)} ;
+my $ball = { wheel=> 0, x=>0, y=>0, rad=>0, surf=> init_particle_surf(25, 1)} ;
 
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
@@ -202,8 +202,8 @@ sub iterate_step {
         $ball->{rad} += $dt/$wheel->{vx}; #rotate the ball on the wheel
         $ball->{rad} = 0 if $ball->{rad} >= 360;
         
-         $ball->{x} = $wheel->{x} + sin($ball->{rad} * 3.14/180)*($wheel->{m}/2) ; 
-         $ball->{y} = $wheel->{y} + cos($ball->{rad} * 3.14/180)*($wheel->{m}/2) ; 
+         $ball->{x} = $wheel->{x} + sin($ball->{rad} * 3.14/180)*($wheel->{m}/2 + 8) ; 
+         $ball->{y} = $wheel->{y} + cos($ball->{rad} * 3.14/180)*($wheel->{m}/2 + 8) ; 
         
         
         
@@ -293,6 +293,9 @@ sub check_mouse {
 
 #Gets a random color for our particle
 sub rand_color {
+    my $ba = shift; 
+    
+    return 0xFF0000FF if $ba;
     my $r = rand( 0x100 - 0x44 ) + 0x44;
     my $b = rand( 0x100 - 0x44 ) + 0x44;
     my $g = rand( 0x100 - 0x44 ) + 0x44;
@@ -305,7 +308,7 @@ sub rand_color {
 # so we only use it once
 sub init_particle_surf {
     my $size = shift;
-
+    my $b =shift;
     #make a surface based on the size
     my $particle =
       SDL::Surface->new( SDL_SWSURFACE, $size + 15, $size + 15, 32, 0, 0, 0,
@@ -320,7 +323,7 @@ sub init_particle_surf {
     #draw a circle on it with a random color
     SDL::GFX::Primitives::filled_circle_color( $particle, $size / 2, $size / 2,
         $size / 2 - 2,
-        rand_color() );
+        rand_color($b) );
 
     SDL::GFX::Primitives::aacircle_color( $particle, $size / 2, $size / 2,
         $size / 2 - 2, 0x000000FF );
