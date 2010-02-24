@@ -225,10 +225,10 @@ sub iterate_step {
             
 
            # Check if our mouse rectangle collides with the particle's rectangle
-            if (   ( $ball->{x} - 15 < $p->{x} + ($p->{m} /2 ) )
-                && ( $ball->{x} + 15 > $p->{x} )
-                && ( $ball->{y} - 15 < $p->{y} +( $p->{m} /2) )
-                && ( $ball->{y} + 15 > $p->{y} ) )
+            if (   ( $ball->{x} + 2< $p->{x} + ($p->{m} /2 ) )
+                && ( $ball->{x} - 2 > $p->{x} )
+                && ( $ball->{y} + 2 < $p->{y} +( $p->{m} /2)  )
+                && ( $ball->{y} - 2 > $p->{y} ) )
             {
 
                 #We got that sucker!!
@@ -367,7 +367,7 @@ sub draw_to_screen {
     }
 
     #make a string with the FPS and level
-    my $pfps = sprintf( "FPS:%.2f Level:%2d", $fps, $level );
+    my $pfps = sprintf( "FPS:%.2f Level:%2d Wheel:%2d", $fps, $level, $ball->{wheel} );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
@@ -386,9 +386,7 @@ sub draw_to_screen {
 sub draw_ball
 {
 
-   if ($ball->{wheel}) #stuck on a wheel
-   {
-        my $wheel = $particles->[$ball->{wheel}];
+   my $wheel = $particles->[$ball->{wheel}];
         
         my $new_part_rect = SDL::Rect->new( 0, 0, 26, 26 );
 
@@ -403,7 +401,7 @@ sub draw_ball
             )
         );
   
-   }
+  
   
   
     
@@ -445,7 +443,7 @@ sub make_rand_particle {
         #randomly place the particle in our app's w and h
         x => rand( $app->w - ( $size / 2 )) + 30,
         y => rand( $app->h - ( $size / 2 ) ) + 30,
-        vx => rand(2)+ 1,    #Get a random X and Y velocity component
+        vx => rand(1)+ 1,    #Get a random X and Y velocity component
         m  => $size,                # The mass or size of the particle
         n  => $t,                   # The number the particle is
     };
