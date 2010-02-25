@@ -284,8 +284,18 @@ sub iterate_step {
                 && ( $ball->y < $p->y + $rad )
                 && ( $ball->y > $p->y - $rad ) )
             {
-
-                #warn 'iterating at wheel = ' . $ball->{wheel};
+                # losing condition
+                if ($p->visited) {
+                    SDL::GFX::Primitives::string_color(
+                        $app,
+                        $app->w / 2 - 150,
+                        $app->h / 2 - 4,
+                        'YOU LOSE!!!', 0x00FF00FF
+                    );
+                    SDL::Video::flip($app);
+                    SDL::delay(1000);
+                    exit;
+                }
 
                 #We got that sucker!!
                 #Get rid of the particle for us
