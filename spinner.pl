@@ -1,5 +1,25 @@
 #!/usr/bin/perl
+
 package Wheel;
+use Mouse;
+
+has 'x'    => ( is => 'ro', isa => 'Int', required => 1 );
+has 'y'    => ( is => 'ro', isa => 'Int', required => 1 );
+has 'size' => ( is => 'ro', isa => 'Int', default => 60 );
+
+has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
+
+# velocity attribute
+has 'vx' => ( is  => 'rw',
+              isa => 'Num',
+              default => ( rand(10)/rand(100) + 0.3 )
+            );
+
+# TODO: do we really need this?
+sub BUILD {
+    my $self = shift;
+    $self->vx(1) if $self->vx == 0;
+}
 
 
 package main;
@@ -53,8 +73,16 @@ my @shots;
 #Our level counter
 my $level = 7;
 
-my $level_map = [ [ 200, 300 ],[ 200, 150 ], [ 400, 150 ], [ 600, 150 ], 
-                  [ 200, 600-150 ], [ 400, 600-150 ], [ 600, 600-150 ], [ 600, 300 ]];
+my @level_map = (
+    [ 200, 300 ],
+    [ 200, 150 ],
+    [ 400, 150 ],
+    [ 600, 150 ],
+    [ 200, 600-150 ],
+    [ 400, 600-150 ],
+    [ 600, 600-150 ],
+    [ 600, 300 ]
+);
 
 my $quit = 0;
 
@@ -68,8 +96,16 @@ while ( !$quit ) {
 
     @shots = ();        #Empty the shots we may have
 
+    # create our spinning wheels
+    foreach my $coord (@level_map) {
+        my $wheel = Wheel->new( x => $coord->[0], y => $coord->[1] );
+        $wheel->surface( init_surface($wheel->size) );
+
+        push @{$particles}, $wheel;
+    }
+
     #Make some random particles with random velocities
-    make_rand_particle($particles, $_) foreach ( 0 .. $level );
+#    make_rand_particle($particles, $_) foreach ( 0 .. $level );
 
     $ball->{wheel} = int( rand($#{$particles})) ;
 
@@ -182,15 +218,15 @@ sub iterate_step {
         my $wheel = $particles->[ $ball->{wheel} ];
 
         return if !$wheel;
-        $ball->{rad} += $dt * $wheel->{vx};    #rotate the ball on the wheel
+        $ball->{rad} += $dt * $wheel->vx;    #rotate the ball on the wheel
         $ball->{rad} = 0 if $ball->{rad} >= 360;
 
         $ball->{x} =
-          $wheel->{x} +
-          sin( $ball->{rad} * 3.14 / 180 ) * ( $wheel->{m} / 2 + 8 );
+          $wheel->x +
+          sin( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
         $ball->{y} =
-          $wheel->{y} +
-          cos( $ball->{rad} * 3.14 / 180 ) * ( $wheel->{m} / 2 + 8 );
+          $wheel->y +
+          cos( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
 
     }
     else {
@@ -219,11 +255,11 @@ sub iterate_step {
             my $p = @{$particles}[$_];
 
            # Check if our mouse rectangle collides with the particle's rectangle
-            my $rad = ( $p->{m} / 2 ) + 10;
-            if (   ( $ball->{x} < $p->{x} + $rad )
-                && ( $ball->{x} > $p->{x} - $rad )
-                && ( $ball->{y} < $p->{y} + $rad )
-                && ( $ball->{y} > $p->{y} - $rad ) )
+            my $rad = ( $p->size / 2 ) + 10;
+            if (   ( $ball->{x} < $p->x + $rad )
+                && ( $ball->{x} > $p->x - $rad )
+                && ( $ball->{y} < $p->y + $rad )
+                && ( $ball->{y} > $p->y - $rad ) )
             {
 
                 #warn 'iterating at wheel = ' . $ball->{wheel};
@@ -284,8 +320,8 @@ sub check_release {
 
     my $w = $particles->[ $ball->{wheel} ];
 
-    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->{vx} * 0.1;
-    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->{vx} * 0.1;
+    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->vx * 0.1;
+    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->vx * 0.1;
 
     $ball->{old_wheel} = $ball->{wheel};
     $ball->{wheel}     = -1;
@@ -303,6 +339,44 @@ sub rand_color {
     return ( 0x000000FF | ( $r << 24 ) | ( $b << 16 ) | ($g) << 8 );
 
 }
+
+sub init_surface {
+    my ($size, $color) = @_;
+
+    #make a surface based on the size
+    my $surface = SDL::Surface->new( SDL_SWSURFACE,
+                                     $size + 15, $size + 15,
+                                     32, 0, 0, 0, 255
+                                   );
+
+    SDL::Video::fill_rect(
+        $surface,
+        SDL::Rect->new( 0, 0, $size + 15, $size + 15 ),
+        SDL::Video::map_RGB( $app->format, 60, 60, 60 )
+    );
+
+    #draw a circle on it with a random color
+    SDL::GFX::Primitives::filled_circle_color(
+            $surface,
+            $size / 2,
+            $size / 2,
+            $size / 2 - 2,
+            rand_color($color)
+    );
+
+    SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
+        $size / 2 - 2, 0x000000FF );
+    SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
+        $size / 2 - 1, 0x000000FF );
+
+    SDL::Video::display_format($surface);
+    my $pixel = SDL::Color->new( 60, 60, 60 );
+    SDL::Video::set_color_key( $surface, SDL_SRCCOLORKEY, $pixel );
+
+    return $surface;
+}
+
+
 
 # Make an initail surface for the particles
 # so we only use it once
@@ -349,7 +423,6 @@ sub draw_to_screen {
     );
 
     # Draw out all our failures to hit the particles
-
     foreach ( 0 .. $#shots ) {
         warn 'show_draw' if $DEBUG;
         SDL::Video::fill_rect( $app, $shots[$_],
@@ -413,15 +486,15 @@ sub draw_ball {
 sub draw_particles {
     foreach my $p ( @{$particles} ) {
         warn 'particle_draw' if $DEBUG;
-        my $new_part_rect = SDL::Rect->new( 0, 0, $p->{m}, $p->{m} );
+        my $new_part_rect = SDL::Rect->new( 0, 0, $p->size, $p->size );
 
         #Blit the particles surface to the app in the right location
         SDL::Video::blit_surface(
-            $p->{surf},
+            $p->surface,
             $new_part_rect,
             $app,
             SDL::Rect->new(
-                $p->{x} - ( $p->{m} / 2 ), $p->{y} - ( $p->{m} / 2 ),
+                $p->x - ( $p->size / 2 ), $p->y - ( $p->size / 2 ),
                 $app->w, $app->h
             )
         );
@@ -439,7 +512,7 @@ sub make_rand_particle {
     #get a random size of our particle
     my $size = 60;
 
-    my $w = $level_map->[$t];
+    my $w = $level_map[$t];
 
     #die $w->[0], $w->[1];
 
