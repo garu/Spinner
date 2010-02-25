@@ -40,7 +40,7 @@ has 'size'    => ( is => 'ro', isa => 'Int', default => 25 );
 has 'rad'     => ( is => 'rw', isa => 'Num', default => 0  );
 has 'color'   => ( is => 'ro', default => 0xFF0000FF );
 has 'n_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
-has 'old_wheel' =>=> ( is => 'rw', isa => 'Int', default => 0  );
+has 'old_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
 
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
