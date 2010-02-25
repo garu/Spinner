@@ -14,6 +14,23 @@ has 'vx' => ( is  => 'rw', isa => 'Num',
               default => ( rand(10)/rand(100) + 0.3 )
             );
 
+# Blit the particles surface to the app in the right location
+sub draw {
+    my ($self, $app) = @_;
+
+    my $new_part_rect = SDL::Rect->new( 0, 0, $self->size, $self->size );
+
+    SDL::Video::blit_surface(
+        $self->surface,
+        $new_part_rect,
+        $app,
+        SDL::Rect->new(
+            $self->x - ( $self->size / 2 ), $self->y - ( $self->size / 2 ),
+            $app->w, $app->h
+        )
+    );
+}
+
 package main;
 
 use strict;
@@ -379,13 +396,13 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel speed:%.2f", $fps, $level, $ball->{wheel}, $particles->[$ball->{wheel}]->vx );
+      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel-speed:%.2f", $fps, $level, $ball->{wheel}, $particles->[$ball->{wheel}]->vx );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
 
     #Draw each particle
-    draw_particles();
+    $_->draw($app) foreach ( @$particles );
 
     draw_ball();
 
@@ -422,25 +439,5 @@ sub draw_ball {
             $app->w, $app->h
         )
     );
-}
-
-# Draw the particles on the screen
-sub draw_particles {
-    foreach my $p ( @{$particles} ) {
-        warn 'particle_draw' if $DEBUG;
-        my $new_part_rect = SDL::Rect->new( 0, 0, $p->size, $p->size );
-
-        #Blit the particles surface to the app in the right location
-        SDL::Video::blit_surface(
-            $p->surface,
-            $new_part_rect,
-            $app,
-            SDL::Rect->new(
-                $p->x - ( $p->size / 2 ), $p->y - ( $p->size / 2 ),
-                $app->w, $app->h
-            )
-        );
-
-    }
 }
 
