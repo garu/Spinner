@@ -30,6 +30,23 @@ sub draw {
     );
 }
 
+
+package Ball;
+use Mouse;
+
+has 'x'       => ( is => 'rw', isa => 'Num', default => 0  );
+has 'y'       => ( is => 'rw', isa => 'Num', default => 0  );
+has 'size'    => ( is => 'ro', isa => 'Int', default => 25 );
+has 'rad'     => ( is => 'rw', isa => 'Num', default => 0  );
+has 'n_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
+has 'old_wheel' =>=> ( is => 'rw', isa => 'Int', default => 0  );
+
+has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
+
+has 'vx' => ( is  => 'rw', isa => 'Num', default => 0 );
+has 'vy' => ( is  => 'rw', isa => 'Num', default => 0 );
+
+
 package main;
 
 use strict;
@@ -65,8 +82,9 @@ croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() if !($app);
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
 my $fps = 30;
-my $ball =
-  { wheel => 0, x => 0, y => 0, rad => 0, surf => init_surface( 25, 1 ) };
+
+my $ball = Ball->new;
+$ball->surface( init_surface( $ball->size, 1 ) );
 
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
@@ -112,7 +130,7 @@ while ( !$quit ) {
         push @{$particles}, $wheel;
     }
 
-    $ball->{wheel} = int( rand($#{$particles})) ;
+    $ball->n_wheel( int( rand($#{$particles})) );
 
     # Get an event object to snapshot the SDL event queue
     my $event = SDL::Event->new();
@@ -218,55 +236,53 @@ while ( !$quit ) {
 sub iterate_step {
     my $dt = shift;
    
-    if ( $ball->{wheel} != -1 ) {   #stuck on a wheel
-        my $wheel = $particles->[ $ball->{wheel} ];
+    if ( $ball->n_wheel != -1 ) {   #stuck on a wheel
+        my $wheel = $particles->[ $ball->n_wheel ];
         return unless $wheel;
 
-        $ball->{rad} = ($ball->{rad} + $dt * $wheel->speed) % 360;    #rotate the ball on the wheel
+        $ball->rad( ($ball->rad + $dt * $wheel->speed) % 360 );    #rotate the ball on the wheel
 
-        $ball->{x} = $wheel->x +
-          sin( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
-        $ball->{y} = $wheel->y +
-          cos( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
+        $ball->x( $wheel->x + sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
+        $ball->y( $wheel->y + cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
 
     }
     else {
-        $ball->{x} += $ball->{vx} * $dt;
-        $ball->{y} += $ball->{vy} * $dt;
+        $ball->x( $ball->x + $ball->vx * $dt);
+        $ball->y( $ball->y + $ball->vy * $dt);
 
         # Bounce our velocities components if we are going off the screen
-        if ( ( $ball->{x} > ( $app->w - (13) ) && $ball->{vx} > 0 ) || ($ball->{x} < ( 0 + (13) ) && $ball->{vx} < 0) )
+        if ( ( $ball->x > ( $app->w - (13) ) && $ball->vx > 0 ) || ($ball->x < ( 0 + (13) ) && $ball->vx < 0) )
         {
-               $ball->{old_wheel} = -1;
+               $ball->old_wheel( -1 );
         
-            $ball->{vx} *= -1
+            $ball->vx( $ball->vx * -1);
         
         }
-        if ( ( $ball->{y} > ( $app->h - (13) ) && $ball->{vy} > 0) || ( $ball->{y} < ( 0 + (13) ) && $ball->{vy} < 0) )
+        if ( ( $ball->y > ( $app->h - (13) ) && $ball->vy > 0) || ( $ball->y < ( 0 + (13) ) && $ball->vy < 0) )
         {
-            $ball->{old_wheel} = -1;
-                $ball->{vy} *= -1
+            $ball->old_wheel( -1 );
+                $ball->vy( $ball->vy * -1 );
         }
 
    
         foreach ( 0 .. $#{$particles} ) {
-            next if $_ == $ball->{old_wheel};
+            next if $_ == $ball->old_wheel;
             warn 'mouse' if $DEBUG;
             my $p = @{$particles}[$_];
 
            # Check if our mouse rectangle collides with the particle's rectangle
             my $rad = ( $p->size / 2 ) + 10;
-            if (   ( $ball->{x} < $p->x + $rad )
-                && ( $ball->{x} > $p->x - $rad )
-                && ( $ball->{y} < $p->y + $rad )
-                && ( $ball->{y} > $p->y - $rad ) )
+            if (   ( $ball->x < $p->x + $rad )
+                && ( $ball->x > $p->x - $rad )
+                && ( $ball->y < $p->y + $rad )
+                && ( $ball->y > $p->y - $rad ) )
             {
 
                 #warn 'iterating at wheel = ' . $ball->{wheel};
 
                 #We got that sucker!!
                 #Get rid of the particle for us
-                $ball->{wheel} = $_;
+                $ball->n_wheel( $_ );
 
                 # We are done no more particles left lets get outta here
                 #return if $#{$particles} == -1;
@@ -316,15 +332,15 @@ sub check_win {
 
 # Check if the release hit or misses
 sub check_release {
-    return if $ball->{wheel} == -1;
+    return if $ball->n_wheel == -1;
 
-    my $w = $particles->[ $ball->{wheel} ];
+    my $w = $particles->[ $ball->n_wheel ];
 
-    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->speed * 1.2;
-    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->speed * 1.2;
+    $ball->vx( sin( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
+    $ball->vy( cos( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
 
-    $ball->{old_wheel} = $ball->{wheel};
-    $ball->{wheel}     = -1;
+    $ball->old_wheel( $ball->n_wheel );
+    $ball->n_wheel( -1 );
 }
 
 #Gets a random color for our particle
@@ -395,7 +411,7 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel-speed:%.2f", $fps, $level, $ball->{wheel}, $particles->[$ball->{wheel}]->speed );
+      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel-speed:%.2f", $fps, $level, $ball->n_wheel, $particles->[$ball->n_wheel]->speed );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
@@ -412,29 +428,29 @@ sub draw_to_screen {
 
 sub draw_ball {
 
-   my $wheel = $particles->[ $ball->{wheel} ];
+   my $wheel = $particles->[ $ball->n_wheel ];
 
     my $new_part_rect = SDL::Rect->new( 0, 0, 26, 26 );
 
-    if($ball->{wheel} != -1) {
+    if($ball->n_wheel != -1) {
         # sin(rad) = opposite / hypo
         my $x2 = my $y2 = 0;
         my $xD = -1 ;my $yD = 1;
-        $yD = -1 if $ball->{rad} < 270 && $ball->{rad} > 90;
-        $xD = 1  if $ball->{rad} < 180 && $ball->{rad} > 0;
-        $x2 = ($ball->{x} + 12 * $xD ) + (70 * sin ( $ball->{rad} * 3.14/180 ) );
-        $y2 = ($ball->{y} + 12 * $yD ) + (70 * cos ( $ball->{rad} * 3.14/180 ) );
+        $yD = -1 if $ball->rad < 270 && $ball->rad > 90;
+        $xD = 1  if $ball->rad < 180 && $ball->rad > 0;
+        $x2 = ($ball->x + 12 * $xD ) + (70 * sin ( $ball->rad * 3.14/180 ) );
+        $y2 = ($ball->y + 12 * $yD ) + (70 * cos ( $ball->rad * 3.14/180 ) );
     
-        SDL::GFX::Primitives::aaline_RGBA( $app, $ball->{x},  $ball->{y}, $x2, $y2, 23, 244, 45, 244 );
+        SDL::GFX::Primitives::aaline_RGBA( $app, $ball->x,  $ball->y, $x2, $y2, 23, 244, 45, 244 );
     }
 
     #Blit the particles surface to the app in the right location
     SDL::Video::blit_surface(
-        $ball->{surf},
+        $ball->surface,
         $new_part_rect,
         $app,
         SDL::Rect->new(
-            $ball->{x} - ( 26 / 2 ), $ball->{y} - ( 26 / 2 ),
+            $ball->x - ( 26 / 2 ), $ball->y - ( 26 / 2 ),
             $app->w, $app->h
         )
     );
