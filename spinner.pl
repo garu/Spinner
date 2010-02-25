@@ -69,9 +69,10 @@ my $particles = [];
 my @shots;
 
 #Our level counter
-my $level = 3;
+my $level = 7;
 
-my $level_map = [ [ 50, 50 ], [ 250, 50 ], [ 510, 150 ], [ 250, 250 ], ];
+my $level_map = [ [ 200, 300 ],[ 200, 150 ], [ 400, 150 ], [ 600, 150 ], 
+                  [ 200, 600-150 ], [ 400, 600-150 ], [ 600, 600-150 ], [ 600, 300 ]];
 
 my $quit = 0;
 
@@ -86,9 +87,9 @@ while ( !$quit ) {
     @shots = ();        #Empty the shots we may have
 
     #Make some random particles with random velocities
-    make_rand_particle($particles) foreach ( 0 .. $level );
+    make_rand_particle($particles, $_) foreach ( 0 .. $level );
 
-    $ball->{wheel} = int( rand( $#{$particles} ) );
+    $ball->{wheel} = int( rand($#{$particles})) ;
 
     # Get an event object to snapshot the SDL event queue
     my $event = SDL::Event->new();
@@ -193,10 +194,10 @@ while ( !$quit ) {
 # Calculate the new velocities
 sub iterate_step {
     my $dt = shift;
-
+   
     if ( $ball->{wheel} != -1 )    #stuck on a wheel
     {
-
+        
         my $wheel = $particles->[ $ball->{wheel} ];
 
         return if !$wheel;
@@ -212,6 +213,7 @@ sub iterate_step {
 
     }
     else {
+        
         $ball->{x} += $ball->{vx} * $dt;
         $ball->{y} += $ball->{vy} * $dt;
 
@@ -236,14 +238,14 @@ sub iterate_step {
             my $p = @{$particles}[$_];
 
            # Check if our mouse rectangle collides with the particle's rectangle
-            my $rad = ( $p->{m} / 2 ) + 13;
+            my $rad = ( $p->{m} / 2 ) + 10;
             if (   ( $ball->{x} < $p->{x} + $rad )
                 && ( $ball->{x} > $p->{x} - $rad )
                 && ( $ball->{y} < $p->{y} + $rad )
                 && ( $ball->{y} > $p->{y} - $rad ) )
             {
 
-                warn 'iterating at wheel = ' . $ball->{wheel};
+                #warn 'iterating at wheel = ' . $ball->{wheel};
 
                 #We got that sucker!!
                 #Get rid of the particle for us
@@ -311,10 +313,7 @@ sub check_mouse {
 
         $ball->{old_wheel} = $ball->{wheel};
         $ball->{wheel}     = -1;
-        warn 'old wheel = '
-          . $ball->{old_wheel}
-          . ' new wheel = '
-          . $ball->{wheel};
+        
 
     }
 
@@ -447,8 +446,7 @@ sub make_rand_particle {
 
     my $particles = shift;
 
-    my $t = $#{$particles};
-    $t = 0 if $t == -1;
+    my $t =shift;
 
     #get a random size of our particle
     my $size = 60;
@@ -462,7 +460,7 @@ sub make_rand_particle {
         #randomly place the particle in our app's w and h
         x  => $w->[0],
         y  => $w->[1],
-        vx => 0.5,       #Get a random X and Y velocity component
+        vx => rand(10)/rand(100) + 0.3,       #Get a random X and Y velocity component
         m  => $size,     # The mass or size of the particle
         n  => $t,        # The number the particle is
     };
