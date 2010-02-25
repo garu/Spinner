@@ -6,6 +6,7 @@ use Mouse;
 has 'x'    => ( is => 'ro', isa => 'Int', required => 1 );
 has 'y'    => ( is => 'ro', isa => 'Int', required => 1 );
 has 'size' => ( is => 'ro', isa => 'Int', default => 60 );
+has 'color' => ( is => 'rw', default => undef );
 
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
@@ -126,7 +127,7 @@ while ( !$quit ) {
     # create our spinning wheels
     foreach my $coord (@level_map) {
         my $wheel = Wheel->new( x => $coord->[0], y => $coord->[1] );
-        $wheel->surface( init_surface($wheel->size) );
+        $wheel->surface( init_surface($wheel->size, $wheel->color) );
 
         push @{$particles}, $wheel;
     }
@@ -336,6 +337,8 @@ sub check_release {
     return if $ball->n_wheel == -1;
 
     my $w = $particles->[ $ball->n_wheel ];
+    $w->color( 0x111111FF );
+    $w->surface( init_surface( $w->size, $w->color ) );
 
     $ball->vx( sin( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
     $ball->vy( cos( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
