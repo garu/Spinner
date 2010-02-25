@@ -304,8 +304,8 @@ sub check_release {
 
     my $w = $particles->[ $ball->{wheel} ];
 
-    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->vx * 0.1;
-    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->vx * 0.1;
+    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->vx * 1.2;
+    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->vx * 1.2;
 
     $ball->{old_wheel} = $ball->{wheel};
     $ball->{wheel}     = -1;
