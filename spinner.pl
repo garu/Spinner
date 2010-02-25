@@ -290,11 +290,11 @@ sub iterate_step {
                         $app,
                         $app->w / 2 - 150,
                         $app->h / 2 - 4,
-                        'YOU LOSE!!!', 0x00FF00FF
+                        'Try Again!!!', 0x00FF00FF
                     );
                     SDL::Video::flip($app);
                     SDL::delay(1000);
-                    exit;
+                    $quit = 1;
                 }
 
                 #We got that sucker!!
