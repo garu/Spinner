@@ -58,7 +58,7 @@ croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() if !($app);
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
 my $fps = 30;
 my $ball =
-  { wheel => 0, x => 0, y => 0, rad => 0, surf => init_particle_surf( 25, 1 ) };
+  { wheel => 0, x => 0, y => 0, rad => 0, surf => init_surface( 25, 1 ) };
 
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
@@ -375,41 +375,6 @@ sub init_surface {
     return $surface;
 }
 
-
-
-# Make an initail surface for the particles
-# so we only use it once
-sub init_particle_surf {
-    my $size = shift;
-    my $b    = shift;
-
-    #make a surface based on the size
-    my $particle =
-      SDL::Surface->new( SDL_SWSURFACE, $size + 15, $size + 15, 32, 0, 0, 0,
-        255 );
-
-    SDL::Video::fill_rect(
-        $particle,
-        SDL::Rect->new( 0, 0, $size + 15, $size + 15 ),
-        SDL::Video::map_RGB( $app->format, 60, 60, 60 )
-    );
-
-    #draw a circle on it with a random color
-    SDL::GFX::Primitives::filled_circle_color( $particle, $size / 2, $size / 2,
-        $size / 2 - 2,
-        rand_color($b) );
-
-    SDL::GFX::Primitives::aacircle_color( $particle, $size / 2, $size / 2,
-        $size / 2 - 2, 0x000000FF );
-    SDL::GFX::Primitives::aacircle_color( $particle, $size / 2, $size / 2,
-        $size / 2 - 1, 0x000000FF );
-
-    SDL::Video::display_format($particle);
-    my $pixel = SDL::Color->new( 60, 60, 60 );
-    SDL::Video::set_color_key( $particle, SDL_SRCCOLORKEY, $pixel );
-
-    return $particle;
-}
 
 # The final update that is drawn to the screen
 sub draw_to_screen {
