@@ -120,10 +120,9 @@ while ( !$quit ) {
             if ( $event->type == SDL_QUIT ) {
                 $quit = 1;
             }
-            elsif ( $event->type == SDL_MOUSEBUTTONDOWN )
-            {    #If it was a mouse button down event
-                ##Check mouse and get its status
-                check_mouse( SDL::Events::get_mouse_state() );
+            elsif ( $event->type == SDL_KEYDOWN )
+            {
+                check_release() if $event->key_sym == SDLK_SPACE;
             }
             warn 'event' if $DEBUG;
 
@@ -297,26 +296,17 @@ sub check_win {
     return 1;
 }
 
-# Check if the mouse hit or misses
-sub check_mouse {
+# Check if the release hit or misses
+sub check_release {
     return if $ball->{wheel} == -1;
 
-    # A hash to simplify accessing the mouse
-    my $mouse = { click => $_[0]->[0], x => $_[0]->[1], y => $_[0]->[2] };
+    my $w = $particles->[ $ball->{wheel} ];
 
-    # If we have a click
-    if ( $mouse->{click} == 1 ) {
-        my $w = $particles->[ $ball->{wheel} ];
+    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->{vx} * 0.1;
+    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->{vx} * 0.1;
 
-        $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->{vx} * 0.1;
-        $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->{vx} * 0.1;
-
-        $ball->{old_wheel} = $ball->{wheel};
-        $ball->{wheel}     = -1;
-        
-
-    }
-
+    $ball->{old_wheel} = $ball->{wheel};
+    $ball->{wheel}     = -1;
 }
 
 #Gets a random color for our particle
