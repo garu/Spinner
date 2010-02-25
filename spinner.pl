@@ -10,7 +10,7 @@ has 'size' => ( is => 'ro', isa => 'Int', default => 60 );
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
 has 'speed' => ( is  => 'rw', isa => 'Num',
-              default => ( rand(10)/rand(100) + 0.3 )
+              default => sub { return rand(10)/rand(100) + 0.3 }
             );
 
 # Blit the particles surface to the app in the right location
