@@ -38,6 +38,7 @@ has 'x'       => ( is => 'rw', isa => 'Num', default => 0  );
 has 'y'       => ( is => 'rw', isa => 'Num', default => 0  );
 has 'size'    => ( is => 'ro', isa => 'Int', default => 25 );
 has 'rad'     => ( is => 'rw', isa => 'Num', default => 0  );
+has 'color'   => ( is => 'ro', default => 0xFF0000FF );
 has 'n_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
 has 'old_wheel' =>=> ( is => 'rw', isa => 'Int', default => 0  );
 
@@ -84,7 +85,7 @@ my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
 my $fps = 30;
 
 my $ball = Ball->new;
-$ball->surface( init_surface( $ball->size, 1 ) );
+$ball->surface( init_surface( $ball->size, $ball->color ) );
 
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
@@ -345,9 +346,6 @@ sub check_release {
 
 #Gets a random color for our particle
 sub rand_color {
-    my $ba = shift;
-
-    return 0xFF0000FF if $ba;
     my $r = rand( 0x100 - 0x44 ) + 0x44;
     my $b = rand( 0x100 - 0x44 ) + 0x44;
     my $g = rand( 0x100 - 0x44 ) + 0x44;
@@ -376,7 +374,7 @@ sub init_surface {
             $size / 2,
             $size / 2,
             $size / 2 - 2,
-            rand_color($color)
+            $color || rand_color(),
     );
 
     SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
