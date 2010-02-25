@@ -50,7 +50,7 @@ croak 'Cannot init video ' . SDL::get_error()
 #Make our display window
 #This is our actual SDL application window
 my $app = SDL::Video::set_video_mode( 800, 600, 32,
-    SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL );
+    SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL  );
 
 croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() if !($app);
 
@@ -141,6 +141,8 @@ while ( !$quit ) {
             elsif ( $event->type == SDL_KEYDOWN )
             {
                 check_release() if $event->key_sym == SDLK_SPACE;
+                $quit = 1 if $event->key_sym == SDLK_ESCAPE;
+                SDL::Video::wm_toggle_fullscreen( $app ) if $event->key_sym == SDLK_f;
             }
             warn 'event' if $DEBUG;
 
