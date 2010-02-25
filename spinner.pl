@@ -9,8 +9,7 @@ has 'size' => ( is => 'ro', isa => 'Int', default => 60 );
 
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
-# velocity attribute
-has 'vx' => ( is  => 'rw', isa => 'Num',
+has 'speed' => ( is  => 'rw', isa => 'Num',
               default => ( rand(10)/rand(100) + 0.3 )
             );
 
@@ -223,7 +222,7 @@ sub iterate_step {
         my $wheel = $particles->[ $ball->{wheel} ];
         return unless $wheel;
 
-        $ball->{rad} = ($ball->{rad} + $dt * $wheel->vx) % 360;    #rotate the ball on the wheel
+        $ball->{rad} = ($ball->{rad} + $dt * $wheel->speed) % 360;    #rotate the ball on the wheel
 
         $ball->{x} = $wheel->x +
           sin( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
@@ -321,8 +320,8 @@ sub check_release {
 
     my $w = $particles->[ $ball->{wheel} ];
 
-    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->vx * 1.2;
-    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->vx * 1.2;
+    $ball->{vx} = sin( $ball->{rad} * 3.14 / 180 ) * $w->speed * 1.2;
+    $ball->{vy} = cos( $ball->{rad} * 3.14 / 180 ) * $w->speed * 1.2;
 
     $ball->{old_wheel} = $ball->{wheel};
     $ball->{wheel}     = -1;
@@ -396,7 +395,7 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel-speed:%.2f", $fps, $level, $ball->{wheel}, $particles->[$ball->{wheel}]->vx );
+      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel-speed:%.2f", $fps, $level, $ball->{wheel}, $particles->[$ball->{wheel}]->speed );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
