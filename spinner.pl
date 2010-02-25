@@ -3,10 +3,11 @@
 package Wheel;
 use Mouse;
 
-has 'x'    => ( is => 'ro', isa => 'Int', required => 1 );
-has 'y'    => ( is => 'ro', isa => 'Int', required => 1 );
-has 'size' => ( is => 'ro', isa => 'Int', default => 60 );
-has 'color' => ( is => 'rw', default => undef );
+has 'x'       => ( is => 'ro', isa => 'Int', required => 1 );
+has 'y'       => ( is => 'ro', isa => 'Int', required => 1 );
+has 'size'    => ( is => 'ro', isa => 'Int', default => 60 );
+has 'color'   => ( is => 'rw', default => undef );
+has 'visited' => ( is => 'rw', default => undef );
 
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
@@ -94,6 +95,7 @@ my $bg_surf = init_bg_surf($app);
 # The actual particles that we see bouncing around
 # particles are defined as hashes
 my $particles = [];
+my $particles_left = 0;
 
 #The shots we have made in each level
 my @shots;
@@ -121,7 +123,6 @@ while ( !$quit ) {
     #START our level
 
     $particles = [];    #Empty our particles new level
-
     @shots = ();        #Empty the shots we may have
 
     # create our spinning wheels
@@ -131,6 +132,7 @@ while ( !$quit ) {
 
         push @{$particles}, $wheel;
     }
+    $particles_left = @{$particles};
 
     $ball->n_wheel( int( rand($#{$particles})) );
 
@@ -315,7 +317,7 @@ sub init_bg_surf {
 # Check if we are done this level
 sub check_win {
     my $init_time = shift;
-    if ( $#{$particles} < 0 ) {
+    if ( $particles_left <= 0 ) {
         my $secs_to_win = ( SDL::get_ticks() - $init_time / 1000 );
         my $str         = sprintf( "Level %d completed in : %2d millisecs !!!",
             $level, $secs_to_win );
@@ -344,9 +346,14 @@ sub check_ball_release {
 
     my $w = $particles->[ $ball->n_wheel ];
 
-    # change wheel color so player knows it's touched
-    $w->color( 0x111111FF );
-    $w->surface( init_surface( $w->size, $w->color ) );
+    if ( !$w->visited ) {
+        # change wheel color so player knows it's touched
+        $w->color( 0x111111FF );
+        $w->surface( init_surface( $w->size, $w->color ) );
+
+        $w->visited(1);
+        $particles_left--;
+    }
 
     # ball gets new speed
     $ball->vx( sin( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
