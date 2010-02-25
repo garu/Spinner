@@ -255,20 +255,23 @@ sub iterate_step {
         # Bounce our velocities components if we are going off the screen
         if ( ( $ball->x > ( $app->w - (13) ) && $ball->vx > 0 ) || ($ball->x < ( 0 + (13) ) && $ball->vx < 0) )
         {
-               $ball->old_wheel( -1 );
-        
+            # if we bounce, we can go back to the previous wheel
+            $ball->old_wheel( -1 );
             $ball->vx( $ball->vx * -1);
-        
         }
         if ( ( $ball->y > ( $app->h - (13) ) && $ball->vy > 0) || ( $ball->y < ( 0 + (13) ) && $ball->vy < 0) )
         {
+            # if we bounce, we can go back to the previous wheel
             $ball->old_wheel( -1 );
-                $ball->vy( $ball->vy * -1 );
+            $ball->vy( $ball->vy * -1 );
         }
 
    
         foreach ( 0 .. $#{$particles} ) {
+
+            # don't collide with previous wheel
             next if $_ == $ball->old_wheel;
+
             warn 'mouse' if $DEBUG;
             my $p = @{$particles}[$_];
 
