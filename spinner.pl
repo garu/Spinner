@@ -202,7 +202,6 @@ while ( !$quit ) {
 
         # Check if we have won this level!
         $cont = check_win($init_time);
-
     }
 
 }
@@ -211,25 +210,19 @@ while ( !$quit ) {
 sub iterate_step {
     my $dt = shift;
    
-    if ( $ball->{wheel} != -1 )    #stuck on a wheel
-    {
-        
+    if ( $ball->{wheel} != -1 ) {   #stuck on a wheel
         my $wheel = $particles->[ $ball->{wheel} ];
+        return unless $wheel;
 
-        return if !$wheel;
-        $ball->{rad} += $dt * $wheel->vx;    #rotate the ball on the wheel
-        $ball->{rad} = 0 if $ball->{rad} >= 360;
+        $ball->{rad} = ($ball->{rad} + $dt * $wheel->vx) % 360;    #rotate the ball on the wheel
 
-        $ball->{x} =
-          $wheel->x +
+        $ball->{x} = $wheel->x +
           sin( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
-        $ball->{y} =
-          $wheel->y +
+        $ball->{y} = $wheel->y +
           cos( $ball->{rad} * 3.14 / 180 ) * ( $wheel->size / 2 + 8 );
 
     }
     else {
-        
         $ball->{x} += $ball->{vx} * $dt;
         $ball->{y} += $ball->{vy} * $dt;
 
@@ -394,7 +387,7 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel:%2d", $fps, $level, $ball->{wheel} );
+      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel speed:%.2f", $fps, $level, $ball->{wheel}, $particles->[$ball->{wheel}]->vx );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
