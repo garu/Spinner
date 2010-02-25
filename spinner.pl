@@ -12,7 +12,7 @@ has 'visited' => ( is => 'rw', default => undef );
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
 has 'speed' => ( is  => 'rw', isa => 'Num',
-              default => sub { return rand(10)/rand(100) + 0.3 }
+              default => sub { return rand(0.7) + 0.3 }
             );
 
 # Blit the particles surface to the app in the right location
@@ -101,9 +101,9 @@ my $particles_left = 0;
 my @shots;
 
 #Our level counter
-my $level = 7;
+my $level = 0;
 
-my @level_map = (
+my @level_map = ([
     [ 200, 300 ],
     [ 200, 150 ],
     [ 400, 150 ],
@@ -112,6 +112,16 @@ my @level_map = (
     [ 400, 600-150 ],
     [ 600, 600-150 ],
     [ 600, 300 ]
+],
+ [  [ 100, 300 ],
+    [ 220, 150 ],
+    [ 400, 50 ],
+    [ 600, 150 ],
+    [ 500, 600-250 ],
+    [ 200, 600-150 ],
+    [ 600, 650 ],
+    [ 300, 300 ]
+],
 );
 
 my $quit = 0;
@@ -126,7 +136,7 @@ while ( !$quit ) {
     @shots = ();        #Empty the shots we may have
 
     # create our spinning wheels
-    foreach my $coord (@level_map) {
+    foreach my $coord ( @{$level_map[$level]}) {
         my $wheel = Wheel->new( x => $coord->[0], y => $coord->[1] );
         $wheel->surface( init_surface($wheel->size, $wheel->color) );
 
@@ -290,7 +300,7 @@ sub iterate_step {
                         $app,
                         $app->w / 2 - 150,
                         $app->h / 2 - 4,
-                        'Try Again!!!', 0x00FF00FF
+                        'YOU LOSE!!!', 0x00FF00FF
                     );
                     SDL::Video::flip($app);
                     SDL::delay(1000);
@@ -342,6 +352,7 @@ sub check_win {
         SDL::Video::flip($app);
         SDL::delay(1000);
         return 0;
+       
 
     }
     return 1;
@@ -482,4 +493,3 @@ sub draw_ball {
         )
     );
 }
-
