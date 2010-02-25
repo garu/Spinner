@@ -165,7 +165,7 @@ while ( !$quit ) {
             }
             elsif ( $event->type == SDL_KEYDOWN )
             {
-                check_release() if $event->key_sym == SDLK_SPACE;
+                check_ball_release() if $event->key_sym == SDLK_SPACE;
                 $quit = 1 if $event->key_sym == SDLK_ESCAPE;
                 SDL::Video::wm_toggle_fullscreen( $app ) if $event->key_sym == SDLK_f;
             }
@@ -332,14 +332,20 @@ sub check_win {
     return 1;
 }
 
-# Check if the release hit or misses
-sub check_release {
+
+# Release ball from wheel (if possible)
+sub check_ball_release {
+
+    # we can't release the ball if it isn't attached to a wheel
     return if $ball->n_wheel == -1;
 
     my $w = $particles->[ $ball->n_wheel ];
+
+    # change wheel color so player knows it's touched
     $w->color( 0x111111FF );
     $w->surface( init_surface( $w->size, $w->color ) );
 
+    # ball gets new speed
     $ball->vx( sin( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
     $ball->vy( cos( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
 
