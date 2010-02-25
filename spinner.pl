@@ -10,17 +10,9 @@ has 'size' => ( is => 'ro', isa => 'Int', default => 60 );
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
 # velocity attribute
-has 'vx' => ( is  => 'rw',
-              isa => 'Num',
+has 'vx' => ( is  => 'rw', isa => 'Num',
               default => ( rand(10)/rand(100) + 0.3 )
             );
-
-# TODO: do we really need this?
-sub BUILD {
-    my $self = shift;
-    $self->vx(1) if $self->vx == 0;
-}
-
 
 package main;
 
