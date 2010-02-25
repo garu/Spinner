@@ -336,7 +336,6 @@ sub rand_color {
     my $g = rand( 0x100 - 0x44 ) + 0x44;
 
     return ( 0x000000FF | ( $r << 24 ) | ( $b << 16 ) | ($g) << 8 );
-
 }
 
 sub init_surface {
@@ -391,7 +390,6 @@ sub draw_to_screen {
         warn 'show_draw' if $DEBUG;
         SDL::Video::fill_rect( $app, $shots[$_],
             SDL::Video::map_RGB( $app->format, 0, 0, 0 ) );
-
     }
 
     #make a string with the FPS and level
@@ -417,22 +415,19 @@ sub draw_ball {
 
     my $new_part_rect = SDL::Rect->new( 0, 0, 26, 26 );
 
+    if($ball->{wheel} != -1) {
+        # sin(rad) = opposite / hypo
+        my $x2 = my $y2 = 0;
+        my $xD = -1 ;my $yD = 1;
+        $yD = -1 if $ball->{rad} < 270 && $ball->{rad} > 90;
+        $xD = 1  if $ball->{rad} < 180 && $ball->{rad} > 0;
+        $x2 = ($ball->{x} + 12 * $xD ) + (70 * sin ( $ball->{rad} * 3.14/180 ) );
+        $y2 = ($ball->{y} + 12 * $yD ) + (70 * cos ( $ball->{rad} * 3.14/180 ) );
     
-    
-    if($ball->{wheel} != -1)
-    {# sin(rad) = opposite / hypo
-    my $x2 = my $y2 = 0;
-    my $xD = -1 ;my $yD = 1;
-       $yD = -1 if $ball->{rad} < 270 && $ball->{rad} > 90;
-       $xD = 1 if $ball->{rad} < 180 && $ball->{rad} > 0;
-     $x2 = ($ball->{x}  + 12 * $xD )  +  (70 * sin ( $ball->{rad} * 3.14/180 ) );
-     $y2 = ($ball->{y}  + 12 * $yD ) + (70 * cos ( $ball->{rad} * 3.14/180 ) );
-    
-   
-    
-     SDL::GFX::Primitives::aaline_RGBA(  $app, $ball->{x},  $ball->{y}, $x2, $y2, 23, 244, 45, 244 );
- }
-     #Blit the particles surface to the app in the right location
+        SDL::GFX::Primitives::aaline_RGBA( $app, $ball->{x},  $ball->{y}, $x2, $y2, 23, 244, 45, 244 );
+    }
+
+    #Blit the particles surface to the app in the right location
     SDL::Video::blit_surface(
         $ball->{surf},
         $new_part_rect,
@@ -442,8 +437,6 @@ sub draw_ball {
             $app->w, $app->h
         )
     );
-
-
 }
 
 # Draw the particles on the screen
