@@ -1,24 +1,6 @@
+#!/usr/bin/perl
+package Wheel;
 
-=pod
-
-=head1 NAME spinner.pl
-
-A quick game for CeBIT
-
-=head2 AUTHOR 
-
-Kartik Thakore
-
-=head2 USAGE
-
-Only for Linux> sudo apt-get install libsdl-dev libsdl_gfx-dev
-cpan Alien::SDL
-Click Download Source http://github.com/kthakore/SDL_perl/tree/redesign
-Extract it 
-perl Build.PL; perl Build; perl Build install
-perl Shooter.pl
-
-=cut
 
 package main;
 
