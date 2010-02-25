@@ -104,9 +104,6 @@ while ( !$quit ) {
         push @{$particles}, $wheel;
     }
 
-    #Make some random particles with random velocities
-#    make_rand_particle($particles, $_) foreach ( 0 .. $level );
-
     $ball->{wheel} = int( rand($#{$particles})) ;
 
     # Get an event object to snapshot the SDL event queue
@@ -504,34 +501,3 @@ sub draw_particles {
     }
 }
 
-# Make a random particle
-sub make_rand_particle {
-
-    my $particles = shift;
-
-    my $t =shift;
-
-    #get a random size of our particle
-    my $size = 60;
-
-    my $w = $level_map[$t];
-
-    #die $w->[0], $w->[1];
-
-    my $particle = {
-
-        #randomly place the particle in our app's w and h
-        x  => $w->[0],
-        y  => $w->[1],
-        vx => rand(10)/rand(100) + 0.3,       #Get a random X and Y velocity component
-        m  => $size,     # The mass or size of the particle
-        n  => $t,        # The number the particle is
-    };
-
-    $particle->{vx} += 1 if $particle->{vx} == 0;
-
-    #Make a surface for our particle
-    $particle->{surf} = init_particle_surf( $particle->{m} );
-    push @{$particles}, $particle;
-
-}
