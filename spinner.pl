@@ -38,7 +38,7 @@ croak 'Cannot init  ' . SDL::get_error()
 
  die 'Music not found: '.SDL::get_error() if !$music;
 
- SDL::Mixer::Music::play_music($music, 1);
+ SDL::Mixer::Music::play_music($music, -1);
 
  SDL::Mixer::Music::volume_music(15);
 
