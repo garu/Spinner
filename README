@@ -7,6 +7,8 @@ AUTHORS
 Kartik Thakore
 Breno G. de Oliveira
 
+Background Music: SP*NK, by L<< Loveshadow|http://ccmixter.org/files/Loveshadow/25375 >>, released under the CreativeCommons License L<< CC BY-NC 3.0|http://creativecommons.org/licenses/by-nc/3.0/ >>
+
 USAGE
 
 Only for Linux> sudo apt-get install libsdl-dev libsdl_gfx-dev
