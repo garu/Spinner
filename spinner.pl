@@ -337,7 +337,7 @@ sub game_level {
         }
 
         #Update our view and count our frames
-        draw_to_screen( $fps, $level, \@shots, $app, $ball, \@wheels );
+        draw_to_screen( $fps, $level, \@shots, $app, $ball, \@wheels, $particles_left );
 
         $frames++;
 
@@ -464,7 +464,7 @@ sub init_surface {
 
 # The final update that is drawn to the screen
 sub draw_to_screen {
-    my ( $fps, $level, $shots_ref, $app, $ball, $particles ) = @_;
+    my ( $fps, $level, $shots_ref, $app, $ball, $particles, $particles_left ) = @_;
 
     #Blit the back ground surface to the window
     SDL::Video::blit_surface(
@@ -481,7 +481,9 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel:%2d, Wheel-speed:%.2f", $fps, $level, $ball->n_wheel, $particles->[$ball->n_wheel]->speed );
+      sprintf( "FPS:%.2f Level:%2d Wheel [%2d, speed:%.2f] Targets left:%d", 
+              $fps, $level, $ball->n_wheel, $particles->[$ball->n_wheel]->speed, $particles_left
+             );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
