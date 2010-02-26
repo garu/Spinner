@@ -10,7 +10,7 @@ has 'visited' => ( is => 'rw', default => undef );
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
 has 'speed' => ( is  => 'rw', isa => 'Num',
-              default => sub { return rand(0.7) + 0.3 }
+              default => sub { return 0.3 + rand(0.3) } #return rand(0.7) + 0.3 }
             );
 
 # Blit the particles surface to the app in the right location
