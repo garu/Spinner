@@ -84,6 +84,9 @@ my $quit = 0;
 my $score = 0;
 
 menu();
+
+SDL::Mixer::close_audio();
+
 sub menu
 {
   my $choice = 0;
