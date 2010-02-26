@@ -18,6 +18,10 @@ use SDL::Time;
 use SDL::Color;
 use SDL::GFX::Primitives;
 
+use SDL::Mixer;
+use SDL::Mixer::Music;
+
+
 use Data::Dumper;
 use Carp;
 
@@ -25,8 +29,18 @@ my $DEBUG = 0;
 
 #Initing video
 #Die here if we cannot make video init
-croak 'Cannot init video ' . SDL::get_error()
-  if ( SDL::init(SDL_INIT_VIDEO) == -1 );
+croak 'Cannot init  ' . SDL::get_error()
+  if ( SDL::init(SDL_INIT_VIDEO | SDL_INIT_VIDEO) == -1 );
+
+ SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096);
+
+ my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
+
+ die 'Music not found: '.SDL::get_error() if !$music;
+
+ SDL::Mixer::Music::play_music($music, 1);
+
+ SDL::Mixer::Music::volume_music(15);
 
 #Make our display window
 #This is our actual SDL application window
