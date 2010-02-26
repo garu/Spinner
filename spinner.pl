@@ -12,7 +12,7 @@ has 'visited' => ( is => 'rw', default => undef );
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
 has 'speed' => ( is  => 'rw', isa => 'Num',
-              default => sub { return rand(0.3) + 0.3 }
+              default => sub { return rand(1) + 1 }
             );
 
 # Blit the particles surface to the app in the right location
@@ -88,7 +88,7 @@ sub update {
         my $wheel = $particles->[ $ball->n_wheel ];
         return unless $wheel;
 
-        $ball->rad( ($ball->rad + $dt * $wheel->speed) % 360 );    #rotate the ball on the wheel
+        $ball->rad( ( $ball->rad + ($wheel->speed ) ) % 360 );    #rotate the ball on the wheel
 
         $ball->x( $wheel->x + sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
         $ball->y( $wheel->y + cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
@@ -205,12 +205,95 @@ my @level_map = ([
 my $quit = 0;
 my $score = 0;
 
+menu();
+sub menu
+{
+  my $choice = 0;
+  my @choices = ( 'New Game', 'Quit' );
+  my $event = SDL::Event->new();
+  while(!$quit)
+  {
+      while ( SDL::Events::poll_event($event) )
+        {    #Get all events from the event queue in our event
+
+            #If we have a quit event i.e click on [X] trigger the quit flage
+            if ( $event->type == SDL_QUIT ) {
+                $quit = 1;
+            }
+            elsif ( $event->type == SDL_KEYDOWN )
+            {
+                
+                $quit = 1 if $event->key_sym == SDLK_ESCAPE;
+                SDL::Video::wm_toggle_fullscreen( $app ) if $event->key_sym == SDLK_f;
+                
+                if( $event->key_sym == SDLK_DOWN )
+                {
+                    $choice++;
+                    
+                    $choice = 0if $choice > $#choices;
+                }
+                
+                if( $event->key_sym == SDLK_UP )
+                {
+                    $choice--;
+                    
+                    $choice = $#choices if $choice < 0 ;
+                }
+                
+                
+                if( $event->key_sym == (SDLK_RETURN) ||  $event->key_sym == (SDLK_KP_ENTER)  )
+                {
+                    #proally better to do this with a hash that holds the sub but meh
+                    
+                    game() if $choice == 0;
+                    $quit = 1 if $choice == 1;
+                    
+                }
+                
+                
+            }
+            
+
+        }
+        
+        my $str         = "SPINNER" ;
+        SDL::GFX::Primitives::string_color(
+            $app,
+            $app->w / 2 - 70,
+            100,
+            $str, 0x00CC34DD
+        );
+        my $h = 100;
+        foreach( @choices )
+        {
+               $str         = $_ ;
+               my $color = 0x00CC34DD;
+               $color = 0xFF0000FF if $choices[$choice] =~ /$_/;
+        SDL::GFX::Primitives::string_color(
+            $app,
+            $app->w / 2 - 70,
+            $h+=50,
+            $str, $color
+        ); 
+        }
+        
+        
+      SDL::Video::flip($app);
+  }
+    
+}
+
+sub game
+{    
+
 my $p_level = 0;
 while ( $level_map[$p_level] ) {
     my $finished = game_level($p_level);
     last if $quit or not $finished;
     $p_level++;
     $score += 1000;
+}
+
 }
 
 
@@ -410,8 +493,8 @@ sub check_ball_release {
     }
 
     # ball gets new speed
-    $ball->vx( sin( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
-    $ball->vy( cos( $ball->rad * 3.14 / 180 ) * $w->speed * 1.2 );
+    $ball->vx( sin( $ball->rad * 3.14 / 180 ) * 0.5 );
+    $ball->vy( cos( $ball->rad * 3.14 / 180 ) * 0.5 );
 
     $ball->old_wheel( $ball->n_wheel );
     $ball->n_wheel( -1 );
@@ -500,5 +583,3 @@ sub draw_to_screen {
     #This is one frame!
     SDL::Video::flip($app);
 }
-
-
