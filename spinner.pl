@@ -203,12 +203,14 @@ my @level_map = ([
 );
 
 my $quit = 0;
+my $score = 0;
 
 my $p_level = 0;
 while ( $level_map[$p_level] ) {
     my $finished = game_level($p_level);
     last if $quit or not $finished;
     $p_level++;
+    $score += 1000;
 }
 
 
@@ -304,7 +306,7 @@ sub game_level {
                     $app,
                     $app->w / 2 - 150,
                     $app->h / 2 - 4,
-                    'YOU LOSE!!!', 0x00FF00FF
+                    "YOU LOSE!!! Score: $score", 0x00FF00FF
                 );
                 SDL::Video::flip($app);
                 SDL::delay(1000);
@@ -404,6 +406,7 @@ sub check_ball_release {
 
         $w->visited(1);
         $particles_left--;
+        $score += 300;
     }
 
     # ball gets new speed
@@ -481,8 +484,8 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel [%2d, speed:%.2f] Targets left:%d", 
-              $fps, $level, $ball->n_wheel, $particles->[$ball->n_wheel]->speed, $particles_left
+      sprintf( "FPS:%.2f Level:%2d Wheel [%2d, speed:%.2f] Left:%d Score: %d", 
+              $fps, $level, $ball->n_wheel, $particles->[$ball->n_wheel]->speed, $particles_left, $score
              );
 
     #write our string to the window
