@@ -4,7 +4,7 @@ use Math::Trig;
 
 has 'x'        => ( is => 'rw', isa => 'Num', default => 0 );
 has 'y'        => ( is => 'rw', isa => 'Num', default => 0 );
-has 'size'     => ( is => 'ro', isa => 'Int', default => 25 );
+has 'size'     => ( is => 'ro', isa => 'Int', default => 26 );
 has 'rad'      => ( is => 'rw', isa => 'Num', default => 0 );
 has 'rotating' => ( is => 'rw', isa => 'Num', default => 0 );
 has 'color'     => ( is => 'ro', default => 0xFF0000FF );
@@ -20,32 +20,15 @@ has 'vy' => ( is => 'rw', isa => 'Num', default => 0 );
 
 sub draw {
     my ( $ball, $app ) = @_;
+    my $size = $ball->size;
 
-    my $new_part_rect = SDL::Rect->new( 0, 0, 26, 26 );
-
-#    if($ball->n_wheel != -1) {
-#        # sin(rad) = opposite / hypo
-#        my $x2 = my $y2 = 0;
-#        my $xD = -1 ;my $yD = 1;
-#        $yD = -1 if $ball->rad < 270 && $ball->rad > 90;
-#        $xD = 1  if $ball->rad < 180 && $ball->rad > 0;
-#        $x2 = ($ball->x + 12 * $xD ) + (70 * sin ( $ball->rad * 3.14/180 ) );
-#        $y2 = ($ball->y + 12 * $yD ) + (70 * cos ( $ball->rad * 3.14/180 ) );
-#
-#        SDL::GFX::Primitives::aaline_RGBA( $app, $ball->x,  $ball->y, $x2, $y2, 23, 244, 45, 244 );
-#   }
+    my $new_part_rect = SDL::Rect->new( 0, 0, $size, $size );
+    my $centered_rect = SDL::Rect->new( $ball->x - $size / 2,
+                                        $ball->y - $size / 2,
+                                        $app->w, $app->h);
 
     #Blit the particles surface to the app in the right location
-    SDL::Video::blit_surface(
-        $ball->surface,
-        $new_part_rect,
-        $app,
-        SDL::Rect->new(
-            $ball->x - ( 26 / 2 ),
-            $ball->y - ( 26 / 2 ),
-            $app->w, $app->h
-        )
-    );
+    SDL::Video::blit_surface($ball->surface, $new_part_rect, $app, $centered_rect);
 }
 
 sub update {
