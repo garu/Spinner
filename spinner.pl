@@ -200,7 +200,7 @@ sub game_level {
     # create our spinning wheels
     foreach my $coord ( @{ $level_map[$level] } ) {
         my $wheel = Spinner::Wheel->new( x => $coord->[0], y => $coord->[1] );
-        $wheel->surface( $wheel_base );
+        $wheel->surface( init_surface( $wheel->size, $wheel->color ) );
 
         push @wheels, $wheel;
     }
@@ -434,6 +434,21 @@ sub init_surface {
         $size / 2 - 2,
         $color || rand_color(),
     );
+    
+    if ( $size == 60)
+    {
+
+    SDL::Video::blit_surface(
+        $wheel_base, SDL::Rect->new( 0, 0, $wheel_base->w, $wheel_base->h ),
+        $surface,     SDL::Rect->new( 0, 0, $surface->w,     $surface->h )
+    );
+    
+    }
+    SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
+	      $size / 2 - 2, 0x000000FF );
+    
+     SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
+	        $size / 2 - 1, 0x000000FF );
 
 
     return $surface;
