@@ -17,6 +17,7 @@ use SDL::Event;
 use SDL::Time;
 use SDL::Color;
 use SDL::GFX::Primitives;
+use SDL::Image;
 
 use SDL::Mixer;
 use SDL::Mixer::Music;
@@ -54,6 +55,15 @@ my $fps = 30;
 
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
+
+my $wheel_base = get_image('data/wheel.png');
+my $ball_image = get_image('data/ball.png');
+    
+
+    
+
+
+croak SDL::get_error if !$wheel_base;
 
 my @level_map = (
     [ [ 100, 300 ], [ 220, 150 ], ],
@@ -177,7 +187,7 @@ sub game_level {
     # create our spinning wheels
     foreach my $coord ( @{ $level_map[$level] } ) {
         my $wheel = Spinner::Wheel->new( x => $coord->[0], y => $coord->[1] );
-        $wheel->surface( init_surface( $wheel->size, $wheel->color ) );
+        $wheel->surface( $wheel_base );
 
         push @wheels, $wheel;
     }
@@ -185,7 +195,7 @@ sub game_level {
 
     # start the ball in a random wheel
     my $ball = Spinner::Ball->new( n_wheel => int rand @wheels );
-    $ball->surface( init_surface( $ball->size, $ball->color ) );
+    $ball->surface( $ball_image );
 
     # Get an event object to snapshot the SDL event queue
     my $event = SDL::Event->new();
@@ -382,8 +392,8 @@ sub rand_color {
     my $r = rand( 0x100 - 0x44 ) + 0x44;
     my $b = rand( 0x100 - 0x44 ) + 0x44;
     my $g = rand( 0x100 - 0x44 ) + 0x44;
-
-    return ( 0x000000FF | ( $r << 24 ) | ( $b << 16 ) | ($g) << 8 );
+    my $a = rand( 0x100 - 0x44 ) + 0x44;
+    return ( $a | ( $r << 24 ) | ( $b << 16 ) | ($g) << 8 );
 }
 
 sub init_surface {
@@ -407,14 +417,6 @@ sub init_surface {
         $color || rand_color(),
     );
 
-    SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-        $size / 2 - 2, 0x000000FF );
-    SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-        $size / 2 - 1, 0x000000FF );
-
-    SDL::Video::display_format($surface);
-    my $pixel = SDL::Color->new( 60, 60, 60 );
-    SDL::Video::set_color_key( $surface, SDL_SRCCOLORKEY, $pixel );
 
     return $surface;
 }
@@ -455,4 +457,18 @@ sub draw_to_screen {
     #Update the entire window
     #This is one frame!
     SDL::Video::flip($app);
+}
+
+sub get_image
+{
+    
+    
+   my $img= SDL::Image::load($_[0]);
+
+    SDL::Video::display_format($img);
+    my $pixel = SDL::Color->new( 60, 60, 60);
+    SDL::Video::set_color_key( $img, SDL_SRCCOLORKEY, $pixel );
+    
+    return $img;
+    
 }
