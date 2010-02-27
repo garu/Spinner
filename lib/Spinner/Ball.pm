@@ -79,41 +79,21 @@ sub update {
             # don't collide with previous wheel
             next if $_ == $ball->old_wheel;
 
-            my $p = $particles->[$_];
-
             # Check if our mouse rectangle collides with the particle's rectangle
-            my $wheel_radius = $p->size / 2;
-            my $rad = $wheel_radius + 2;
-            if (   ( $ball->x < $p->x + $rad )
-                && ( $ball->x > $p->x - $rad )
-                && ( $ball->y < $p->y + $rad )
-                && ( $ball->y > $p->y - $rad ) )
-            {
-                #calculate new radians
-                my $ratio = abs( $ball->x - $p->x ) / $rad;
-                my $angle = 0;
-                if ( $ball->x == $p->x ) {
-                    $angle = 180 if $ball->y < $p->y;
-                    $angle = 0 if $ball->y > $p->y;
-                }
-                elsif ( $ball->y == $p->y ) {
-                    $angle = 270 if $ball->x < $p->x;
-                    $angle = 90 if $ball->x > $p->x;
-                }
-                elsif ( $ball->x < $p->x && $ball->y < $p->y ) {
-                    $angle = ( 180 + csc($ratio) );
-                }
-                elsif ( $ball->x > $p->x && $ball->y < $p->y ) {
-                    $angle = ( 180 - csc($ratio) );
-                }
-                elsif ( $ball->x < $p->x && $ball->y > $p->y ) {
-                    $angle = ( 270 + sec($ratio) );
-                }
-                elsif ( $ball->x > $p->x && $ball->y > $p->y ) {
-                    $angle = ( 90 - sec($ratio) );
-                }
+            my $p                 = $particles->[$_];
+            my $wheel_radius      = $p->size / 2;
+            my $x_diff            = $ball->x - $p->x;
+            my $y_diff            = $ball->y - $p->y;
+            my $distance_squared  = $x_diff * $x_diff + $y_diff * $y_diff;
+            my $sum_radii_squared = ($ball_radius + $wheel_radius) ** 2;
 
-                $ball->rad($angle);
+            if ($distance_squared <= $sum_radii_squared) {
+                my $angle  = atan2(-$y_diff, $x_diff) * 180 / pi;
+                   $angle += 360 if $angle < 0;
+
+                printf "%7.3f  %7.3f  %7.3f\n", $x_diff, $y_diff, $angle;
+
+                $ball->rad($angle + 90);
                 $ball->n_wheel($_);
 
                 return 2;
