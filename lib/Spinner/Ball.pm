@@ -64,9 +64,9 @@ sub update {
             $ball->rad( $angle - ( int( $angle / 360 ) * 360 ) );
         }
         $ball->x( $wheel->x +
-              sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ) );
+              sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 11 ) );
         $ball->y( $wheel->y +
-              cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ) );
+              cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 11 ) );
 
         $ball->ready(1)
           if !$ball->ready;    #the first time we get not ready and a wheel
@@ -106,7 +106,7 @@ sub update {
             my $p = @{$particles}[$_];
 
            # Check if our mouse rectangle collides with the particle's rectangle
-            my $rad = ( $p->size / 2 ) + 5;
+            my $rad = ( $p->size / 2 ) + 2;
             if (   ( $ball->x < $p->x + $rad )
                 && ( $ball->x > $p->x - $rad )
                 && ( $ball->y < $p->y + $rad )
@@ -116,7 +116,17 @@ sub update {
                 #calculate new radians
                 my $ratio = abs( $ball->x - $p->x ) / $rad;
                 my $angle = 0;
-                if ( $ball->x < $p->x && $ball->y < $p->y ) {
+                if ( $ball->x == $p->x )
+                {
+                    $angle = 180 if $ball->y < $p->y;
+                    $angle = 0 if $ball->y > $p->y;
+                }
+                elsif ( $ball->y == $p->y )
+                {
+                    $angle = 270 if $ball->x < $p->x;
+                    $angle = 90 if $ball->x > $p->x;
+                }
+                elsif ( $ball->x < $p->x && $ball->y < $p->y ) {
                     $angle = ( 180 + csc($ratio) );
                 }
                 elsif ( $ball->x > $p->x && $ball->y < $p->y ) {
