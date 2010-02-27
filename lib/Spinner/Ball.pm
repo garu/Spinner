@@ -32,10 +32,9 @@ sub draw {
 }
 
 sub update {
-    my $ball      = shift;
-    my $dt        = shift;
-    my $particles = shift;
-    my $app       = shift;
+    my ($ball, $dt, $particles, $app) = @_;
+
+    my $ball_radius = $ball->size / 2;
 
     if ( $ball->n_wheel != -1 ) {    #stuck on a wheel
         my $wheel = $particles->[ $ball->n_wheel ];
@@ -51,61 +50,53 @@ sub update {
         $ball->y( $wheel->y +
               cos( $ball->rad * pi / 180 ) * ( $wheel->size / 2 + 11 ) );
 
-        $ball->ready(1)
-          if !$ball->ready;    #the first time we get not ready and a wheel
-
+        # the first time we get not ready and a wheel
+        $ball->ready(1) unless $ball->ready;
     }
     else {
-
         $ball->x( $ball->x + $ball->vx * $dt );
         $ball->y( $ball->y + $ball->vy * $dt );
 
         # Bounce our velocities components if we are going off the screen
-        if (   ( $ball->x > ( $app->w - (13) ) && $ball->vx > 0 )
-            || ( $ball->x < ( 0 + (13) ) && $ball->vx < 0 ) )
+        if (   $ball->x > ( $app->w - $ball_radius ) && $ball->vx > 0
+            || $ball->x < (       0 + $ball_radius ) && $ball->vx < 0 )
         {
-
             # if we bounce, we can go back to the previous wheel
             $ball->old_wheel(-1);
             $ball->vx( $ball->vx * -1 );
             return 1;
         }
-        if (   ( $ball->y > ( $app->h - (13) ) && $ball->vy > 0 )
-            || ( $ball->y < ( 0 + (13) ) && $ball->vy < 0 ) )
+        if (   $ball->y > ( $app->h - $ball_radius ) && $ball->vy > 0
+            || $ball->y < (       0 + $ball_radius ) && $ball->vy < 0 )
         {
-
             # if we bounce, we can go back to the previous wheel
             $ball->old_wheel(-1);
             $ball->vy( $ball->vy * -1 );
-
             return 1;
         }
 
-        foreach ( 0 .. $#{$particles} ) {
-
+        for ( 0 .. $#$particles ) {
             # don't collide with previous wheel
             next if $_ == $ball->old_wheel;
 
-            my $p = @{$particles}[$_];
+            my $p = $particles->[$_];
 
-           # Check if our mouse rectangle collides with the particle's rectangle
-            my $rad = ( $p->size / 2 ) + 2;
+            # Check if our mouse rectangle collides with the particle's rectangle
+            my $wheel_radius = $p->size / 2;
+            my $rad = $wheel_radius + 2;
             if (   ( $ball->x < $p->x + $rad )
                 && ( $ball->x > $p->x - $rad )
                 && ( $ball->y < $p->y + $rad )
                 && ( $ball->y > $p->y - $rad ) )
             {
-
                 #calculate new radians
                 my $ratio = abs( $ball->x - $p->x ) / $rad;
                 my $angle = 0;
-                if ( $ball->x == $p->x )
-                {
+                if ( $ball->x == $p->x ) {
                     $angle = 180 if $ball->y < $p->y;
                     $angle = 0 if $ball->y > $p->y;
                 }
-                elsif ( $ball->y == $p->y )
-                {
+                elsif ( $ball->y == $p->y ) {
                     $angle = 270 if $ball->x < $p->x;
                     $angle = 90 if $ball->x > $p->x;
                 }
@@ -125,13 +116,9 @@ sub update {
                 $ball->rad($angle);
                 $ball->n_wheel($_);
 
-                # We are done no more particles left lets get outta here
-                #return if $#{$particles} == -1;
-
                 return 2;
             }
         }
-
     }
     return 0;
 }
