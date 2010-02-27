@@ -63,8 +63,8 @@ my $fps = 30;
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
 
-my $ball_image = get_image('data/ball.png');
-my $spinner_menu = get_image('data/main.png');
+my $ball_image = SDL::Image::load('data/ball.png');
+my $spinner_menu = SDL::Image::load('data/main.png');
 
 my $quit  = 0;
 my $score = 0;
@@ -295,8 +295,7 @@ sub game_level {
 # Can keep using it as many times as we need
 sub init_bg_surf {
     my $app = shift;
-    my $bg =
-      get_image('data/bg.png');
+    my $bg = SDL::Image::load('data/bg.png');
     return $bg;
 }
 
@@ -398,19 +397,10 @@ sub draw_to_screen {
     SDL::Video::flip($app);
 }
 
-sub get_image
-{
-   my $img = SDL::Image::load($_[0]);
-   return $img;
-}
-
 
 sub handle_chunk
 {
     my ($mix_chunk) = shift;
      SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
 #    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
-
-
-
 }
