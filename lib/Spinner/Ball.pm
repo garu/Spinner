@@ -8,6 +8,7 @@ has 'rad'     => ( is => 'rw', isa => 'Num', default => 0  );
 has 'color'   => ( is => 'ro', default => 0xFF0000FF );
 has 'n_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
 has 'old_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
+has 'ready' => ( is => 'rw', isa => 'Int', default => 0  ); #wait until level is ready
 
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
@@ -53,13 +54,20 @@ sub update {
         my $wheel = $particles->[ $ball->n_wheel ];
         return unless $wheel;
 
-        $ball->rad( ($ball->rad + $dt * $wheel->speed) % 360 );    #rotate the ball on the wheel
+        # Rotate the ball on the wheel
+        my $angle = $ball->rad + $dt * $wheel->speed;
+        $ball->rad( $angle - int($angle / 360) * 360 );
 
         $ball->x( $wheel->x + sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
         $ball->y( $wheel->y + cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
+        
+        $ball->ready ( 1 ) if !$ball->ready;  #the first time we get not ready and a wheel
 
     }
-    else {
+    else { 
+        
+         
+       
         $ball->x( $ball->x + $ball->vx * $dt);
         $ball->y( $ball->y + $ball->vy * $dt);
 
@@ -99,6 +107,7 @@ sub update {
                 #return if $#{$particles} == -1;
             }
         }
+       
     }
     return 1;
 }

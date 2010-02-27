@@ -21,7 +21,6 @@ use SDL::GFX::Primitives;
 use SDL::Mixer;
 use SDL::Mixer::Music;
 
-
 use Data::Dumper;
 use Carp;
 
@@ -30,22 +29,22 @@ my $DEBUG = 0;
 #Initing video
 #Die here if we cannot make video init
 croak 'Cannot init  ' . SDL::get_error()
-  if ( SDL::init(SDL_INIT_VIDEO | SDL_INIT_VIDEO) == -1 );
+  if ( SDL::init( SDL_INIT_VIDEO | SDL_INIT_VIDEO ) == -1 );
 
- SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096);
+SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
- my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
+my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
 
- die 'Music not found: '.SDL::get_error() if !$music;
+die 'Music not found: ' . SDL::get_error() if !$music;
 
- SDL::Mixer::Music::play_music($music, -1);
+SDL::Mixer::Music::play_music( $music, -1 );
 
- SDL::Mixer::Music::volume_music(15);
+SDL::Mixer::Music::volume_music(15);
 
 #Make our display window
 #This is our actual SDL application window
 my $app = SDL::Video::set_video_mode( 800, 600, 32,
-    SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL  );
+    SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL );
 
 croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() if !($app);
 
@@ -56,127 +55,115 @@ my $fps = 30;
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
 
-my @level_map = ([
- [ 100, 300 ],
- [ 220, 150 ],
-],
-[
-    [ 200, 300 ],
-    [ 200, 150 ],
-    [ 400, 150 ],
-    [ 600, 150 ],
-    [ 200, 600-150 ],
-    [ 400, 600-150 ],
-    [ 600, 600-150 ],
-    [ 600, 300 ]
-],
-[  [ 100, 300 ],
-    [ 220, 150 ],
-    [ 400, 50 ],
-    [ 600, 150 ],
-    [ 500, 600-250 ],
-    [ 200, 600-150 ],
-    [ 300, 300 ]
-],
+my @level_map = (
+    [ [ 100, 300 ], [ 220, 150 ], ],
+    [
+        [ 200, 300 ],
+        [ 200, 150 ],
+        [ 400, 150 ],
+        [ 600, 150 ],
+        [ 200, 600 - 150 ],
+        [ 400, 600 - 150 ],
+        [ 600, 600 - 150 ],
+        [ 600, 300 ]
+    ],
+    [
+        [ 100, 300 ],
+        [ 220, 150 ],
+        [ 400, 50 ],
+        [ 600, 150 ],
+        [ 500, 600 - 250 ],
+        [ 200, 600 - 150 ],
+        [ 300, 300 ]
+    ],
 );
 
-my $quit = 0;
+my $quit  = 0;
 my $score = 0;
 
 menu();
 
 SDL::Mixer::close_audio();
 
-sub menu
-{
-  my $choice = 0;
-  my @choices = ( 'New Game', 'Quit' );
-  my $event = SDL::Event->new();
-  while(!$quit)
-  {
-      while ( SDL::Events::poll_event($event) )
+sub menu {
+    my $choice  = 0;
+    my @choices = ( 'New Game', 'Quit' );
+    my $event   = SDL::Event->new();
+    while ( !$quit ) {
+        while ( SDL::Events::poll_event($event) )
         {    #Get all events from the event queue in our event
 
             #If we have a quit event i.e click on [X] trigger the quit flage
             if ( $event->type == SDL_QUIT ) {
                 $quit = 1;
             }
-            elsif ( $event->type == SDL_KEYDOWN )
-            {
-                
+            elsif ( $event->type == SDL_KEYDOWN ) {
+
                 $quit = 1 if $event->key_sym == SDLK_ESCAPE;
-                SDL::Video::wm_toggle_fullscreen( $app ) if $event->key_sym == SDLK_f;
-                
-                if( $event->key_sym == SDLK_DOWN )
-                {
+                SDL::Video::wm_toggle_fullscreen($app)
+                  if $event->key_sym == SDLK_f;
+
+                if ( $event->key_sym == SDLK_DOWN ) {
                     $choice++;
-                    
-                    $choice = 0if $choice > $#choices;
+
+                    $choice = 0 if $choice > $#choices;
                 }
-                
-                if( $event->key_sym == SDLK_UP )
-                {
+
+                if ( $event->key_sym == SDLK_UP ) {
                     $choice--;
-                    
-                    $choice = $#choices if $choice < 0 ;
+
+                    $choice = $#choices if $choice < 0;
                 }
-                
-                
-                if( $event->key_sym == (SDLK_RETURN) ||  $event->key_sym == (SDLK_KP_ENTER)  )
+
+                if (   $event->key_sym == (SDLK_RETURN)
+                    || $event->key_sym == (SDLK_KP_ENTER) )
                 {
-                    #proally better to do this with a hash that holds the sub but meh
-                    
+
+               #proally better to do this with a hash that holds the sub but meh
+
                     game() if $choice == 0;
                     $quit = 1 if $choice == 1;
-                    
+
                 }
-                
-                
+
             }
-            
 
         }
-        
-        my $str         = "SPINNER" ;
-        SDL::GFX::Primitives::string_color(
-            $app,
-            $app->w / 2 - 70,
-            100,
-            $str, 0x00CC34DD
+
+        # Blit the back ground surface to the window
+        SDL::Video::blit_surface(
+            $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
+            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
         );
+
+        my $str = "SPINNER";
+        SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
+            100, $str, 0x00CC34DD );
         my $h = 100;
-        foreach( @choices )
-        {
-               $str         = $_ ;
-               my $color = 0x00CC34DD;
-               $color = 0xFF0000FF if $choices[$choice] =~ /$_/;
-        SDL::GFX::Primitives::string_color(
-            $app,
-            $app->w / 2 - 70,
-            $h+=50,
-            $str, $color
-        ); 
+        foreach (@choices) {
+            $str = $_;
+            my $color = 0x00CC34DD;
+            $color = 0xFF0000FF if $choices[$choice] =~ /$_/;
+            SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
+                $h += 50, $str, $color );
         }
-        
-        
-      SDL::Video::flip($app);
-  }
-    
-}
 
-sub game
-{    
-
-my $p_level = 0;
-while ( $level_map[$p_level] ) {
-    my $finished = game_level($p_level);
-    last if $quit or not $finished;
-    $p_level++;
-    $score += 1000;
-}
+        SDL::Video::flip($app);
+    }
 
 }
 
+sub game {
+
+    my $p_level = 0;
+    while ( $level_map[$p_level] ) {
+        my $finished = game_level($p_level);
+        last if $quit or not $finished;
+        $p_level++;
+        $score += 1000;
+    }
+
+}
 
 # create the given level. returns true if level is over,
 # or false if player died.
@@ -185,11 +172,12 @@ sub game_level {
 
     my @wheels = ();
     my @shots  = ();
+    
 
     # create our spinning wheels
-    foreach my $coord ( @{$level_map[$level]}) {
+    foreach my $coord ( @{ $level_map[$level] } ) {
         my $wheel = Spinner::Wheel->new( x => $coord->[0], y => $coord->[1] );
-        $wheel->surface( init_surface($wheel->size, $wheel->color) );
+        $wheel->surface( init_surface( $wheel->size, $wheel->color ) );
 
         push @wheels, $wheel;
     }
@@ -228,11 +216,13 @@ sub game_level {
             if ( $event->type == SDL_QUIT ) {
                 $quit = 1;
             }
-            elsif ( $event->type == SDL_KEYDOWN )
-            {
-                $particles_left = check_ball_release($ball, \@wheels, $particles_left) if $event->key_sym == SDLK_SPACE;
+            elsif ( $event->type == SDL_KEYDOWN ) {
+                $particles_left =
+                  check_ball_release( $ball, \@wheels, $particles_left )
+                  if $event->key_sym == SDLK_SPACE;
                 $quit = 1 if $event->key_sym == SDLK_ESCAPE;
-                SDL::Video::wm_toggle_fullscreen( $app ) if $event->key_sym == SDLK_f;
+                SDL::Video::wm_toggle_fullscreen($app)
+                  if $event->key_sym == SDLK_f;
             }
             warn 'event' if $DEBUG;
 
@@ -262,7 +252,7 @@ sub game_level {
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
-            $ball->update($dt, \@wheels, $app);
+            $ball->update( $dt, \@wheels, $app );
 
             # losing condition
             if ( $ball->n_wheel >= 0 and $wheels[ $ball->n_wheel ]->visited ) {
@@ -303,16 +293,16 @@ sub game_level {
         }
 
         #Update our view and count our frames
-        draw_to_screen( $fps, $level, \@shots, $app, $ball, \@wheels, $particles_left );
+        draw_to_screen( $fps, $level, \@shots, $app, $ball, \@wheels,
+            $particles_left );
 
         $frames++;
 
         # Check if we have won this level!
-        $cont = check_win($init_time, $particles_left, $app);
+        $cont = check_win( $init_time, $particles_left, $app );
     }
     return !$quit;
 }
-
 
 # Create a background surface once so we
 # Can keep using it as many times as we need
@@ -330,13 +320,14 @@ sub init_bg_surf {
 
 # Check if we are done this level
 sub check_win {
-    my $init_time = shift;
+    my $init_time      = shift;
     my $particles_left = shift;
-    my $app = shift;
+    my $app            = shift;
 
     if ( $particles_left <= 0 ) {
         my $secs_to_win = ( SDL::get_ticks() - $init_time / 1000 );
-        my $str         = sprintf( "Level completed in : %2d millisecs !!!", $secs_to_win );
+        my $str =
+          sprintf( "Level completed in : %2d millisecs !!!", $secs_to_win );
         SDL::GFX::Primitives::string_color(
             $app,
             $app->w / 2 - 150,
@@ -351,21 +342,24 @@ sub check_win {
     return 1;
 }
 
-
 # Release ball from wheel (if possible)
 # FIXME: we return the number of particles left
 # which is silly
 sub check_ball_release {
-    my ($ball, $particles, $particles_left) = @_;
-
+    
+    
+    my ( $ball, $particles, $particles_left ) = @_;
+    warn $ball->ready;
+    return  $particles_left if ! $ball->ready; #the ball is not ready to release yet 
     # we can't release the ball if it isn't attached to a wheel
     return $particles_left if $ball->n_wheel == -1;
 
     my $w = $particles->[ $ball->n_wheel ];
 
     if ( !$w->visited ) {
+
         # change wheel color so player knows it's touched
-        $w->color( 0x111111FF );
+        $w->color(0x111111FF);
         $w->surface( init_surface( $w->size, $w->color ) );
 
         $w->visited(1);
@@ -378,7 +372,7 @@ sub check_ball_release {
     $ball->vy( cos( $ball->rad * 3.14 / 180 ) * 0.5 );
 
     $ball->old_wheel( $ball->n_wheel );
-    $ball->n_wheel( -1 );
+    $ball->n_wheel(-1);
 
     return $particles_left;
 }
@@ -393,13 +387,12 @@ sub rand_color {
 }
 
 sub init_surface {
-    my ($size, $color) = @_;
+    my ( $size, $color ) = @_;
 
     #make a surface based on the size
-    my $surface = SDL::Surface->new( SDL_SWSURFACE,
-                                     $size + 15, $size + 15,
-                                     32, 0, 0, 0, 255
-                                   );
+    my $surface =
+      SDL::Surface->new( SDL_SWSURFACE, $size + 15, $size + 15, 32, 0, 0, 0,
+        255 );
 
     SDL::Video::fill_rect(
         $surface,
@@ -409,11 +402,9 @@ sub init_surface {
 
     #draw a circle on it with a random color
     SDL::GFX::Primitives::filled_circle_color(
-            $surface,
-            $size / 2,
-            $size / 2,
-            $size / 2 - 2,
-            $color || rand_color(),
+        $surface, $size / 2, $size / 2,
+        $size / 2 - 2,
+        $color || rand_color(),
     );
 
     SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
@@ -428,10 +419,10 @@ sub init_surface {
     return $surface;
 }
 
-
 # The final update that is drawn to the screen
 sub draw_to_screen {
-    my ( $fps, $level, $shots_ref, $app, $ball, $particles, $particles_left ) = @_;
+    my ( $fps, $level, $shots_ref, $app, $ball, $particles, $particles_left ) =
+      @_;
 
     #Blit the back ground surface to the window
     SDL::Video::blit_surface(
@@ -447,16 +438,17 @@ sub draw_to_screen {
     }
 
     #make a string with the FPS and level
-    my $pfps =
-      sprintf( "FPS:%.2f Level:%2d Wheel [%2d, speed:%.2f] Left:%d Score: %d", 
-              $fps, $level, $ball->n_wheel, $particles->[$ball->n_wheel]->speed, $particles_left, $score
-             );
+    my $pfps = sprintf(
+        "FPS:%.2f Level:%2d Wheel [%2d, speed:%.2f] Left:%d Score: %d",
+        $fps, $level, $ball->n_wheel, $particles->[ $ball->n_wheel ]->speed,
+        $particles_left, $score
+    );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
 
     #Draw each particle
-    $_->draw($app) foreach ( @$particles );
+    $_->draw($app) foreach (@$particles);
 
     $ball->draw($app);
 
