@@ -337,12 +337,7 @@ sub game_level {
 sub init_bg_surf {
     my $app = shift;
     my $bg =
-      SDL::Surface->new( SDL_SWSURFACE, $app->w, $app->h, 32, 0, 0, 0, 0 );
-
-    SDL::Video::fill_rect( $bg, $app_rect,
-        SDL::Video::map_RGB( $app->format, 60, 60, 60 ) );
-
-    SDL::Video::display_format($bg);
+      get_image('data/bg.png');
     return $bg;
 }
 
@@ -425,7 +420,7 @@ sub init_surface {
     SDL::Video::fill_rect(
         $surface,
         SDL::Rect->new( 0, 0, $size + 15, $size + 15 ),
-        SDL::Video::map_RGB( $app->format, 60, 60, 60 )
+        SDL::Video::map_RGB( $app->format, 60, 0, 0 )
     );
 
     #draw a circle on it with a random color
@@ -434,6 +429,9 @@ sub init_surface {
         $size / 2 - 2,
         $color || rand_color(),
     );
+                SDL::Video::display_format($surface);
+    my $pixel = SDL::Color->new( 60, 0, 0);
+    SDL::Video::set_color_key( $surface, SDL_SRCCOLORKEY, $pixel );
     
     if ( $size == 60)
     {
@@ -449,6 +447,8 @@ sub init_surface {
     
      SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
 	        $size / 2 - 1, 0x000000FF );
+	        
+	
 
 
     return $surface;
@@ -497,10 +497,6 @@ sub get_image
     
     
    my $img= SDL::Image::load($_[0]);
-
-    SDL::Video::display_format($img);
-    my $pixel = SDL::Color->new( 60, 60, 60);
-    SDL::Video::set_color_key( $img, SDL_SRCCOLORKEY, $pixel );
     
     return $img;
     
