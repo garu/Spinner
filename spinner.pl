@@ -45,9 +45,12 @@ my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
 
 die 'Music not found: ' . SDL::get_error() if !$music;
 
-SDL::Mixer::Music::play_music( $music, -1 );
+eval { SDL::Mixer::Music::play_music( $music, -1 ); };
 
 SDL::Mixer::Music::volume_music(15);
+
+SDL::Video::wm_set_icon(SDL::Video::load_BMP("data/icon.bmp"));
+
 
 #Make our display window
 #This is our actual SDL application window
@@ -216,11 +219,11 @@ sub play {
                   if $event->key_sym == SDLK_f;
                   
                   if ( $event->key_sym == SDLK_LEFT ) {
-                    $ball->rotating(-1);
+                    $ball->rotating(1);
                 }
 
                 if ( $event->key_sym == SDLK_RIGHT ) {
-                    $ball->rotating(1);
+                    $ball->rotating(-1);
                 }
             }
             elsif ( $event->type == SDL_KEYUP )
