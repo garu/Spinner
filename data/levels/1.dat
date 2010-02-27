@@ -1,0 +1,9 @@
+{
+    "name": "Warming Up",
+    "author": "garu",
+    "wheels": [
+                { "x" : 350, "y" : 350 },
+                { "x" : 450, "y" : 200 }
+            ],
+    "starting_wheel": 1
+}
