@@ -5,8 +5,8 @@ use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use Spinner::Wheel;
 use Spinner::Ball;
+use Spinner::Level;
 
 use SDL;
 use SDL::Video;
@@ -63,39 +63,8 @@ my $fps = 30;
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
 
-my $wheel_base = get_image('data/wheel.png');
 my $ball_image = get_image('data/ball.png');
-
 my $spinner_menu = get_image('data/main.png');
-    
-
-    
-
-
-croak SDL::get_error if !$wheel_base;
-
-my @level_map = (
-    [ [ 100, 300 ], [ 220, 150 ], ],
-    [
-        [ 200, 300 ],
-        [ 200, 150 ],
-        [ 400, 150 ],
-        [ 600, 150 ],
-        [ 200, 600 - 150 ],
-        [ 400, 600 - 150 ],
-        [ 600, 600 - 150 ],
-        [ 600, 300 ]
-    ],
-    [
-        [ 100, 300 ],
-        [ 220, 150 ],
-        [ 400, 50 ],
-        [ 600, 150 ],
-        [ 500, 600 - 250 ],
-        [ 200, 600 - 150 ],
-        [ 300, 300 ]
-    ],
-);
 
 my $quit  = 0;
 my $score = 0;
@@ -178,11 +147,11 @@ sub menu {
 
 sub game {
     $quit = 0;
-    my $p_level = 0;
-    while ( $level_map[$p_level] ) {
-        my $finished = game_level($p_level);
+    my $level = Spinner::Level->new;
+    while ( $level->load($app) ) {
+        my $finished = game_level($level);
         last if $quit or not $finished;
-        $p_level++;
+        $level->number( $level->number + 1 );
         $score += 1000;
     }
 
@@ -193,21 +162,11 @@ sub game {
 sub game_level {
     my $level = shift;
 
-    my @wheels = ();
     my @shots  = ();
-    
-
-    # create our spinning wheels
-    foreach my $coord ( @{ $level_map[$level] } ) {
-        my $wheel = Spinner::Wheel->new( x => $coord->[0], y => $coord->[1] );
-        $wheel->init_surface($app);
-
-        push @wheels, $wheel;
-    }
-    my $particles_left = scalar @wheels;
+    my $particles_left = scalar @{$level->wheels};
 
     # start the ball in a random wheel
-    my $ball = Spinner::Ball->new( n_wheel => int rand @wheels );
+    my $ball = Spinner::Ball->new( n_wheel => int rand $particles_left);
     $ball->surface( $ball_image );
 
     # Get an event object to snapshot the SDL event queue
@@ -241,7 +200,7 @@ sub game_level {
             }
             elsif ( $event->type == SDL_KEYDOWN ) {
                 $particles_left =
-                  check_ball_release( $ball, \@wheels, $particles_left )
+                  check_ball_release( $ball, $level->wheels, $particles_left )
                   if $event->key_sym == SDLK_SPACE;
                 $quit = 1 if $event->key_sym == SDLK_ESCAPE;
                 SDL::Video::wm_toggle_fullscreen($app)
@@ -275,7 +234,7 @@ sub game_level {
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
-           my $effect = $ball->update( $dt, \@wheels, $app );
+           my $effect = $ball->update( $dt, $level->wheels, $app );
            
            
            handle_chunk($bounce_chunk) if $effect == 1;
@@ -283,7 +242,7 @@ sub game_level {
            handle_chunk($grab_chunk) if $effect == 2;
 
             # losing condition
-            if ( $ball->n_wheel >= 0 and $wheels[ $ball->n_wheel ]->visited ) {
+            if ( $ball->n_wheel >= 0 and $level->wheels->[ $ball->n_wheel ]->visited ) {
                 SDL::GFX::Primitives::string_color(
                     $app,
                     $app->w / 2 - 150,
@@ -321,7 +280,7 @@ sub game_level {
         }
 
         #Update our view and count our frames
-        draw_to_screen( $fps, $level, \@shots, $app, $ball, \@wheels,
+        draw_to_screen( $fps, $level, \@shots, $app, $ball, $level->wheels,
             $particles_left );
 
         $frames++;
