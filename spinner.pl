@@ -349,7 +349,7 @@ sub check_ball_release {
     
     
     my ( $ball, $particles, $particles_left ) = @_;
-    warn $ball->ready;
+   # warn $ball->ready;
     return  $particles_left if ! $ball->ready; #the ball is not ready to release yet 
     # we can't release the ball if it isn't attached to a wheel
     return $particles_left if $ball->n_wheel == -1;
