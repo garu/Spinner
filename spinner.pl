@@ -121,6 +121,9 @@ sub menu {
 
         }
 
+         SDL::Video::fill_rect( $app, $app_rect,
+            SDL::Video::map_RGB( $app->format, 0, 0, 0 ) );
+    
         # Blit the back ground surface to the window
         SDL::Video::blit_surface(
             $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
@@ -162,7 +165,7 @@ sub game {
 sub play {
     my $level = shift;
 
-    my @shots  = ();
+    
     my $particles_left = scalar @{$level->wheels};
 
     # start the ball in a random wheel
@@ -280,7 +283,7 @@ sub play {
         }
 
         #Update our view and count our frames
-        draw_to_screen( $fps, $level, \@shots, $app, $ball, $level->wheels,
+        draw_to_screen( $fps, $level, $app, $ball, $level->wheels,
             $particles_left );
 
         $frames++;
@@ -361,26 +364,28 @@ sub check_ball_release {
 
 # The final update that is drawn to the screen
 sub draw_to_screen {
-    my ( $fps, $level, $shots_ref, $app, $ball, $particles, $particles_left ) =
+    my ( $fps, $level, $app, $ball, $particles, $particles_left ) =
       @_;
 
     #Blit the back ground surface to the window
-    SDL::Video::blit_surface(
-        $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
-        $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
-    );
-
     # Draw out all our failures to hit the particles
-    foreach ( 0 .. @{$shots_ref} ) {
-        warn 'show_draw' if $DEBUG;
-        SDL::Video::fill_rect( $app, $shots_ref->[$_],
+        SDL::Video::fill_rect( $app, $app_rect,
             SDL::Video::map_RGB( $app->format, 0, 0, 0 ) );
-    }
+    
+        # Blit the back ground surface to the window
+        #TODO: optimize so we can show bg
+     #    SDL::Video::blit_surface(
+     #       $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
+     #       $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
+     #   );
+    
+    
+
 
     #make a string with the FPS and level
     my $pfps = sprintf(
-        "FPS:%.2f Level:%2d Wheel [%2d, speed:%.2f] Left:%d Score: %d",
-        $fps, $level, $ball->n_wheel, $particles->[ $ball->n_wheel ]->speed,
+        "FPS:%.2f Level:%s Wheel [%2d, speed:%.2f] Left:%d Score: %d",
+        $fps, $level->name, $ball->n_wheel, $particles->[ $ball->n_wheel ]->speed,
         $particles_left, $score
     );
 

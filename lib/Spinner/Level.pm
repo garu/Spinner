@@ -6,6 +6,7 @@ use Spinner::Wheel;
 has 'wheels'         => ( is => 'rw', isa => 'ArrayRef' );
 has 'starting_wheel' => ( is => 'rw', isa => 'Int', default => 1 );
 has 'number'         => ( is => 'rw', isa => 'Int', default => 1 );
+has 'name'           => ( is => 'rw', isa => 'Str', default => 'unknown' );
 
 
 sub load {
@@ -26,6 +27,7 @@ sub load {
     # ... and then into a hashref
     my $level = JSON::Any->from_json($json);
 
+   $self->name( $level->{name} );
     # load wheels
     my @wheels = ();
     foreach my $wheel_data ( @{$level->{wheels}} ) {
