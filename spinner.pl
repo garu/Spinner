@@ -58,6 +58,8 @@ my $bg_surf = init_bg_surf($app);
 
 my $wheel_base = get_image('data/wheel.png');
 my $ball_image = get_image('data/ball.png');
+
+my $spinner_menu = get_image('data/main.png');
     
 
     
@@ -146,12 +148,13 @@ sub menu {
             $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
         );
 
-        my $str = "SPINNER";
-        SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
-            100, $str, 0x00CC34DD );
+         SDL::Video::blit_surface(
+            $spinner_menu, SDL::Rect->new( 0, 0, $spinner_menu->w, $spinner_menu->h ),
+            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
+        );
         my $h = 100;
         foreach (@choices) {
-            $str = $_;
+           my $str = $_;
             my $color = 0x00CC34DD;
             $color = 0xFF0000FF if $choices[$choice] =~ /$_/;
             SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
