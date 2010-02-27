@@ -400,15 +400,6 @@ sub check_ball_release {
     return $particles_left;
 }
 
-#Gets a random color for our particle
-sub rand_color {
-    my $r = rand( 0x100 - 0x44 ) + 0x44;
-    my $b = rand( 0x100 - 0x44 ) + 0x44;
-    my $g = rand( 0x100 - 0x44 ) + 0x44;
-    my $a = rand( 0x100 - 0x44 ) + 0x44;
-    return ( $a | ( $r << 24 ) | ( $b << 16 ) | ($g) << 8 );
-}
-
 
 # The final update that is drawn to the screen
 sub draw_to_screen {
