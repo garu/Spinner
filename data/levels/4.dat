@@ -1,0 +1,9 @@
+{
+    "name": "Voyager",
+    "author": "garu",
+    "wheels": [
+                { "x" :  70, "y" : 300 },
+                { "x" : 730, "y" : 300 }
+            ],
+    "starting_wheel": 1
+}
