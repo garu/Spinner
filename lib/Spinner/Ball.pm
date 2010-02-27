@@ -5,6 +5,7 @@ has 'x'       => ( is => 'rw', isa => 'Num', default => 0  );
 has 'y'       => ( is => 'rw', isa => 'Num', default => 0  );
 has 'size'    => ( is => 'ro', isa => 'Int', default => 25 );
 has 'rad'     => ( is => 'rw', isa => 'Num', default => 0  );
+has 'rotating'     => ( is => 'rw', isa => 'Num', default => 0  );
 has 'color'   => ( is => 'ro', default => 0xFF0000FF );
 has 'n_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
 has 'old_wheel' => ( is => 'rw', isa => 'Int', default => 0  );
@@ -44,6 +45,8 @@ sub draw {
     );
 }
 
+
+
 sub update {
     my $ball = shift;
     my $dt = shift;
@@ -55,9 +58,11 @@ sub update {
         return 0 unless $wheel;
 
         # Rotate the ball on the wheel
-        my $angle = $ball->rad + $dt * $wheel->speed;
-        $ball->rad( $angle - int($angle / 360) * 360 );
-
+        if ($ball->rotating != 0)
+        {
+        my $angle = $ball->rad + $dt * $wheel->speed * $ball->rotating;
+        $ball->rad( $angle - (int($angle / 360) * 360 ) ) ;
+        }
         $ball->x( $wheel->x + sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
         $ball->y( $wheel->y + cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 8 ));
         

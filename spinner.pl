@@ -208,6 +208,18 @@ sub play {
                 $quit = 1 if $event->key_sym == SDLK_ESCAPE;
                 SDL::Video::wm_toggle_fullscreen($app)
                   if $event->key_sym == SDLK_f;
+                  
+                  if ( $event->key_sym == SDLK_LEFT ) {
+                    $ball->rotating(-1);
+                }
+
+                if ( $event->key_sym == SDLK_RIGHT ) {
+                    $ball->rotating(1);
+                }
+            }
+            elsif ( $event->type == SDL_KEYUP )
+            {
+                $ball->rotating(0);
             }
             warn 'event' if $DEBUG;
 
