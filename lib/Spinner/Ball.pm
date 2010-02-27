@@ -52,7 +52,7 @@ sub update {
 
     if ( $ball->n_wheel != -1 ) {   #stuck on a wheel
         my $wheel = $particles->[ $ball->n_wheel ];
-        return unless $wheel;
+        return 0 unless $wheel;
 
         # Rotate the ball on the wheel
         my $angle = $ball->rad + $dt * $wheel->speed;
@@ -77,12 +77,15 @@ sub update {
             # if we bounce, we can go back to the previous wheel
             $ball->old_wheel( -1 );
             $ball->vx( $ball->vx * -1);
+            return 1;
         }
         if ( ( $ball->y > ( $app->h - (13) ) && $ball->vy > 0) || ( $ball->y < ( 0 + (13) ) && $ball->vy < 0) )
         {
             # if we bounce, we can go back to the previous wheel
             $ball->old_wheel( -1 );
             $ball->vy( $ball->vy * -1 );
+            
+            return 1;
         }
 
         foreach ( 0 .. $#{$particles} ) {
@@ -105,11 +108,13 @@ sub update {
 
                 # We are done no more particles left lets get outta here
                 #return if $#{$particles} == -1;
+                
+                return 2;
             }
         }
        
     }
-    return 1;
+    return 0;
 }
 
 42;

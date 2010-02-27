@@ -37,7 +37,7 @@ croak 'Cannot init  ' . SDL::get_error()
 SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
 #pre-load the effects
-my $effect_chan = -1;
+
 my $grab_chunk  = SDL::Mixer::Samples::load_WAV('data/grab.ogg');
 my $bounce_chunk = SDL::Mixer::Samples::load_WAV('data/bounce.ogg');
 my $menu_sel_chunk =  SDL::Mixer::Samples::load_WAV('data/menu_select.ogg');
@@ -125,12 +125,14 @@ sub menu {
 
                 if ( $event->key_sym == SDLK_DOWN ) {
                     $choice++;
+		    handle_chunk($menu_sel_chunk); 
 
                     $choice = 0 if $choice > $#choices;
                 }
 
                 if ( $event->key_sym == SDLK_UP ) {
                     $choice--;
+		   handle_chunk($menu_sel_chunk); 
 
                     $choice = $#choices if $choice < 0;
                 }
@@ -273,7 +275,12 @@ sub game_level {
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
-            $ball->update( $dt, \@wheels, $app );
+           my $effect = $ball->update( $dt, \@wheels, $app );
+           
+           
+           handle_chunk($bounce_chunk) if $effect == 1;
+           
+           handle_chunk($grab_chunk) if $effect == 2;
 
             # losing condition
             if ( $ball->n_wheel >= 0 and $wheels[ $ball->n_wheel ]->visited ) {
@@ -482,4 +489,15 @@ sub get_image
     
     return $img;
     
+}
+
+
+sub handle_chunk
+{
+    my ($mix_chunk) = shift;
+     SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
+#    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
+
+
+
 }
