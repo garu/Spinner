@@ -11,11 +11,14 @@ Background Music: SP*NK, by L<< Loveshadow|http://ccmixter.org/files/Loveshadow/
 
 USAGE
 
-Only for Linux> sudo apt-get install libsdl-dev libsdl_gfx-dev
+get headers for libvorbis-dev and libpng-dev
+
 cpan Alien::SDL
+  choose to compile
+
 Click Download Source http://github.com/kthakore/SDL_perl/tree/redesign
-Extract it 
-perl Build.PL; perl Build; perl Build install
+   Extract it 
+   perl Build.PL; perl Build; perl Build install
 
 cpan JSON::Any Mouse
 perl Shooter.pl
