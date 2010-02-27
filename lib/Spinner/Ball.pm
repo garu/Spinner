@@ -21,17 +21,17 @@ sub draw {
 
     my $new_part_rect = SDL::Rect->new( 0, 0, 26, 26 );
 
-    if($ball->n_wheel != -1) {
-        # sin(rad) = opposite / hypo
-        my $x2 = my $y2 = 0;
-        my $xD = -1 ;my $yD = 1;
-        $yD = -1 if $ball->rad < 270 && $ball->rad > 90;
-        $xD = 1  if $ball->rad < 180 && $ball->rad > 0;
-        $x2 = ($ball->x + 12 * $xD ) + (70 * sin ( $ball->rad * 3.14/180 ) );
-        $y2 = ($ball->y + 12 * $yD ) + (70 * cos ( $ball->rad * 3.14/180 ) );
-
-        SDL::GFX::Primitives::aaline_RGBA( $app, $ball->x,  $ball->y, $x2, $y2, 23, 244, 45, 244 );
-    }
+#    if($ball->n_wheel != -1) {
+#        # sin(rad) = opposite / hypo
+#        my $x2 = my $y2 = 0;
+#        my $xD = -1 ;my $yD = 1;
+#        $yD = -1 if $ball->rad < 270 && $ball->rad > 90;
+#        $xD = 1  if $ball->rad < 180 && $ball->rad > 0;
+#        $x2 = ($ball->x + 12 * $xD ) + (70 * sin ( $ball->rad * 3.14/180 ) );
+#        $y2 = ($ball->y + 12 * $yD ) + (70 * cos ( $ball->rad * 3.14/180 ) );
+#
+#        SDL::GFX::Primitives::aaline_RGBA( $app, $ball->x,  $ball->y, $x2, $y2, 23, 244, 45, 244 );
+ #   }
 
     #Blit the particles surface to the app in the right location
     SDL::Video::blit_surface(
