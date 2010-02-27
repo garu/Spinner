@@ -40,8 +40,8 @@ SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
  my $audiospec = sprintf("%s, %s, %s, %s\n", $status, $freq, $format, $channels);
  
- print stderr ' Asked for freq, format, channels ', join( ' ', ( 44100, AUDIO_S16, 2,) );
- print stderr ' Got back status,  freq, format, channels ', join( ' ', ( $status, $freq, $format, $channels ) );
+ print  ' Asked for freq, format, channels ', join( ' ', ( 44100, AUDIO_S16, 2,) );
+ print  ' Got back status,  freq, format, channels ', join( ' ', ( $status, $freq, $format, $channels ) );
 
 
 #pre-load the effects
