@@ -91,8 +91,6 @@ sub update {
                 my $angle  = atan2(-$y_diff, $x_diff) * 180 / pi;
                    $angle += 360 if $angle < 0;
 
-                printf "%7.3f  %7.3f  %7.3f\n", $x_diff, $y_diff, $angle;
-
                 $ball->rad($angle + 90);
                 $ball->n_wheel($_);
 
