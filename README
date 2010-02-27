@@ -16,6 +16,8 @@ cpan Alien::SDL
 Click Download Source http://github.com/kthakore/SDL_perl/tree/redesign
 Extract it 
 perl Build.PL; perl Build; perl Build install
+
+cpan JSON::Any Mouse
 perl Shooter.pl
 
 
