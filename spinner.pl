@@ -21,10 +21,12 @@ use SDL::Image;
 
 use SDL::Mixer;
 use SDL::Mixer::Music;
+use SDL::Mixer::Channels;
+use SDL::Mixer::Samples;
+use SDL::Mixer::MixChunk;
 
 use Data::Dumper;
 use Carp;
-
 my $DEBUG = 0;
 
 #Initing video
@@ -34,6 +36,11 @@ croak 'Cannot init  ' . SDL::get_error()
 
 SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
+#pre-load the effects
+my $effect_chan = -1;
+my $grab_chunk  = SDL::Mixer::Samples::load_WAV('data/grab.ogg');
+my $bounce_chunk = SDL::Mixer::Samples::load_WAV('data/bounce.ogg');
+my $menu_sel_chunk =  SDL::Mixer::Samples::load_WAV('data/menu_select.ogg');
 my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
 
 die 'Music not found: ' . SDL::get_error() if !$music;
