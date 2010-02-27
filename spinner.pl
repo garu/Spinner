@@ -200,7 +200,7 @@ sub game_level {
     # create our spinning wheels
     foreach my $coord ( @{ $level_map[$level] } ) {
         my $wheel = Spinner::Wheel->new( x => $coord->[0], y => $coord->[1] );
-        $wheel->surface( init_surface( $wheel->size, $wheel->color ) );
+        $wheel->init_surface($app);
 
         push @wheels, $wheel;
     }
@@ -383,7 +383,7 @@ sub check_ball_release {
 
         # change wheel color so player knows it's touched
         $w->color(0x111111FF);
-        $w->surface( init_surface( $w->size, $w->color ) );
+        $w->init_surface($app);
 
         $w->visited(1);
         $particles_left--;
@@ -409,50 +409,6 @@ sub rand_color {
     return ( $a | ( $r << 24 ) | ( $b << 16 ) | ($g) << 8 );
 }
 
-sub init_surface {
-    my ( $size, $color ) = @_;
-
-    #make a surface based on the size
-    my $surface =
-      SDL::Surface->new( SDL_SWSURFACE, $size + 15, $size + 15, 32, 0, 0, 0,
-        255 );
-
-    SDL::Video::fill_rect(
-        $surface,
-        SDL::Rect->new( 0, 0, $size + 15, $size + 15 ),
-        SDL::Video::map_RGB( $app->format, 60, 0, 0 )
-    );
-
-    #draw a circle on it with a random color
-    SDL::GFX::Primitives::filled_circle_color(
-        $surface, $size / 2, $size / 2,
-        $size / 2 - 2,
-        $color || rand_color(),
-    );
-                SDL::Video::display_format($surface);
-    my $pixel = SDL::Color->new( 60, 0, 0);
-    SDL::Video::set_color_key( $surface, SDL_SRCCOLORKEY, $pixel );
-    
-    if ( $size == 60)
-    {
-
-    SDL::Video::blit_surface(
-        $wheel_base, SDL::Rect->new( 0, 0, $wheel_base->w, $wheel_base->h ),
-        $surface,     SDL::Rect->new( 0, 0, $surface->w,     $surface->h )
-    );
-    
-    }
-    SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-	      $size / 2 - 2, 0x000000FF );
-    
-     SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-	        $size / 2 - 1, 0x000000FF );
-	        
-	
-
-
-    return $surface;
-}
 
 # The final update that is drawn to the screen
 sub draw_to_screen {
@@ -494,12 +450,8 @@ sub draw_to_screen {
 
 sub get_image
 {
-    
-    
-   my $img= SDL::Image::load($_[0]);
-    
-    return $img;
-    
+   my $img = SDL::Image::load($_[0]);
+   return $img;
 }
 
 
