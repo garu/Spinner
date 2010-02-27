@@ -151,12 +151,15 @@ sub menu {
 sub game {
     $quit = 0;
     my $level = Spinner::Level->new;
+    $score = 0;
     while ( $level->load($app) ) {
         my $finished = play($level);
         last if $quit or not $finished;
         $level->number( $level->number + 1 );
         $score += 1000;
     }
+    
+    
 
 }
 
