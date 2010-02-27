@@ -57,8 +57,10 @@ die 'Music not found: ' . SDL::get_error() if !$music;
 if ($status == 1) { SDL::Mixer::Music::play_music( $music, -1 ); };
 
 SDL::Mixer::Music::volume_music(15);
+my $icon = SDL::Video::load_BMP("data/icon.bmp");
+croak SDL::get_error if !$icon;
 
-SDL::Video::wm_set_icon(SDL::Video::load_BMP("data/icon.bmp"));
+SDL::Video::wm_set_icon($icon);
 
 
 #Make our display window
@@ -76,7 +78,9 @@ my $fps = 30;
 my $bg_surf = init_bg_surf($app);
 
 my $ball_image = SDL::Image::load('data/ball.png');
+croak SDL::get_error() if !$ball_image;
 my $spinner_menu = SDL::Image::load('data/main.png');
+croak SDL::get_error() if !$spinner_menu;
 
 SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
 
@@ -329,6 +333,7 @@ sub play {
 sub init_bg_surf {
     my $app = shift;
     my $bg = SDL::Image::load('data/bg.png');
+    croak SDL::get_error() if !$bg;
     return $bg;
 }
 
