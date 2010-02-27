@@ -101,17 +101,18 @@ sub menu {
     my $choice  = 0;
     my @choices = ( 'New Game', 'Quit' );
     my $event   = SDL::Event->new();
-    while ( !$quit ) {
+    my $menu_quit = 0;
+    while ( !$menu_quit ) {
         while ( SDL::Events::poll_event($event) )
         {    #Get all events from the event queue in our event
 
             #If we have a quit event i.e click on [X] trigger the quit flage
             if ( $event->type == SDL_QUIT ) {
-                $quit = 1;
+                $menu_quit = 1;
             }
             elsif ( $event->type == SDL_KEYDOWN ) {
 
-                $quit = 1 if $event->key_sym == SDLK_ESCAPE;
+                $menu_quit = 1 if $event->key_sym == SDLK_ESCAPE;
                 SDL::Video::wm_toggle_fullscreen($app)
                   if $event->key_sym == SDLK_f;
 
@@ -134,7 +135,7 @@ sub menu {
                #proally better to do this with a hash that holds the sub but meh
 
                     game() if $choice == 0;
-                    $quit = 1 if $choice == 1;
+                    $menu_quit = 1 if $choice == 1;
 
                 }
 
@@ -167,7 +168,7 @@ sub menu {
 }
 
 sub game {
-
+    $quit = 0;
     my $p_level = 0;
     while ( $level_map[$p_level] ) {
         my $finished = game_level($p_level);
