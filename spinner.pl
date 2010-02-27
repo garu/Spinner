@@ -40,8 +40,8 @@ SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
  my $audiospec = sprintf("%s, %s, %s, %s\n", $status, $freq, $format, $channels);
  
- print  ' Asked for freq, format, channels ', join( ' ', ( 44100, AUDIO_S16, 2,) );
- print  ' Got back status,  freq, format, channels ', join( ' ', ( $status, $freq, $format, $channels ) );
+carp  ' Asked for freq, format, channels ', join( ' ', ( 44100, AUDIO_S16, 2,) );
+carp  ' Got back status,  freq, format, channels ', join( ' ', ( $status, $freq, $format, $channels ) );
 
 
 #pre-load the effects
@@ -437,7 +437,7 @@ sub handle_chunk
 {
     my ($mix_chunk) = shift;
      my $channel_number = SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
-      SDL::Mixer::Channels::volume( $channel_number, 10);
+      SDL::Mixer::Channels::volume( $channel_number, 10) if $channel_number > 0;
 
 #    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
 }
