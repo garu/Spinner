@@ -36,6 +36,14 @@ croak 'Cannot init  ' . SDL::get_error()
 
 SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
+ my ($status, $freq, $format, $channels) = @{ SDL::Mixer::query_spec() };
+
+ my $audiospec = sprintf("%s, %s, %s, %s\n", $status, $freq, $format, $channels);
+ 
+ print stderr ' Asked for freq, format, channels ', join( ' ', ( 44100, AUDIO_S16, 2,) );
+ print stderr ' Got back status,  freq, format, channels ', join( ' ', ( $status, $freq, $format, $channels ) );
+
+
 #pre-load the effects
 
 my $grab_chunk  = SDL::Mixer::Samples::load_WAV('data/grab.ogg');
@@ -45,7 +53,8 @@ my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
 
 die 'Music not found: ' . SDL::get_error() if !$music;
 
-eval { SDL::Mixer::Music::play_music( $music, -1 ); };
+#only play music if our status indicates we go the capability
+if ($status == 1) { SDL::Mixer::Music::play_music( $music, -1 ); };
 
 SDL::Mixer::Music::volume_music(15);
 
@@ -427,6 +436,8 @@ sub draw_to_screen {
 sub handle_chunk
 {
     my ($mix_chunk) = shift;
-     SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
+     my $channel_number = SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
+      SDL::Mixer::Channels::volume( $channel_number, 10);
+
 #    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
 }
