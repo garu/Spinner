@@ -436,7 +436,8 @@ sub draw_to_screen {
 sub handle_chunk
 {
     my ($mix_chunk) = shift;
-     my $channel_number = SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
+    my $channel_number = -1;
+      $channel_number = SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
       SDL::Mixer::Channels::volume( $channel_number, 10) if $channel_number > 0;
 
 #    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
