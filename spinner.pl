@@ -66,6 +66,9 @@ my $bg_surf = init_bg_surf($app);
 my $ball_image = SDL::Image::load('data/ball.png');
 my $spinner_menu = SDL::Image::load('data/main.png');
 
+SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
+
+
 my $quit  = 0;
 my $score = 0;
 

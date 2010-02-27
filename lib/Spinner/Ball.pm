@@ -64,9 +64,9 @@ sub update {
             $ball->rad( $angle - ( int( $angle / 360 ) * 360 ) );
         }
         $ball->x( $wheel->x +
-              sin( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 11 ) );
+              sin( $ball->rad * pi / 180 ) * ( $wheel->size / 2 + 11 ) );
         $ball->y( $wheel->y +
-              cos( $ball->rad * 3.14 / 180 ) * ( $wheel->size / 2 + 11 ) );
+              cos( $ball->rad * pi / 180 ) * ( $wheel->size / 2 + 11 ) );
 
         $ball->ready(1)
           if !$ball->ready;    #the first time we get not ready and a wheel
