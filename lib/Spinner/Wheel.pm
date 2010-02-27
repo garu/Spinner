@@ -5,7 +5,7 @@ has 'x'       => ( is => 'ro', isa => 'Int', required => 1 );
 has 'y'       => ( is => 'ro', isa => 'Int', required => 1 );
 has 'size'    => ( is => 'ro', isa => 'Int', default => 60 );
 has 'color'   => ( is => 'rw', default => undef );
-has 'visited' => ( is => 'rw', default => undef );
+has 'visited' => ( is => 'rw', isa => 'Bool', default => undef );
 
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
