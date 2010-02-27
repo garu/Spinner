@@ -149,7 +149,7 @@ sub game {
     $quit = 0;
     my $level = Spinner::Level->new;
     while ( $level->load($app) ) {
-        my $finished = game_level($level);
+        my $finished = play($level);
         last if $quit or not $finished;
         $level->number( $level->number + 1 );
         $score += 1000;
@@ -159,7 +159,7 @@ sub game {
 
 # create the given level. returns true if level is over,
 # or false if player died.
-sub game_level {
+sub play {
     my $level = shift;
 
     my @shots  = ();
