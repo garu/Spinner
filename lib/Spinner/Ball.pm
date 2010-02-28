@@ -87,10 +87,11 @@ sub update {
             my $distance_squared  = $x_diff * $x_diff + $y_diff * $y_diff;
             my $sum_radii_squared = ($ball_radius + $wheel_radius) ** 2;
 
-            if ($distance_squared <= $sum_radii_squared) {
-                my $angle  = atan2(-$y_diff, $x_diff) * 180 / pi;
+	    my $angle  = atan2(-$y_diff, $x_diff) * 180 / pi;
                    $angle += 360 if $angle < 0;
 
+            if ($distance_squared <= $sum_radii_squared) {
+              
                 $ball->rad($angle + 90);
                 $ball->n_wheel($_);
 
@@ -100,12 +101,23 @@ sub update {
 	    {
 		if($p->gravity>0)
 		{
-		my ($p_x, $p_y) = (1, 1);
-		$x_diff < 1 ? $p_x = -1 : $p_x =1;
-		$y_diff < 1 ? $p_y = 1  : $p_y =-1;
+#		warn  $ball->x, ' ', $ball->y;
+#		warn  $p->x, ' ', $p->y;
+		my $px = my $py = 1;
+		$px = 0  if  $x_diff == 0;
+		$px = -1 if  $x_diff > 0;
+		$px = 1 if  $x_diff <  0;
 
-		$ball->vx ( $ball->vx +  $p_x * $p->gravity * $dt * ( 0.006/ $distance_squared  ));
-		$ball->vy ( $ball->vy +  $p_y * $p->gravity * $dt * ( 0.006/ $distance_squared  ));
+		$py = 0  if  $y_diff == 0;
+		$py = -1 if  $y_diff >= 0;
+		$py = 1 if  $y_diff <=  0;
+		
+		my $G = 0.06; 
+
+		$ball->vx ( $ball->vx +  ( 0.06 * $px * $p->gravity * $dt  / $distance_squared ) );
+		$ball->vy ( $ball->vy +  ( 0.06 * $py * $p->gravity * $dt / $distance_squared  ) );
+
+
 		}
 
 	    }
