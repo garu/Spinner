@@ -96,6 +96,12 @@ sub update {
 
                 return 2;
             }
+	    else
+	    {
+		$ball->vx ( $ball->vx + abs( 400 * $dt * ( 0.006/ $distance_squared ) ));
+		$ball->vy ( $ball->vy + abs( 400 * $dt * ( 0.006/ $distance_squared ) ));
+
+	    }
         }
     }
     return 0;
