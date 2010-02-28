@@ -20,7 +20,15 @@ Click Download Source http://github.com/kthakore/SDL_perl/tree/redesign
    Extract it 
    perl Build.PL; perl Build; perl Build install
 
-cpan JSON::Any Mouse
+
+This game has the following dependencies, all of which 
+can be installed from CPAN:
+
+  * JSON::Any
+  * Mouse   
+  * Math::Trig
+
+
 perl Shooter.pl
 
 
