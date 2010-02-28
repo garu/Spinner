@@ -29,6 +29,6 @@ can be installed from CPAN:
   * Math::Trig
 
 
-perl Shooter.pl
+perl spinner.pl
 
 
