@@ -1,0 +1,56 @@
+TODO file for shooter
+=====================
+
+Don't be shy, Feel free to add your own bug reports and wishlists. 
+If you fixed or implemented something, remember to remove it from
+here as well.
+
+*****************************************************************
+*** ALL COMMITTERS WILL HAVE THEIR NAME SHOWN IN GAME CREDITS ***
+*****************************************************************
+
+(ask garu or kthakore for push rights on the repo) 
+
+
+* MOAR LEVLZ!!! 
+  So whe can organize them in a progressive order,
+  making the game harder and the player experience better.
+
+* Better speed control
+  the ball circles too fast on some machines. We need to make this
+  as smooth and regular as possible, otherwise game becomes 
+  impossible to play.
+
+* Multiple Lifes
+
+* Menu option to choose a specific level
+
+* High Score, with a Menu option showing it
+
+* Implement Bounding Walls
+
+* Implement different Wheels. Ideas:
+
+   - gravity wheel      => attracts ball; (done! kthakore++)
+   - moving wheel       => walks through a path;
+   - disappearing wheel => blinking, can only be touched when visible;
+   - strong wheel       => needs to be touched more than once before 
+                           being disabled;
+   - bomb-wheel         => once ball connects, it goes dark in 3...2...1, 
+                           so you have to get out quickly!
+
+
+* Implement power-ups, to be catched among flight. They would go for a short
+  period of time, then everything turns back to normal. Also, while it'd be
+  much easier to apply them upon the ball touching it, it might be cooler if
+  the fetched item went to a bag, like the bottom bar on Mario 3. The player
+  would be able to choose what and when to use each item.
+
+   - something that makes ball really big, so it has more contact surface;
+   - something that makes the game move real slow (bullett-time);
+   - something that makes the ball have a "laser" pointing it to the 
+     direction it will go off to;
+   
+
+
+
