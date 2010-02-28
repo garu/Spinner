@@ -98,8 +98,15 @@ sub update {
             }
 	    else
 	    {
-		$ball->vx ( $ball->vx + abs( 400 * $dt * ( 0.006/ $distance_squared ) ));
-		$ball->vy ( $ball->vy + abs( 400 * $dt * ( 0.006/ $distance_squared ) ));
+		if($p->gravity>0)
+		{
+		my ($p_x, $p_y) = (1, 1);
+		$x_diff < 1 ? $p_x = -1 : $p_x =1;
+		$y_diff < 1 ? $p_y = 1  : $p_y =-1;
+
+		$ball->vx ( $ball->vx +  $p_x * $p_gravity * $dt * ( 0.006/ $distance_squared  ));
+		$ball->vy ( $ball->vy +  $p_y * $p_gravity * $dt * ( 0.006/ $distance_squared  ));
+		}
 
 	    }
         }

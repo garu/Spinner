@@ -2,7 +2,7 @@
     "name": "Square Tactics",
     "author": "kthakore",
     "wheels": [
-                { "x" : 200, "y" : 300 },
+                { "x" : 200, "y" : 300 , "gravity" : 10},
                 { "x" : 200, "y" : 150 },
                 { "x" : 400, "y" : 150 },
                 { "x" : 600, "y" : 150 },
