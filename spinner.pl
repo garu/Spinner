@@ -87,6 +87,7 @@ SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
 
 my $quit  = 0;
 my $score = 0;
+my $lives = 3;
 
 menu();
 
@@ -94,7 +95,7 @@ SDL::Mixer::close_audio();
 
 sub menu {
     my $choice  = 0;
-    my @choices = ( 'New Game', 'Quit' );
+    my @choices = ( 'New Game', 'Load Game', 'How to Play', 'High Scores', 'Options', 'Quit' );
     my $event   = SDL::Event->new();
     my $menu_quit = 0;
     while ( !$menu_quit ) {
@@ -132,12 +133,9 @@ sub menu {
                #proally better to do this with a hash that holds the sub but meh
 
                     game() if $choice == 0;
-                    $menu_quit = 1 if $choice == 1;
-
+                    $menu_quit = 1 if $choice == 5;
                 }
-
             }
-
         }
 
          SDL::Video::fill_rect( $app, $app_rect,
