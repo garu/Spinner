@@ -2,8 +2,9 @@
     "name": "Warming Up",
     "author": "garu",
     "wheels": [
-                { "x" : 0, "y" : 0 },
-                { "x" : 400, "y" : 300, "gravity" : 2000}
+                { "x" : 70, "y" : 70 },
+                { "x" : 400, "y" : 300, "gravity" : 200}
+
             ],
     "starting_wheel": 0
 }
