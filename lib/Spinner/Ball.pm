@@ -104,8 +104,8 @@ sub update {
 		$x_diff < 1 ? $p_x = -1 : $p_x =1;
 		$y_diff < 1 ? $p_y = 1  : $p_y =-1;
 
-		$ball->vx ( $ball->vx +  $p_x * $p_gravity * $dt * ( 0.006/ $distance_squared  ));
-		$ball->vy ( $ball->vy +  $p_y * $p_gravity * $dt * ( 0.006/ $distance_squared  ));
+		$ball->vx ( $ball->vx +  $p_x * $p->gravity * $dt * ( 0.006/ $distance_squared  ));
+		$ball->vy ( $ball->vy +  $p_y * $p->gravity * $dt * ( 0.006/ $distance_squared  ));
 		}
 
 	    }
