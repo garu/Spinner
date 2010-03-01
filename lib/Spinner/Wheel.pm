@@ -79,7 +79,7 @@ sub patrol_up
 	 }
 
 
-#	warn 'Trying to get_to '. $get_to->{x}. ' ' . $get_to->{y};
+	 #warn 'Trying to get_to '. $get_to->{x}. ' ' . $get_to->{y};
 
 	my $x_diff = $self->x - $get_to->{x};
 	my $y_diff = $self->y - $get_to->{y};
@@ -92,10 +92,21 @@ sub patrol_up
 	{
 		$self->x( $get_to->{x});
 		$self->y( $get_to->{y});
+		 if ( $self->{patrol_to} +1 <= $#patrol_loc )
+		 {
 		$self->{patrol_to} += 1; 
-		
-		$self->{patrol_to} = -1 if  !($patrol_loc[ $self->{patrol_to} ]); 
-#		die 'Patrolling back to '.  $self->{patrol_to};
+		}
+		else
+		{
+		$self->{patrol_to} -= 1; 
+		#TODO$self->{patrol_back} = 1;
+
+		}
+		#	else
+		#{
+		# $self->{patrol_to} = -1
+		#}
+		warn 'Patrolling  to '.  $self->{patrol_to};
 		return
 	}
 
