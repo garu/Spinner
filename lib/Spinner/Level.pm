@@ -20,6 +20,7 @@ sub load {
 
     my $filename = "data/levels/$level_number.dat";
     my $level = Spinner::load_data_file($filename);
+    return unless $level;
 
     $self->name( $level->{name} );
     # load wheels
