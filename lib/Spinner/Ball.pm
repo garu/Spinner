@@ -18,6 +18,8 @@ has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 has 'vx' => ( is => 'rw', isa => 'Num', default => 0 );
 has 'vy' => ( is => 'rw', isa => 'Num', default => 0 );
 
+
+
 sub draw {
     my ( $ball, $app ) = @_;
     my $size = $ball->size;
@@ -97,11 +99,27 @@ sub update {
 
                 return 2;
             }
-	    else
-	    {
-		if($p->gravity>0)
-		{
-#		warn  $ball->x, ' ', $ball->y;
+		
+		
+                   _gravity ($y_diff, $p, $ball, $x_diff, $distance_squared, $dt) if($p->gravity>0);
+
+        }
+    }
+    return 0;
+}
+
+#
+# New subroutine "_gravity" extracted - Sun Feb 28 21:57:30 2010.
+#
+sub _gravity {
+    my $y_diff = shift;
+    my $p = shift;
+    my $ball = shift;
+    my $x_diff = shift;
+    my $distance_squared = shift;
+    my $dt = shift;
+
+	warn  $ball->x, ' ', $ball->y; #<--- Can't call method "x" on an undefined value at (eval 692) line 11.
 #		warn  $p->x, ' ', $p->y;
 		my $px = my $py = 1;
 		$px = 0  if  $x_diff == 0;
@@ -116,14 +134,7 @@ sub update {
 
 		$ball->vx ( $ball->vx +  ( 0.06 * $px * $p->gravity * $dt  / $distance_squared ) );
 		$ball->vy ( $ball->vy +  ( 0.06 * $py * $p->gravity * $dt / $distance_squared  ) );
-
-
-		}
-
-	    }
-        }
-    }
-    return 0;
+    return ($G, $px, $py);
 }
 
 42;
