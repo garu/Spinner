@@ -65,18 +65,22 @@ sub init_surface {
     my $pixel = SDL::Color->new( 60, 0, 0);
     SDL::Video::set_color_key( $surface, SDL_SRCCOLORKEY, $pixel );
 
-    if ( $size == 60) {
+    my $ring = 0x000000FF;
+   
+    if ( $color ) {
+	$ring = 0xFF0000FF;
+    }
         SDL::Video::blit_surface(
             $self->image, SDL::Rect->new( 0, 0, $self->image->w, $self->image->h ),
             $surface,     SDL::Rect->new( 0, 0, $surface->w,     $surface->h )
         );
 
-    }
+    
     SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-	      $size / 2 - 2, 0x000000FF );
+	      $size / 2 - 2, $ring);
 
      SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-	        $size / 2 - 1, 0x000000FF );
+	        $size / 2 - 1, $ring );
 
     $self->surface($surface);
 }
