@@ -203,6 +203,7 @@ sub high_scores {
 sub game {
     $quit = 0;
     my $level = Spinner::Level->new;
+
     $score = 0;
     $lives = 3;
     while ( $level->load() ) {
@@ -308,22 +309,26 @@ sub play {
 
        #accumulate our delta_time. This is like our queue for back log animation
         $accumulator += $delta_time;
-
+        my $on_last_ball;
         # release the time in $dt amount of time so we have smooth animations
         while ( $accumulator >= $dt && $continue ) {
 
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
-           my $effect = $ball->update( $dt, $level->wheels );
-           Spinner::Wheel::update( $dt, $level->wheels);
-           
-           handle_chunk($bounce_chunk) if $effect == 1;
-           
-           handle_chunk($grab_chunk) if $effect == 2;
+            my $effect = $ball->update( $dt, $level->wheels );
+            Spinner::Wheel::update( $dt, $level->wheels);
+
+            handle_chunk($bounce_chunk) if $effect == 1;
+
+            handle_chunk($grab_chunk) if $effect == 2;
+
+            $on_last_ball = 1 if $effect == 3;
 
             # losing condition
-            if ( $ball->n_wheel >= 0 and $level->wheels->[ $ball->n_wheel ]->visited ) {
+            if ( $ball->n_wheel >= 0 
+                and $level->wheels->[ $ball->n_wheel ]->visited 
+            ) {
                 $continue = 0;
             }
 
@@ -359,7 +364,11 @@ sub play {
         $frames++;
 
         # Check if we have won this level!
-        last if check_win( $init_time, $particles_left, $app );
+        if ($on_last_ball)
+        {
+            show_win_message($app, $init_time);
+            last;
+        }
     }
     return $continue;
 }
@@ -372,30 +381,26 @@ sub init_bg_surf {
     return $bg;
 }
 
-# Check if we are done this level
-# returns true if player won, false otherwise
-sub check_win {
-    my $init_time      = shift;
-    my $particles_left = shift;
-    my $app            = shift;
+sub show_win_message
+{
+    my $app        = shift;
+    my $init_time = shift;
 
-    if ( $particles_left <= 0 ) {
-        my $secs_to_win = ( SDL::get_ticks() - $init_time / 1000 );
-        my $str =
-          sprintf( "Level completed in : %2d millisecs !!!", $secs_to_win );
-        SDL::GFX::Primitives::string_color(
+
+    my $secs_to_win = ( SDL::get_ticks() - $init_time / 1000 );
+    my $str = sprintf( "Level completed in : %2d millisecs !!!", $secs_to_win );
+    SDL::GFX::Primitives::string_color(
             $app,
             $app->w / 2 - 150,
             $app->h / 2 - 4,
             $str, 0x00FF00FF
-        );
+    );
 
-        SDL::Video::flip($app);
-        SDL::delay(1000);
-        return 1;
-    }
-    return 0;
+    SDL::Video::flip($app);
+    SDL::delay(1000);
+    return 1;
 }
+
 
 # Release ball from wheel (if possible)
 # FIXME: we return the number of particles left

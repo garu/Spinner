@@ -93,20 +93,23 @@ sub update {
             my $distance_squared  = $x_diff * $x_diff + $y_diff * $y_diff;
             my $sum_radii_squared = ($ball_radius + $wheel_radius) ** 2;
 
-	    my $angle  = atan2(-$y_diff, $x_diff) * 180 / pi;
-                   $angle += 360 if $angle < 0;
+            my $angle  = atan2(-$y_diff, $x_diff) * 180 / pi;
+            $angle += 360 if $angle < 0;
 
             if ($distance_squared <= $sum_radii_squared) {
               
                 $ball->rad($angle + 90);
                 $ball->n_wheel($_);
 
+                push @{$ball->{visited}}, $_;
+               # warn $#{$ball->{visited}} + 1;
+              #  warn $#$particles ;
+                return 3 if $#$particles == $#{$ball->{visited}} + 1;
                 return 2;
             }
-		
-		
-                   _gravity ($y_diff, $p, $ball, $x_diff, $distance_squared, $dt) if($p->gravity>0);
-	
+         _gravity ( $p, $ball, $angle, $x_diff, 
+                    $y_diff, $distance_squared, $dt
+                  ) if( $p->gravity > 0);
         }
     }
     return 0;
@@ -116,28 +119,31 @@ sub update {
 # New subroutine "_gravity" extracted - Sun Feb 28 21:57:30 2010.
 #
 sub _gravity {
-    my $y_diff = shift;
-    my $p = shift;
-    my $ball = shift;
-    my $x_diff = shift;
-    my $distance_squared = shift;
-    my $dt = shift;
+    my ($p, $ball, $angle, $x_diff, $y_diff, $distance_squared, $dt) = @_;
 
     #warn  $ball->x, ' ', $ball->y; #<--- Can't call method "x" on an undefined value at (eval 692) line 11.
-#		warn  $p->x, ' ', $p->y;
-		my $px = my $py = 1;
-		$px = 0  if  $x_diff == 0;
-		$px = -1 if  $x_diff > 0;
-		$px = 1 if  $x_diff <  0;
+#       warn  $p->x, ' ', $p->y;
+    my $px = my $py = 1;
 
-		$py = 0  if  $y_diff == 0;
-		$py = -1 if  $y_diff >= 0;
-		$py = 1 if  $y_diff <=  0;
-		
-		my $G = 0.06; 
+    my $px = $x_diff > 0 ? -1 
+           : $x_diff < 0 ?  1
+           : 0
+           ;
 
-		$ball->vx ( $ball->vx +  ( 0.06 * $px * $p->gravity * $dt  / $distance_squared ) );
-		$ball->vy ( $ball->vy +  ( 0.06 * $py * $p->gravity * $dt / $distance_squared  ) );
+    my $py = $y_diff > 0 ? -1 
+           : $y_diff < 0 ?  1
+           : 0
+           ;
+   
+    my $G = 0.06; 
+    
+    my $v_G = $G * ( $px * $p->gravity * $dt  / $distance_squared );
+    
+    my $v_Gx = $v_G* cos($angle);
+    my $v_Gy = $v_G* sin($angle);
+
+    $ball->vx ( $ball->vx +  ( 0.06 * $px * $p->gravity * $dt  / $distance_squared ) );
+    $ball->vy ( $ball->vy +  ( 0.06 * $py * $p->gravity * $dt / $distance_squared  ) );
     return ($G, $px, $py);
 }
 
