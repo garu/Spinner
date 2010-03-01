@@ -6,7 +6,7 @@ use Carp;
 
 use Mouse;
 has 'cmd'        => ( is => 'rw', isa => 'Str' );
-has 'counter'     => ( is => 'ro', isa => 'Int' );
+has 'counter'     => ( is => 'rw', isa => 'Int' , default=> 0);
 
 
 # Choose a next command
@@ -15,18 +15,26 @@ has 'counter'     => ( is => 'ro', isa => 'Int' );
 sub get_next_command
 { 
    my $self = shift;
+
+   if ($self->counter > 0)
+   {
+	$self->counter ( $self->counter - 1);
+
+	return $self->cmd();
+   }
+
    my @options = qw/ R L S/; # Right Left or Shoot
 
-   my $option = $options[ rand( $#options ) ]; #get one of those options
+   my $option = $options[ int ( rand( $#options ) +1 ) ]; #get one of those options
 
-   my $counter;
-    $counter = rand(1000) if ($option =~ /R|L/); #for how long
+   my $counter = 1;
+    $counter = int( rand(25) + 20 ) if ($option =~ /R|L/); #for how long
 
 
     $self->cmd( $option); $self->counter( $counter );
    
 
-    return  ( $option, $counter);
+    return   $option;
 
 }
 

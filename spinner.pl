@@ -9,6 +9,7 @@ use Spinner;
 use Spinner::Ball;
 use Spinner::Wheel;
 use Spinner::Level;
+use Spinner::AutoPlayer;
 
 use SDL;
 use SDL::Video;
@@ -30,6 +31,8 @@ use SDL::Mixer::MixChunk;
 use Data::Dumper;
 use Carp;
 my $DEBUG = 0;
+
+my $AUTO = $ARGV[0];
 
 #Initing video
 #Die here if we cannot make video init
@@ -85,7 +88,20 @@ my $quit  = 0;
 my $score = 0;
 my $lives = 3;
 
-menu();
+if (!$AUTO)
+{
+
+menu() 
+
+}
+
+while($AUTO)
+{
+	$AUTO = Spinner::AutoPlayer->new();
+  
+	game();
+
+}
 
 SDL::Mixer::close_audio();
 
@@ -291,6 +307,26 @@ sub play {
             }
             warn 'event' if $DEBUG;
         }
+
+	if ($AUTO)
+	{
+
+	  my $cmd =  $AUTO->get_next_command();
+
+	  $ball->rotating(1) if $cmd eq 'R';
+
+	  $ball->rotating(-1) if $cmd eq 'L';
+
+  	  if ($cmd eq 'S')
+	  {
+		  $ball->rotating(0);
+
+		 $particles_left = check_ball_release($ball, $level->wheels, $particles_left) 
+	  }
+		$AUTO = undef if $quit == 1;
+
+
+	}
 
         warn 'level' if $DEBUG;
 
