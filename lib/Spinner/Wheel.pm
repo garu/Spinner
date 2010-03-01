@@ -7,8 +7,9 @@ use SDL::Surface;
 use SDL::GFX::Primitives;
 
 
-has 'x'       => ( is => 'ro', isa => 'Int', required => 1 );
-has 'y'       => ( is => 'ro', isa => 'Int', required => 1 );
+has 'x'       => ( is => 'rw', isa => 'Num', required => 1 );
+has 'y'       => ( is => 'rw', isa => 'Num', required => 1 );
+
 has 'size'    => ( is => 'ro', isa => 'Int', default => 60 );
 has 'color'   => ( is => 'rw', default => undef );
 has 'visited' => ( is => 'rw', isa => 'Bool', default => undef );
@@ -22,6 +23,8 @@ has 'speed' => ( is  => 'rw', isa => 'Num',
               default => sub { return 0.3 + rand(0.3) } #return rand(0.7) + 0.3 }
             );
 has 'gravity' => ( is => 'rw', isa => 'Int', default => -1 );
+
+has 'patrol'  => ( is => 'ro', isa => 'ArrayRef', default => sub {[] } );
 
 
 # Blit the particles surface to the app in the right location
@@ -39,6 +42,72 @@ sub draw {
             $app->w, $app->h
         )
     );
+}
+
+sub update
+{
+    my ( $dt, $particles, $app) = @_;
+    foreach my $p (@{$particles}) { $p->patrol_up($dt)} ;
+
+}
+
+sub patrol_up
+{
+	my ($self, $dt) = @_;
+
+
+	my @patrol_loc = @{$self->patrol()};
+	return if ($#patrol_loc < 0);
+	# keep a copy of the  start position we  go back to it
+	($self->{sx} , $self->{sy} ) = ($self->x , $self->y)  if (!$self->{sx} && !$self->{sy});
+
+#	warn 'Start at '. $self->{sx}. ' ' . $self->{sy};
+	$self->{patrol_to} = 0 if !$self->{patrol_to} ;
+
+	my $get_to;
+	 if ( $self->{patrol_to} < 0)
+	 {
+		 $get_to =  { x => $self->{sx}, y => $self->{sy}  };	
+
+	 }
+	 else
+	 {
+		$get_to = $patrol_loc[ $self->{patrol_to} ] ;
+
+	 }
+
+
+#	warn 'Trying to get_to '. $get_to->{x}. ' ' . $get_to->{y};
+
+	my $x_diff = $self->x - $get_to->{x};
+	my $y_diff = $self->y - $get_to->{y};
+#	warn 'To get_to '. $x_diff. ' ' . -$y_diff;
+
+
+	my $next_tick = $dt * $self->speed; 
+
+ 	if  (  abs($x_diff) < $next_tick && abs($y_diff) < $next_tick) #if we are going to be at the place snap int and  increment patrol_to
+	{
+		$self->x( $get_to->{x});
+		$self->y( $get_to->{y});
+		$self->{patrol_to} += 1; 
+		
+		$self->{patrol_to} = -1 if  !($patrol_loc[ $self->{patrol_to} ]); 
+#		die 'Patrolling back to '.  $self->{patrol_to};
+		return
+	}
+
+	my $xd = my $yd = 1;
+	$xd = -1 if $x_diff > 0;
+	$yd = -1 if $y_diff > 0;
+
+
+	$self->x ( $self->x + ( $next_tick * $xd) ) ;#if $x_diff > $next_tick;
+	$self->y ( $self->y + ( $next_tick * $yd) ) ;#if $y_diff > $next_tick;
+
+
+
+
 }
 
 sub init_surface {
