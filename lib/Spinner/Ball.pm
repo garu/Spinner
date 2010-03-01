@@ -1,5 +1,6 @@
 package Spinner::Ball;
 use Mouse;
+use Spinner;
 use Math::Trig;
 
 has 'x'        => ( is => 'rw', isa => 'Num', default => 0 );
@@ -21,7 +22,8 @@ has 'vy' => ( is => 'rw', isa => 'Num', default => 0 );
 
 
 sub draw {
-    my ( $ball, $app ) = @_;
+    my ( $ball ) = @_;
+    my $app = Spinner->app;
     my $size = $ball->size;
 
     my $new_part_rect = SDL::Rect->new( 0, 0, $size, $size );
@@ -34,7 +36,8 @@ sub draw {
 }
 
 sub update {
-    my ($ball, $dt, $particles, $app) = @_;
+    my ($ball, $dt, $particles) = @_;
+    my $app = Spinner->app;
 
     my $ball_radius = $ball->size / 2;
 

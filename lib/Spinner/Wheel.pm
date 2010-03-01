@@ -5,6 +5,7 @@ use SDL::Image;
 use SDL::Video;
 use SDL::Surface;
 use SDL::GFX::Primitives;
+use Spinner;
 
 
 has 'x'       => ( is => 'ro', isa => 'Int', required => 1 );
@@ -26,7 +27,8 @@ has 'gravity' => ( is => 'rw', isa => 'Int', default => -1 );
 
 # Blit the particles surface to the app in the right location
 sub draw {
-    my ($self, $app) = @_;
+    my ($self) = @_;
+    my $app = Spinner->app;
 
     my $new_part_rect = SDL::Rect->new( 0, 0, $self->size, $self->size );
 
@@ -42,7 +44,8 @@ sub draw {
 }
 
 sub init_surface {
-    my ($self, $app) = @_;
+    my ($self) = @_;
+    my $app = Spinner->app;
     my ( $size, $color ) = ($self->size, $self->color);
 
     #make a surface based on the size
