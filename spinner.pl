@@ -164,15 +164,28 @@ sub game {
     $quit = 0;
     my $level = Spinner::Level->new;
     $score = 0;
+    $lives = 3;
     while ( $level->load() ) {
-        my $finished = play($level);
-        last if $quit or not $finished;
-        $level->number( $level->number + 1 );
-        $score += 1000;
+        if ( play($level) ) {
+            $level->number( $level->number + 1 );
+            $score += 1000;
+        }
+        else {
+            $lives--;
+            if ($lives == 0) {
+                SDL::GFX::Primitives::string_color(
+                    $app,
+                    $app->w / 2 - 150,
+                    $app->h / 2 - 4,
+                    "YOU LOSE!!! Score: $score", 0x00FF00FF
+                );
+                SDL::Video::flip($app);
+                SDL::delay(1000);
+                last;
+            }
+        }
+        last if $quit;
     }
-    
-    
-
 }
 
 # create the given level. returns true if level is over,
@@ -180,7 +193,6 @@ sub game {
 sub play {
     my $level = shift;
 
-    
     my $particles_left = scalar @{$level->wheels};
 
     # start the ball in a random wheel
@@ -195,7 +207,7 @@ sub play {
     my $time = SDL::get_ticks();
 
     # This is our level continue flag
-    my $cont = 1;
+    my $continue = 1;
 
     # Init some level globals for time calculations
     my ( $dt, $t, $accumulator, $cur_time ) = ( 0.001, 0, 0, SDL::get_ticks() );
@@ -207,7 +219,7 @@ sub play {
     my $frames = 0;
 
     #Our level game loop
-    while ( $cont && !$quit ) {
+    while ( $continue && !$quit ) {
 
         while ( SDL::Events::poll_event($event) )
         {    #Get all events from the event queue in our event
@@ -237,7 +249,6 @@ sub play {
                 $ball->rotating(0);
             }
             warn 'event' if $DEBUG;
-
         }
 
         warn 'level' if $DEBUG;
@@ -259,13 +270,12 @@ sub play {
         $accumulator += $delta_time;
 
         # release the time in $dt amount of time so we have smooth animations
-        while ( $accumulator >= $dt && !$quit ) {
+        while ( $accumulator >= $dt && $continue ) {
 
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
            my $effect = $ball->update( $dt, $level->wheels );
-           
            
            handle_chunk($bounce_chunk) if $effect == 1;
            
@@ -273,15 +283,7 @@ sub play {
 
             # losing condition
             if ( $ball->n_wheel >= 0 and $level->wheels->[ $ball->n_wheel ]->visited ) {
-                SDL::GFX::Primitives::string_color(
-                    $app,
-                    $app->w / 2 - 150,
-                    $app->h / 2 - 4,
-                    "YOU LOSE!!! Score: $score", 0x00FF00FF
-                );
-                SDL::Video::flip($app);
-                SDL::delay(1000);
-                $quit = 1;
+                $continue = 0;
             }
 
             #dequeue our time accumulator
@@ -316,9 +318,9 @@ sub play {
         $frames++;
 
         # Check if we have won this level!
-        $cont = check_win( $init_time, $particles_left, $app );
+        last if check_win( $init_time, $particles_left, $app );
     }
-    return !$quit;
+    return $continue;
 }
 
 # Create a background surface once so we
@@ -330,6 +332,7 @@ sub init_bg_surf {
 }
 
 # Check if we are done this level
+# returns true if player won, false otherwise
 sub check_win {
     my $init_time      = shift;
     my $particles_left = shift;
@@ -348,9 +351,9 @@ sub check_win {
 
         SDL::Video::flip($app);
         SDL::delay(1000);
-        return 0;
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 # Release ball from wheel (if possible)
@@ -411,9 +414,9 @@ sub draw_to_screen {
 
     #make a string with the FPS and level
     my $pfps = sprintf(
-        "FPS:%.2f Level:%s Wheel [%2d, speed:%.2f] Left:%d Score: %d",
+        "FPS:%.2f Level:%s Wheel [%2d, speed:%.2f] Left:%d Score: %d Lives: %d",
         $fps, $level->name, $ball->n_wheel, $particles->[ $ball->n_wheel ]->speed,
-        $particles_left, $score
+        $particles_left, $score, $lives
     );
 
     #write our string to the window
