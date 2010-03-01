@@ -106,7 +106,7 @@ sub patrol_up
 		#{
 		# $self->{patrol_to} = -1
 		#}
-		warn 'Patrolling  to '.  $self->{patrol_to};
+#		warn 'Patrolling  to '.  $self->{patrol_to};
 		return
 	}
 
