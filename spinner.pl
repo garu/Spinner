@@ -110,14 +110,14 @@ sub menu {
 
                 if ( $event->key_sym == SDLK_DOWN ) {
                     $choice++;
-		    handle_chunk($menu_sel_chunk); 
+                    handle_chunk($menu_sel_chunk);
 
                     $choice = 0 if $choice > $#choices;
                 }
 
                 if ( $event->key_sym == SDLK_UP ) {
                     $choice--;
-		   handle_chunk($menu_sel_chunk); 
+                    handle_chunk($menu_sel_chunk);
 
                     $choice = $#choices if $choice < 0;
                 }
@@ -127,9 +127,15 @@ sub menu {
                 {
 
                #proally better to do this with a hash that holds the sub but meh
-
-                    game() if $choice == 0;
-                    $menu_quit = 1 if $choice == 5;
+                    if ( $choice == 0 ) {
+                        game();
+                    }
+                    elsif ( $choice == 3 ) {
+                        high_scores();
+                    }
+                    elsif ( $choice == 5 ) {
+                        $menu_quit = 1;
+                    }
                 }
             }
         }
@@ -148,10 +154,9 @@ sub menu {
             $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
         );
         my $h = 100;
-        foreach (@choices) {
-           my $str = $_;
+        foreach my $str (@choices) {
             my $color = 0x00CC34DD;
-            $color = 0xFF0000FF if $choices[$choice] =~ /$_/;
+            $color = 0xFF0000FF if $choices[$choice] =~ /$str/;
             SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
                 $h += 50, $str, $color );
         }
@@ -159,6 +164,40 @@ sub menu {
         SDL::Video::flip($app);
     }
 
+}
+
+sub high_scores {
+    my $show = 1;
+
+    my $high_score = Spinner::load_data_file('data/highscore.dat');
+
+    # Get an event object to snapshot the SDL event queue
+    my $event = SDL::Event->new();
+    while ($show) {
+        while ( SDL::Events::poll_event($event) ) {
+            $show = 0 if    $event->type == SDL_QUIT
+                         || $event->type == SDL_KEYDOWN
+                      ;
+        }
+        SDL::Video::fill_rect( $app, $app_rect,
+            SDL::Video::map_RGB( $app->format, 0, 0, 0 ) );
+
+        # Blit the back ground surface to the window
+        SDL::Video::blit_surface(
+            $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
+            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
+        );
+
+        my $h = 30;
+        foreach my $score ( @{$high_score} ) {
+            my $color = 0x00CC34DD;
+            my $str = $score->{name} . '     ' . $score->{score};
+            SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
+                $h += 50, $str, $color );
+        }
+
+        SDL::Video::flip($app);
+    }
 }
 
 sub game {
