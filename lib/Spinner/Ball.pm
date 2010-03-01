@@ -80,7 +80,8 @@ sub update {
             return 1;
         }
 
-        for ( 0 .. $#$particles ) {
+ 
+       for ( 0 .. $#$particles ) {
             # don't collide with previous wheel
             next if $_ == $ball->old_wheel;
 
@@ -105,7 +106,7 @@ sub update {
 		
 		
                    _gravity ($y_diff, $p, $ball, $x_diff, $distance_squared, $dt) if($p->gravity>0);
-
+	
         }
     }
     return 0;

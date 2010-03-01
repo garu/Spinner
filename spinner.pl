@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/lib";
 use Spinner;
 use Spinner::Ball;
+use Spinner::Wheel;
 use Spinner::Level;
 
 use SDL;
@@ -276,6 +277,7 @@ sub play {
             # (x,y) = dv*dt
             ######iterate_step($dt);
            my $effect = $ball->update( $dt, $level->wheels );
+           Spinner::Wheel::update( $dt, $level->wheels);
            
            handle_chunk($bounce_chunk) if $effect == 1;
            
