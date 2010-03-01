@@ -5,6 +5,7 @@ use SDL::Image;
 use SDL::Video;
 use SDL::Surface;
 use SDL::GFX::Primitives;
+use Spinner;
 
 
 has 'x'       => ( is => 'rw', isa => 'Num', required => 1 );
@@ -29,7 +30,8 @@ has 'patrol'  => ( is => 'ro', isa => 'ArrayRef', default => sub {[] } );
 
 # Blit the particles surface to the app in the right location
 sub draw {
-    my ($self, $app) = @_;
+    my ($self) = @_;
+    my $app = Spinner->app;
 
     my $new_part_rect = SDL::Rect->new( 0, 0, $self->size, $self->size );
 
@@ -111,7 +113,8 @@ sub patrol_up
 }
 
 sub init_surface {
-    my ($self, $app) = @_;
+    my ($self) = @_;
+    my $app = Spinner->app;
     my ( $size, $color ) = ($self->size, $self->color);
 
     #make a surface based on the size

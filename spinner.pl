@@ -5,6 +5,7 @@ use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
+use Spinner;
 use Spinner::Ball;
 use Spinner::Wheel;
 use Spinner::Level;
@@ -63,13 +64,7 @@ croak SDL::get_error if !$icon;
 
 SDL::Video::wm_set_icon($icon);
 
-
-#Make our display window
-#This is our actual SDL application window
-my $app = SDL::Video::set_video_mode( 800, 600, 32,
-    SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL );
-
-croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() if !($app);
+my $app = Spinner->init;
 
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
@@ -170,7 +165,7 @@ sub game {
     $quit = 0;
     my $level = Spinner::Level->new;
     $score = 0;
-    while ( $level->load($app) ) {
+    while ( $level->load() ) {
         my $finished = play($level);
         last if $quit or not $finished;
         $level->number( $level->number + 1 );
@@ -377,7 +372,7 @@ sub check_ball_release {
 
         # change wheel color so player knows it's touched
         $w->color(0x111111FF);
-        $w->init_surface($app);
+        $w->init_surface;
 
         $w->visited(1);
         $particles_left--;
@@ -426,9 +421,9 @@ sub draw_to_screen {
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
 
     #Draw each particle
-    $_->draw($app) foreach (@$particles);
+    $_->draw foreach (@$particles);
 
-    $ball->draw($app);
+    $ball->draw;
 
     #Update the entire window
     #This is one frame!
