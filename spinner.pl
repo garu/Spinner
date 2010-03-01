@@ -154,6 +154,7 @@ sub menu {
             $app,     SDL::Rect->new( 150, 0, $app->w,     $app->h )
         );
         my $h = 200;
+        load_font('Metro.otf');
         foreach my $str (@choices) {
             my $color = 0x00CC34DD;
             $color = 0xFF0000FF if $choices[$choice] =~ /$str/;
@@ -163,7 +164,20 @@ sub menu {
 
         SDL::Video::flip($app);
     }
+}
 
+sub load_font {
+    my $font_name = shift;
+    my $filename = "data/$font_name";
+
+    my $font;
+    open my $fh, '<', $filename
+        or Carp::croak "error loading font '$filename': $!\n";
+    binmode $fh;
+    read $fh, $font, 4096;
+    close $fh;
+
+    SDL::GFX::Primitives::set_font($font, 5, 7);
 }
 
 sub high_scores {
