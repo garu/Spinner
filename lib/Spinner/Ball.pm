@@ -125,12 +125,12 @@ sub _gravity {
 #       warn  $p->x, ' ', $p->y;
     my $px = my $py = 1;
 
-    my $px = $x_diff > 0 ? -1 
+    $px = $x_diff > 0 ? -1 
            : $x_diff < 0 ?  1
            : 0
            ;
 
-    my $py = $y_diff > 0 ? -1 
+     $py = $y_diff > 0 ? -1 
            : $y_diff < 0 ?  1
            : 0
            ;

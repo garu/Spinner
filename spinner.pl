@@ -144,16 +144,16 @@ sub menu {
             SDL::Video::map_RGB( $app->format, 0, 0, 0 ) );
     
         # Blit the back ground surface to the window
-        SDL::Video::blit_surface(
-            $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
-            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
-        );
+#        SDL::Video::blit_surface(
+#            $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
+#            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
+#        );
 
          SDL::Video::blit_surface(
             $spinner_menu, SDL::Rect->new( 0, 0, $spinner_menu->w, $spinner_menu->h ),
-            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
+            $app,     SDL::Rect->new( 150, 0, $app->w,     $app->h )
         );
-        my $h = 100;
+        my $h = 200;
         foreach my $str (@choices) {
             my $color = 0x00CC34DD;
             $color = 0xFF0000FF if $choices[$choice] =~ /$str/;
