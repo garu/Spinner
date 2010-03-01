@@ -53,74 +53,77 @@ sub update
 
 }
 
-sub patrol_up
-{
-	my ($self, $dt) = @_;
+sub patrol_up {
+    my ($self, $dt) = @_;
 
+    my @patrol_loc = @{$self->patrol()};
+    return if ($#patrol_loc < 0);
 
-	my @patrol_loc = @{$self->patrol()};
-	return if ($#patrol_loc < 0);
-	# keep a copy of the  start position we  go back to it
-	($self->{sx} , $self->{sy} ) = ($self->x , $self->y)  if (!$self->{sx} && !$self->{sy});
+    # keep a copy of the  start position we  go back to it
+    ($self->{sx} , $self->{sy} ) = ($self->x , $self->y)  if (!$self->{sx} && !$self->{sy});
 
-#	warn 'Start at '. $self->{sx}. ' ' . $self->{sy};
-	$self->{patrol_to} = 0 if !$self->{patrol_to} ;
+#   warn 'Start at '. $self->{sx}. ' ' . $self->{sy};
+    $self->{patrol_to} = 0 if !$self->{patrol_to} ;
 
-	my $get_to;
-	 if ( $self->{patrol_to} < 0)
-	 {
-		 $get_to =  { x => $self->{sx}, y => $self->{sy}  };	
+    my $get_to;
+    if ( $self->{patrol_to} < 0) {
+        $get_to =  { x => $self->{sx}, y => $self->{sy}  };
+    }
+    else {
+        $get_to = $patrol_loc[ $self->{patrol_to} ];
+    }
 
-	 }
-	 else
-	 {
-		$get_to = $patrol_loc[ $self->{patrol_to} ] ;
+    #warn 'Trying to get_to '. $get_to->{x}. ' ' . $get_to->{y};
 
-	 }
+    my $x_diff = $self->x - $get_to->{x};
+    my $y_diff = $self->y - $get_to->{y};
+#   warn 'To get_to '. $x_diff. ' ' . -$y_diff;
 
+    my $next_tick = 0.4;
 
-	 #warn 'Trying to get_to '. $get_to->{x}. ' ' . $get_to->{y};
+    if  (  abs($x_diff) < $next_tick && abs($y_diff) < $next_tick) #if we are going to be at the place snap int and  increment patrol_to
+    {
+        #warn "Got to ".  $self->{patrol_to};
+        $self->x( $get_to->{x});
+        $self->y( $get_to->{y});
+        #warn "From ".  $self->{patrol_to};
+        ($self->{patrol_to}, $self->{direction}) = _patrol_count( $#patrol_loc + 1, $self->{patrol_to}, $self->{direction} );
+        #warn "TO ".  $self->{patrol_to};
+        #return
+    }
 
-	my $x_diff = $self->x - $get_to->{x};
-	my $y_diff = $self->y - $get_to->{y};
-#	warn 'To get_to '. $x_diff. ' ' . -$y_diff;
+    my $xd = my $yd = 1;
+    $xd = -1 if $x_diff > 0;
+    $yd = -1 if $y_diff > 0;
 
+    $self->x ( $self->x + ( $next_tick * $xd) ) ;#if $x_diff > $next_tick;
+    $self->y ( $self->y + ( $next_tick * $yd) ) ;#if $y_diff > $next_tick;
+}
 
-	my $next_tick = 0.4   ; 
+sub _patrol_count {
+    my ($total,  $current, $direction) = @_;
 
- 	if  (  abs($x_diff) < $next_tick && abs($y_diff) < $next_tick) #if we are going to be at the place snap int and  increment patrol_to
-	{
-		$self->x( $get_to->{x});
-		$self->y( $get_to->{y});
-		 if ( $self->{patrol_to} +1 <= $#patrol_loc )
-		 {
-		$self->{patrol_to} += 1; 
-		}
-		else
-		{
-		$self->{patrol_to} -= 1; 
-		#TODO$self->{patrol_back} = 1;
+    $current = -1 if !$current < 0 ;
 
-		}
-		#	else
-		#{
-		# $self->{patrol_to} = -1
-		#}
-#		warn 'Patrolling  to '.  $self->{patrol_to};
-		return
-	}
+    $direction = 1 if !$direction;
 
-	my $xd = my $yd = 1;
-	$xd = -1 if $x_diff > 0;
-	$yd = -1 if $y_diff > 0;
+    # warn "Current $current , direction $direction, total $total";
+    if ($current + 1 < $total && $direction > 0) {
+        $current++;
+    }
+    elsif ($current - 1 > -2 && $direction < 0) {
+        $current--;
+    }
+    # warn "Current $current , direction $direction, total $total";
+    if ($current + 1 == $total && $direction > 0) {
+        $direction = -1;
+    }
+    elsif($current - 1 == -2 && $direction < 0) {
+        $direction = 1;
+    }
+    #warn "Current $current , direction $direction, total $total";
 
-
-	$self->x ( $self->x + ( $next_tick * $xd) ) ;#if $x_diff > $next_tick;
-	$self->y ( $self->y + ( $next_tick * $yd) ) ;#if $y_diff > $next_tick;
-
-
-
-
+    return ($current, $direction);
 }
 
 sub init_surface {
@@ -151,19 +154,19 @@ sub init_surface {
     my $ring = 0x000000FF;
    
     if ( $color ) {
-	$ring = 0xFF0000FF;
+        $ring = 0xFF0000FF;
     }
-        SDL::Video::blit_surface(
+    SDL::Video::blit_surface(
             $self->image, SDL::Rect->new( 0, 0, $self->image->w, $self->image->h ),
             $surface,     SDL::Rect->new( 0, 0, $surface->w,     $surface->h )
-        );
+    );
 
-    
+
     SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-	      $size / 2 - 2, $ring);
+          $size / 2 - 2, $ring);
 
      SDL::GFX::Primitives::aacircle_color( $surface, $size / 2, $size / 2,
-	        $size / 2 - 1, $ring );
+            $size / 2 - 1, $ring );
 
     $self->surface($surface);
 }
