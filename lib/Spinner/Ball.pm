@@ -119,7 +119,7 @@ sub _gravity {
     my $distance_squared = shift;
     my $dt = shift;
 
-	warn  $ball->x, ' ', $ball->y; #<--- Can't call method "x" on an undefined value at (eval 692) line 11.
+    #warn  $ball->x, ' ', $ball->y; #<--- Can't call method "x" on an undefined value at (eval 692) line 11.
 #		warn  $p->x, ' ', $p->y;
 		my $px = my $py = 1;
 		$px = 0  if  $x_diff == 0;

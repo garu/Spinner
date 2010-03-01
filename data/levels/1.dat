@@ -3,7 +3,8 @@
     "author": "garu",
     "wheels": [
                 { "x" : 70, "y" : 70 },
-                { "x" : 400, "y" : 300, "gravity" : 200}
+                { "x" : 400, "y" : 300, "gravity" : 200},
+                { "x" : 730, "y" :  30, "patrol" : [ { "x" : 2, "y" : 10 }  ] }
 
             ],
     "starting_wheel": 0
