@@ -1,5 +1,7 @@
 package Spinner;
 use Carp ();
+use JSON::Any;
+use SDL::Video;
 
 my $SINGLETON = undef;
 
@@ -18,6 +20,20 @@ sub init {
         unless $SINGLETON;
 
     return $SINGLETON;
+}
+
+sub load_data_file {
+    my $filename = shift;
+    return unless -r $filename;
+
+    # load file into $json...
+    open my $fh, '<', $filename
+        or Carp::croak "error loading file '$filename': $!\n";
+    my $json = do { local $/; <$fh> };
+    close $fh;
+
+    # ... and then into a hashref
+    return JSON::Any->from_json($json);
 }
 
 42;

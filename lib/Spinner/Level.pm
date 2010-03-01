@@ -17,19 +17,11 @@ sub load {
     # levels are stored here
     my $level_number = $self->number;
     return unless $level_number =~ /\d+/o;
+
     my $filename = "data/levels/$level_number.dat";
-    return unless -r $filename;
+    my $level = Spinner::load_data_file($filename);
 
-    # load file into $json...
-    open my $fh, '<', $filename 
-        or die "error loading file '$filename': $!\n";
-    my $json = do { local $/; <$fh> };
-    close $fh;
-
-    # ... and then into a hashref
-    my $level = JSON::Any->from_json($json);
-
-   $self->name( $level->{name} );
+    $self->name( $level->{name} );
     # load wheels
     my @wheels = ();
     foreach my $wheel_data ( @{$level->{wheels}} ) {
