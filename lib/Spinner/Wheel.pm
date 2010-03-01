@@ -86,7 +86,7 @@ sub patrol_up
 #	warn 'To get_to '. $x_diff. ' ' . -$y_diff;
 
 
-	my $next_tick = $dt * $self->speed; 
+	my $next_tick = 0.4   ; 
 
  	if  (  abs($x_diff) < $next_tick && abs($y_diff) < $next_tick) #if we are going to be at the place snap int and  increment patrol_to
 	{
