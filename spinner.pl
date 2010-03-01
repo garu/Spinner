@@ -77,9 +77,9 @@ my $fps = 30;
 # The surface of the background
 my $bg_surf = init_bg_surf($app);
 
-my $ball_image = SDL::Image::load('data/ball.png');
+my $ball_image = load_image('data/ball.png');
 croak SDL::get_error() if !$ball_image;
-my $spinner_menu = SDL::Image::load('data/main.png');
+my $spinner_menu = load_image('data/main.png');
 croak SDL::get_error() if !$spinner_menu;
 
 SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
@@ -330,8 +330,7 @@ sub play {
 # Can keep using it as many times as we need
 sub init_bg_surf {
     my $app = shift;
-    my $bg = SDL::Image::load('data/bg.png');
-    croak SDL::get_error() if !$bg;
+    my $bg = load_image('data/bg.png', 1);
     return $bg;
 }
 
@@ -407,10 +406,10 @@ sub draw_to_screen {
     
         # Blit the back ground surface to the window
         #TODO: optimize so we can show bg
-     #    SDL::Video::blit_surface(
-     #       $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
-     #       $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
-     #   );
+         SDL::Video::blit_surface(
+            $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
+            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
+        );
     
     
 
@@ -444,4 +443,16 @@ sub handle_chunk
       SDL::Mixer::Channels::volume( $channel_number, 10) if ( $channel_number && $channel_number >= 0);
 
 #    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
+}
+
+
+sub load_image
+{
+  my $loaded_img = SDL::Image::load($_[0]);
+  croak SDL::get_error if !$loaded_img;
+  return $loaded_img if !$_[1];
+  my $opt_img = SDL::Video::display_format($loaded_img);
+  croak SDL::get_error if !$opt_img;
+  return $opt_img;
+
 }
