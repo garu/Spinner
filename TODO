@@ -16,6 +16,21 @@ here as well.
   So whe can organize them in a progressive order,
   making the game harder and the player experience better.
 
+
+#################################################################
+ ###    Refactor Before doing the following features 	     ###
+#################################################################
+
+* Refactor spinner.pl
+  * methods for handling data should be called in only one place
+  * events should be handled in one place (SDL::App switch maybe)
+  * state machines for ball and wheel effects
+  * velocity should be independent of the FPS 
+	( http://www.lazyfoo.net/SDL_tutorials/lesson32/index.php)
+  * drawing should be seperate from game logic
+
+
+
 * Better speed control
   the ball circles too fast on some machines. We need to make this
   as smooth and regular as possible, otherwise game becomes 
