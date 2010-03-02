@@ -54,38 +54,30 @@ sub _get_next_rad
     my $ball = shift;
     my $targets = shift;
     
-    my @target_now = @{$targets};
-    # Pick the first none dead target
-    
     my $aim_at;
-    foreach my $t ( @target_now)
-    {
+    foreach my $t ( @{$targets} ) {
         
-         if ( !( $t->visited || $t == $target_now[$ball->n_wheel] ) )         
-         {
+         if ( !( $t->visited || $t == $targets->[$ball->n_wheel] ) ) {
           #warn 'Found one';
           $aim_at = $t
          }
-        
-        
-        
     }
    # warn ' Aiming random' if !$aim_at;
     
     return int( rand(2 * 3.14) ) if !$aim_at;
     
-    my $wheel_on = $target_now[$ball->{n_wheel}];
+    my $wheel_on = $targets->[ $ball->{n_wheel} ];
     
-    my $x_diff = $ball->{x} - $aim_at->{x};
-    my $y_diff = $aim_at->{y} - $ball->{y};
+    my $x_diff = $ball->x - $aim_at->x;
+    my $y_diff = $aim_at->y - $ball->y;
 
     # calculate angle between vertical down and vector between wheels
          ### tan( theta ) = x_diff / y_diff 
          # theta = atan2 ( x_diff/ y_diff);
     my $angle = atan2($y_diff, $x_diff); 
     #$angle += 360 if $angle < 0;
+    warn "[[[[ $angle ]]]] ";
     return ($angle, $aim_at);
-       
 }
 
 sub _handle_rotate
@@ -146,12 +138,6 @@ sub _handle_rotate
     }
    
   }
-  
-   
-   
-      
-     
- 
 }
 
 sub get_next_command
