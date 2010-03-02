@@ -190,10 +190,10 @@ sub load_font {
     open my $fh, '<', $filename
         or Carp::croak "error loading font '$filename': $!\n";
     binmode $fh;
-    read $fh, $font, 4096;
+    while (not eof $fh) { my $buf; read $fh, $buf, 4096; $font .= $buf }
     close $fh;
 
-    SDL::GFX::Primitives::set_font($font, 5, 7);
+    SDL::GFX::Primitives::set_font($font, 20, 20);
 }
 
 sub high_scores {
