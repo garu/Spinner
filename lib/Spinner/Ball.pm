@@ -137,13 +137,13 @@ sub _gravity {
    
     my $G = 0.06; 
     
-    my $v_G = $G * ( $px * $p->gravity * $dt  / $distance_squared );
+    my $v_G = $G * (  $p->gravity * $dt  / $distance_squared );
     
-    my $v_Gx = $v_G* cos($angle);
-    my $v_Gy = $v_G* sin($angle);
+    my $v_Gx = $px * $v_G;
+    my $v_Gy = $py * $v_G;
 
-    $ball->vx ( $ball->vx +  ( 0.06 * $px * $p->gravity * $dt  / $distance_squared ) );
-    $ball->vy ( $ball->vy +  ( 0.06 * $py * $p->gravity * $dt / $distance_squared  ) );
+    $ball->vx ( $ball->vx +  $v_Gx );
+    $ball->vy ( $ball->vy +  $v_Gy );
     return ($G, $px, $py);
 }
 
