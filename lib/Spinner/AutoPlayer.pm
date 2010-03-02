@@ -91,42 +91,55 @@ sub _get_next_rad
 sub _handle_rotate
 {
   my $self = $_[0];
-  my $angle_diff = $_[1];
-  
+  my $ball_angle = $_[1];
+  my $ang = $self->angle() * 180/3.14;
   #start rotation if we have a angle_diff to handle
-  if ( !$self->rotating && abs($angle_diff) > 0 ) 
+  if ( !$self->rotating && abs($ball_angle) != $ang ) 
   {
    #warn ' Not rotating ';
-     if ( int( $angle_diff ) >  0)
+     if (  $ball_angle  >  $ang )
      {
       # warn ' Start Right';
        $self->rotating( 1 ) ;
        return 'R' ;
      }
-     elsif (  int( $angle_diff ) < 1 )
+     elsif (  $ball_angle  <  $ang  )
     {
      #warn ' Start Left';
       $self->rotating( -1 ) ;
      return 'L' ; #We rotate left
-    }     
+    } 
+    else
+    {
+        my $pick = int( rand( 1 ) - rand( 1 ) );
+        
+        if( $pick > 0 ) 
+        {$pick = 'R'; $self->rotating( 1 ) } 
+        else { $pick = 'L' ; $self->rotating( -1 ) }
+        
+       
+        
+       
+    }    
   }
   elsif ( $self->rotating != 0 )
   {
     
-    if( $self->rotating == 1 &&  $angle_diff >= 0) #we were rotating right
+    if( $self->rotating == 1 &&  $ball_angle  >  $ang ) #we were rotating right
     {
-      #warn ' Continue Right '.$angle_diff;
+      warn "Continue Right Trying to get to $ball_angle got to $ang";
        return 'R' #continue rotating
        
     }
-    elsif ( $self->rotating == -1 && $angle_diff <= 0)
+    elsif ( $self->rotating == -1 && $ball_angle  <  $ang )
     {
-     #warn ' Continue Left '.$angle_diff  ;
+     warn "Continue Left Trying to get to $ball_angle got to $ang"  ;
      return 'L' #continue rotating 
     }
     else
     {
       #shoot if we can't get any closer
+      warn "Trying to get to $ball_angle got to $ang" ;
       $self->angle( 0 );
       $self->rotating( 0 );
       return 'S'  #We shoot
@@ -155,10 +168,10 @@ sub get_next_command
     
    }
     
-    my $angle_diff = $ball->rad - $self->angle; 
+    
     #warn ' Going to angle '. $self->angle.' currently at '.$ball->rad ;
     
-   return  $self->_handle_rotate($angle_diff);
+   return  $self->_handle_rotate($ball->rad, $self->angle);
     
    
 }
