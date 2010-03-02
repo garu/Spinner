@@ -25,10 +25,10 @@ sub get_next_command
 
    my @options = qw/ R L S/; # Right Left or Shoot
 
-   my $option = $options[ int ( rand( $#options ) +1 ) ]; #get one of those options
+   my $option = $options[ int ( rand( $#options + 1 )  ) ]; #get one of those options
 
    my $counter = 1;
-    $counter = int( rand(25) + 20 ) if ($option =~ /R|L/); #for how long
+    $counter = int( rand(15) + 10 ) if ($option =~ /R|L/); #for how long
 
 
     $self->cmd( $option); $self->counter( $counter );

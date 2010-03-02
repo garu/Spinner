@@ -327,9 +327,9 @@ sub play {
 
 	  my $cmd =  $AUTO->get_next_command();
 
-	  $ball->rotating(1) if $cmd eq 'R';
+	  $ball->rotating(-1) if $cmd eq 'R';
 
-	  $ball->rotating(-1) if $cmd eq 'L';
+	  $ball->rotating(1) if $cmd eq 'L';
 
   	  if ($cmd eq 'S')
 	  {
