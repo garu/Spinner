@@ -28,6 +28,7 @@ here as well.
   * velocity should be independent of the FPS 
 	( http://www.lazyfoo.net/SDL_tutorials/lesson32/index.php)
   * drawing should be seperate from game logic
+  * handle sound better
 
 
 

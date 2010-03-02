@@ -232,7 +232,7 @@ sub high_scores {
 
 sub game {
     $quit = 0;
-    my $level = Spinner::Level->new;
+    my $level = Spinner::Level->new(  );
 
     $score = 0;
     $lives = 3;
