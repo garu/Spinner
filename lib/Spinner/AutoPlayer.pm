@@ -3,6 +3,7 @@ package Spinner::AutoPlayer;
 use strict;
 use warnings;
 use Carp;
+use Math::Trig;
 
 use Mouse;
 has 'cmd'        => ( is => 'rw', isa => 'Str' );
@@ -10,6 +11,7 @@ has 'angle'     => ( is => 'rw', isa => 'Num' , default=> 0);
 has 'diff'     => ( is => 'rw', isa => 'Int' , );
 has 'rotating'     => ( is => 'rw', isa => 'Int' , );
 
+my $DEBUG = 0;
 
 # Choose a next command
 # Returns an array 
@@ -64,7 +66,7 @@ sub _get_next_rad
     }
    # warn ' Aiming random' if !$aim_at;
     
-    return int( rand(2 * 3.14) ) if !$aim_at;
+    return int( rand(2 * pi) ) if !$aim_at;
     
     my $wheel_on = $targets->[ $ball->{n_wheel} ];
     
@@ -74,7 +76,8 @@ sub _get_next_rad
     # calculate angle between vertical down and vector between wheels
          ### tan( theta ) = x_diff / y_diff 
          # theta = atan2 ( x_diff/ y_diff);
-    my $angle = atan2($y_diff, $x_diff); 
+    my $angle = atan($y_diff, $x_diff)* 180 / pi;
+            $angle += 360 if $angle < 0;; 
     #$angle += 360 if $angle < 0;
     warn "[[[[ $angle ]]]] ";
     return ($angle, $aim_at);
@@ -84,7 +87,7 @@ sub _handle_rotate
 {
   my $self = $_[0];
   my $ball_angle = $_[1];
-  my $ang = $self->angle() * 180/3.14;
+  my $ang = $self->angle();
   #start rotation if we have a angle_diff to handle
   if ( !$self->rotating && abs($ball_angle) != $ang ) 
   {
@@ -119,19 +122,19 @@ sub _handle_rotate
     
     if( $self->rotating == 1 &&  $ball_angle  >  $ang ) #we were rotating right
     {
-      warn "Continue Right Trying to get to $ball_angle got to $ang";
+      warn "Continue Right Trying to get to $ball_angle got to $ang" if $DEBUG;
        return 'R' #continue rotating
        
     }
     elsif ( $self->rotating == -1 && $ball_angle  <  $ang )
     {
-     warn "Continue Left Trying to get to $ball_angle got to $ang"  ;
+     warn "Continue Left Trying to get to $ball_angle got to $ang"  if $DEBUG;
      return 'L' #continue rotating 
     }
     else
     {
       #shoot if we can't get any closer
-      warn "Trying to get to $ball_angle got to $ang" ;
+      warn "Trying to get to $ball_angle got to $ang" if $DEBUG;
       $self->angle( 0 );
       $self->rotating( 0 );
       return 'S'  #We shoot
