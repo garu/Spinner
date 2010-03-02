@@ -1,0 +1,21 @@
+{
+    "name": "Pong",
+    "author": "garu",
+    "wheels": [
+                { "x" :  70, "y" : 320, 
+                  "gravity": 200,
+                  "patrol": [
+                        { "x": 70, "y": 540 },
+                        { "x": 70, "y":  80 }
+                   ] 
+                },
+                { "x" : 730, "y" : 130,
+                  "gravity": 200,
+                  "patrol": [
+                        { "x": 730, "y": 540 },
+                        { "x": 730, "y":  80 }
+                  ]
+                }
+            ],
+    "starting_wheel": 1
+}
