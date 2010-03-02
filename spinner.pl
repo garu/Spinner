@@ -170,7 +170,7 @@ sub menu {
             $app,     SDL::Rect->new( 150, 0, $app->w,     $app->h )
         );
         my $h = 200;
-        load_font('metro.otf');
+        #load_font('metro.fnt');
         foreach my $str (@choices) {
             my $color = 0x00CC34DD;
             $color = 0xFF0000FF if $choices[$choice] =~ /$str/;
