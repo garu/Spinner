@@ -325,7 +325,7 @@ sub play {
 	if ($AUTO)
 	{
 
-	  my $cmd =  $AUTO->get_next_command();
+	  my $cmd =  $AUTO->get_next_command($ball, $level->wheels);
 
 	  $ball->rotating(-1) if $cmd eq 'R';
 
@@ -335,12 +335,13 @@ sub play {
 	  {
 		  $ball->rotating(0);
 
-		 $particles_left = check_ball_release($ball, $level->wheels, $particles_left) 
+		 $particles_left = check_ball_release($ball, $level->wheels, $particles_left, $dt) 
 	  }
 		$AUTO = undef if $quit == 1;
-
+           
 
 	}
+	
 
         warn 'level' if $DEBUG;
 
