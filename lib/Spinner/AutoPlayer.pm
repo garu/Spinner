@@ -74,7 +74,7 @@ sub _get_next_rad
     }
    # warn ' Aiming random' if !$aim_at;
     
-    return int( rand(2 * 3.14) ) if !$aim_at;
+    return int( rand(2 * pi) ) if !$aim_at;
     
     my $wheel_on = $target_now[$ball->{n_wheel}];
     
