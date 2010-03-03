@@ -11,7 +11,7 @@ has 'angle'     => ( is => 'rw', isa => 'Num' , default=> 0);
 has 'diff'     => ( is => 'rw', isa => 'Int' , );
 has 'rotating'     => ( is => 'rw', isa => 'Int' , );
 
-my $DEBUG = 0;
+my $DEBUG = 1;
 
 # Choose a next command
 # Returns an array 
@@ -61,7 +61,8 @@ sub _get_next_rad
         
          if ( !( $t->visited || $t == $targets->[$ball->n_wheel] ) ) {
           #warn 'Found one';
-          $aim_at = $t
+          $aim_at = $t;
+	  last;
          }
     }
    # warn ' Aiming random' if !$aim_at;
@@ -70,16 +71,17 @@ sub _get_next_rad
     
     my $wheel_on = $targets->[ $ball->{n_wheel} ];
     
-    my $x_diff = $ball->x - $aim_at->x;
-    my $y_diff = $aim_at->y - $ball->y;
+    my $x_diff = $wheel_on->x - $aim_at->x;
+    my $y_diff =  $wheel_on->y - $aim_at->x;
 
     # calculate angle between vertical down and vector between wheels
          ### tan( theta ) = x_diff / y_diff 
          # theta = atan2 ( x_diff/ y_diff);
-    my $angle = atan($y_diff, $x_diff)* 180 / pi;
-            $angle += 360 if $angle < 0;; 
-    #$angle += 360 if $angle < 0;
-    warn "[[[[ $angle ]]]] ";
+    my $angle = rad2deg ( atan2(-$y_diff, -$x_diff) + 270);
+    $angle -= 360 while $angle > 360;
+
+
+	
     return ($angle, $aim_at);
 }
 
@@ -149,10 +151,11 @@ sub get_next_command
     my $self = $_[0];
     
     my $ball = $_[1];
+    my $targets = $_[2];
     my ($ang);
     if (!$self->angle)
     {
-    ($ang) = _get_next_rad($_[1], $_[2]);
+    ($ang) = _get_next_rad($ball, $targets);
     $self->angle ( $ang ) ;
     
    }
@@ -160,7 +163,7 @@ sub get_next_command
     
     #warn ' Going to angle '. $self->angle.' currently at '.$ball->rad ;
     
-   return  $self->_handle_rotate($ball->rad, $self->angle);
+   return  $self->_handle_rotate($ball->rad);
     
    
 }

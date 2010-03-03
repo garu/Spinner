@@ -322,7 +322,7 @@ sub play {
             warn 'event' if $DEBUG;
         }
 
-	if ($AUTO)
+	if ($AUTO && $frames > 0)
 	{
 
 	  my $cmd =  $AUTO->get_next_command($ball, $level->wheels);
@@ -335,7 +335,7 @@ sub play {
 	  {
 		  $ball->rotating(0);
 
-		 $particles_left = check_ball_release($ball, $level->wheels, $particles_left, $dt) 
+		  $particles_left = check_ball_release($ball, $level->wheels, $particles_left, $dt) 
 	  }
 		$AUTO = undef if $quit == 1;
            
