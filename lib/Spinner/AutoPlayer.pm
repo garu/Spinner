@@ -57,12 +57,18 @@ sub _get_next_rad
     my $targets = shift;
     
     my $aim_at;
+	my $dist = -1;
     foreach my $t ( @{$targets} ) {
         
          if ( !( $t->visited || $t == $targets->[$ball->n_wheel] ) ) {
           #warn 'Found one';
-          $aim_at = $t;
-	  last;
+	  my $l_dist = ( $t->x - $ball->x ) **2 + ( $t->y - $ball->x ) **2;
+	  if ( $dist == -1 || ($dist != -1 && $l_dist <= $dist ) )
+	  {
+		$dist = $l_dist;
+	          $aim_at = $t;
+
+	  }
          }
     }
    # warn ' Aiming random' if !$aim_at;
@@ -77,7 +83,7 @@ sub _get_next_rad
     # calculate angle between vertical down and vector between wheels
          ### tan( theta ) = x_diff / y_diff 
          # theta = atan2 ( x_diff/ y_diff);
-    my $angle = rad2deg ( atan2(-$y_diff, -$x_diff) + 270);
+    my $angle = rad2deg ( atan2(-$y_diff, $x_diff) + 270);
     $angle -= 360 while $angle > 360;
 
 
@@ -133,16 +139,14 @@ sub _handle_rotate
      warn "Continue Left Trying to get to $ball_angle got to $ang"  if $DEBUG;
      return 'L' #continue rotating 
     }
-    else
-    {
+   
+  }
       #shoot if we can't get any closer
       warn "Trying to get to $ball_angle got to $ang" if $DEBUG;
       $self->angle( 0 );
       $self->rotating( 0 );
       return 'S'  #We shoot
-    }
-   
-  }
+
 }
 
 sub get_next_command
