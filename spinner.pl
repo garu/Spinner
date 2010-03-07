@@ -17,7 +17,6 @@ use SDL::Surface;
 use SDL::Rect;
 use SDL::Events;
 use SDL::Event;
-use SDL::Time;
 use SDL::Color;
 use SDL::GFX::Primitives;
 use SDL::Image;
