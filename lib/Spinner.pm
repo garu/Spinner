@@ -47,8 +47,7 @@ sub get_camera {
 }
 
 sub set_camera {
-	my $self = shift;
-	my ($new_x, $new_y) = @_;
+	my ($self, $new_x, $new_y) = @_;
 	$camera->x = $new_x;
 	$camera->y = $new_y;
 }
