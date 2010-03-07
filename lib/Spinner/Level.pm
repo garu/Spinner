@@ -1,7 +1,6 @@
 package Spinner::Level;
 use Mouse;
 use JSON::Any;
-use Spinner;
 use Spinner::Wheel;
 
 has 'wheels'         => ( is => 'rw', isa => 'ArrayRef' );
@@ -12,7 +11,6 @@ has 'name'           => ( is => 'rw', isa => 'Str', default => 'unknown' );
 
 sub load {
     my ($self ) = @_;
-    my $app = Spinner->app;
 
     # levels are stored here
     my $level_number = $self->number;
@@ -27,7 +25,7 @@ sub load {
     my @wheels = ();
     foreach my $wheel_data ( @{$level->{wheels}} ) {
         my $w = Spinner::Wheel->new( %{$wheel_data} );
-        $w->init_surface($app);
+        $w->init_surface;
 
         push @wheels, $w;
     }

@@ -46,12 +46,11 @@ sub draw {
     );
 }
 
-sub update
-{
+sub update {
     my ( $dt, $particles, $app) = @_;
     foreach my $p (@{$particles}) { $p->patrol_up($dt)} ;
-
 }
+
 
 sub patrol_up {
     my ($self, $dt) = @_;
