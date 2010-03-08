@@ -6,10 +6,11 @@ use Carp;
 use Math::Trig;
 
 use Mouse;
-has 'cmd'        => ( is => 'rw', isa => 'Str' );
-has 'angle'     => ( is => 'rw', isa => 'Num' , default=> 0);
-has 'diff'     => ( is => 'rw', isa => 'Int' , );
-has 'rotating'     => ( is => 'rw', isa => 'Int' , );
+has 'cmd'      => ( is => 'rw', isa => 'Str' );
+has 'angle'    => ( is => 'rw', isa => 'Num' , default=> 0);
+has 'diff'     => ( is => 'rw', isa => 'Int' );
+has 'rotating' => ( is => 'rw', isa => 'Int' );
+has 'timeout'  => ( is => 'rw', isa => 'Int' );
 
 my $DEBUG = 1;
 
@@ -91,85 +92,70 @@ sub _get_next_rad
     return ($angle, $aim_at);
 }
 
-sub _handle_rotate
-{
-  my $self = $_[0];
-  my $ball_angle = $_[1];
-  my $ang = $self->angle();
-  #start rotation if we have a angle_diff to handle
-  if ( !$self->rotating && abs($ball_angle) != $ang ) 
-  {
-   #warn ' Not rotating ';
-     if (  $ball_angle  >  $ang )
-     {
-      # warn ' Start Right';
-       $self->rotating( 1 ) ;
-       return 'R' ;
-     }
-     elsif (  $ball_angle  <  $ang  )
-    {
-     #warn ' Start Left';
-      $self->rotating( -1 ) ;
-     return 'L' ; #We rotate left
-    } 
-    else
-    {
-        my $pick = int( rand( 1 ) - rand( 1 ) );
+sub _handle_rotate {
+    my ($self, $ball_angle) = @_;
+    my $ang = $self->angle();
+
+    #start rotation if we have a angle_diff to handle
+    if ( !$self->rotating && abs($ball_angle) != $ang ) {
+        # warn ' Not rotating ';
+        if ( $ball_angle > $ang ) {
+            # warn ' Start Right';
+            $self->rotating( 1 ) ;
+            return 'R' ;
+        }
+        elsif ( $ball_angle < $ang ) {
+            # warn ' Start Left';
+            $self->rotating( -1 ) ;
+            return 'L' ; #We rotate left
+        }
+        else {
+            # FIXME: my math sucks at 4am, but
+            # won't $pick always be 0 ?
+            my $pick = int( rand(1) - rand(1) );
         
-        if( $pick > 0 ) 
-        {$pick = 'R'; $self->rotating( 1 ) } 
-        else { $pick = 'L' ; $self->rotating( -1 ) }
-        
-       
-        
-       
-    }    
-  }
-  elsif ( $self->rotating != 0 )
-  {
-    
-    if( $self->rotating == 1 &&  $ball_angle  >  $ang ) #we were rotating right
-    {
-      warn "Continue Right Trying to get to $ball_angle got to $ang" if $DEBUG;
-       return 'R' #continue rotating
-       
+            if( $pick > 0 ) {
+                $pick = 'R';
+                $self->rotating( 1 );
+            }
+            else {
+                $pick = 'L';
+                $self->rotating( -1 );
+            }
+        }
     }
-    elsif ( $self->rotating == -1 && $ball_angle  <  $ang )
-    {
-     warn "Continue Left Trying to get to $ball_angle got to $ang"  if $DEBUG;
-     return 'L' #continue rotating 
+    elsif ( $self->rotating != 0 ) {
+        # we were rotating right
+        if( $self->rotating == 1 && $ball_angle > $ang ) {
+            warn "Continue Right Trying to get to $ball_angle got to $ang"
+                if $DEBUG;
+            return 'R' #continue rotating
+        }
+        elsif ( $self->rotating == -1 && $ball_angle  <  $ang ) {
+            warn "Continue Left Trying to get to $ball_angle got to $ang"
+                if $DEBUG;
+            return 'L' #continue rotating
+        }
     }
-   
-  }
-      #shoot if we can't get any closer
-      warn "Trying to get to $ball_angle got to $ang" if $DEBUG;
-      $self->angle( 0 );
-      $self->rotating( 0 );
-      return 'S'  #We shoot
+    # shoot if we can't get any closer
+    warn "Trying to get to $ball_angle got to $ang" if $DEBUG;
+    $self->angle( 0 );
+    $self->rotating( 0 );
+    return 'S'  #We shoot
 
 }
 
-sub get_next_command
-{
-    return 'W' if !_attached($_[1]); # wait to attach onto a ball
-    my $self = $_[0];
-    
-    my $ball = $_[1];
-    my $targets = $_[2];
-    my ($ang);
-    if (!$self->angle)
-    {
-    ($ang) = _get_next_rad($ball, $targets);
-    $self->angle ( $ang ) ;
-    
+sub get_next_command {
+    my ($self, $ball, $targets) = @_;
+    return 'W' unless _attached($ball); # wait to attach onto a ball
+
+    if (!$self->angle) {
+        my ($ang) = _get_next_rad($ball, $targets);
+        $self->angle ( $ang ) ;
    }
     
-    
     #warn ' Going to angle '. $self->angle.' currently at '.$ball->rad ;
-    
    return  $self->_handle_rotate($ball->rad);
-    
-   
 }
 
 
