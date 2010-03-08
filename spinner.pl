@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+use 5.10.0;
 use strict;
 use warnings;
 
@@ -291,31 +292,36 @@ sub play {
     #Our level game loop
     while ( $continue && !$quit ) {
 
-        while ( SDL::Events::poll_event($event) )
-        {    #Get all events from the event queue in our event
-
+        #Get all events from the event queue in our event
+        while ( SDL::Events::poll_event($event) ) {
             #If we have a quit event i.e click on [X] trigger the quit flage
             if ( $event->type == SDL_QUIT ) {
                 $quit = 1;
             }
             elsif ( $event->type == SDL_KEYDOWN ) {
-                $particles_left =
-                  check_ball_release( $ball, $level->wheels, $particles_left )
-                  if $event->key_sym == SDLK_SPACE;
-                $quit = 1 if $event->key_sym == SDLK_ESCAPE;
-                SDL::Video::wm_toggle_fullscreen($app)
-                  if $event->key_sym == SDLK_f;
-                  
-                  if ( $event->key_sym == SDLK_LEFT ) {
-                    $ball->rotating(1);
-                }
-
-                if ( $event->key_sym == SDLK_RIGHT ) {
-                    $ball->rotating(-1);
+                given ( $event->key_sym ) {
+                    when (SDLK_SPACE) {
+                        $particles_left =
+                            check_ball_release( $ball,  $level->wheels,
+                                                $particles_left
+                                              );
+                    }
+                    when (SDLK_ESCAPE) {
+                        $quit = 1;
+                    }
+                    when (SDLK_f) {
+                        SDL::Video::wm_toggle_fullscreen($app);
+                    }
+                    when (SDLK_LEFT) {
+                        $ball->rotating(1);
+                    }
+                    when (SDLK_RIGHT) {
+                        $ball->rotating(-1);
+                    }
+                    default {}
                 }
             }
-            elsif ( $event->type == SDL_KEYUP )
-            {
+            elsif ( $event->type == SDL_KEYUP ) {
                 $ball->rotating(0);
             }
             warn 'event' if $DEBUG;
