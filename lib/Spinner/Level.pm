@@ -8,6 +8,12 @@ has 'starting_wheel' => ( is => 'rw', isa => 'Int', default => -1 );
 has 'number'         => ( is => 'rw', isa => 'Int', default => 1 );
 has 'name'           => ( is => 'rw', isa => 'Str', default => 'unknown' );
 
+sub randomize {
+    my $self = shift;
+    my @levels = glob('data/levels/*.dat');
+    $self->number( int( rand @levels ) + 1);
+    return $self;
+}
 
 sub load {
     my ($self ) = @_;
