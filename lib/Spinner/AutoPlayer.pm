@@ -4,15 +4,18 @@ use strict;
 use warnings;
 use Carp;
 use Math::Trig;
+use SDL;
 
 use Mouse;
 has 'cmd'      => ( is => 'rw', isa => 'Str' );
 has 'angle'    => ( is => 'rw', isa => 'Num' , default=> 0);
 has 'diff'     => ( is => 'rw', isa => 'Int' );
 has 'rotating' => ( is => 'rw', isa => 'Int' );
-has 'timeout'  => ( is => 'rw', isa => 'Int' );
+has 'timeout'  => ( is => 'rw', isa => 'Int',
+                    default => sub { SDL::get_ticks() }
+                  );
 
-my $DEBUG = 1;
+my $DEBUG = 0;
 
 # Choose a next command
 # Returns an array 
@@ -141,18 +144,26 @@ sub _handle_rotate {
     warn "Trying to get to $ball_angle got to $ang" if $DEBUG;
     $self->angle( 0 );
     $self->rotating( 0 );
+    $self->timeout( SDL::get_ticks() ); # reset shooting timeout
     return 'S'  #We shoot
 
 }
 
 sub get_next_command {
     my ($self, $ball, $targets) = @_;
+
     return 'W' unless _attached($ball); # wait to attach onto a ball
 
     if (!$self->angle) {
         my ($ang) = _get_next_rad($ball, $targets);
         $self->angle ( $ang ) ;
-   }
+    }
+
+    # release ball if we reached a timeout
+    if (SDL::get_ticks() - $self->timeout > 2000) {
+        $self->timeout( SDL::get_ticks() );
+        return 'S';
+    }
     
     #warn ' Going to angle '. $self->angle.' currently at '.$ball->rad ;
    return  $self->_handle_rotate($ball->rad);
