@@ -36,7 +36,7 @@ sub draw {
 }
 
 sub update {
-    my ($ball, $dt, $particles) = @_;
+    my ($ball, $dt, $particles, $beginner) = @_;
     my $app = Spinner->app;
 
     my $ball_radius = $ball->size / 2;
@@ -85,7 +85,7 @@ sub update {
             # don't collide with previous wheel
             next if $_ == $ball->old_wheel;
 
-            # Check if our mouse rectangle collides with the particle's rectangle
+            # Check if our rectangle collides with the particle's rectangle
             my $p                 = $particles->[$_];
             my $wheel_radius      = $p->size / 2;
             my $x_diff            = $ball->x - $p->x;
@@ -100,6 +100,7 @@ sub update {
               
                 $ball->rad($angle + 90);
                 $ball->n_wheel($_);
+                $ball->rotating(1) unless $beginner;
 
                 push @{$ball->{visited}}, $_;
                # warn $#{$ball->{visited}} + 1;

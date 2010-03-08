@@ -83,10 +83,12 @@ croak SDL::get_error() if !$spinner_menu;
 
 SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
 
-
 my $quit  = 0;
-my $score = 0;
-my $lives = 3;
+
+# Spinner::Player, anyone?
+my $score    = 0;
+my $lives    = 3;
+my $beginner = 0;
 
 if (!$AUTO) {
     menu()
@@ -275,14 +277,17 @@ sub play {
     my $particles_left = scalar @{$level->wheels};
 
     # start the ball in a random wheel
-    my $ball = Spinner::Ball->new( n_wheel => int rand $particles_left);
+    my $ball = Spinner::Ball->new(
+                  n_wheel  => int rand $particles_left,
+                  rotating => ($beginner ? 0 : 1),
+               );
     $ball->surface( $ball_image );
 
     # Get an event object to snapshot the SDL event queue
     my $event = SDL::Event->new();
 
     # SDL time is recorded in ticks,
-    # Ticks are the  milliseconds since the SDL library was loaded into memory
+    # Ticks are the milliseconds since the SDL library was loaded into memory
     my $time = SDL::get_ticks();
 
     # This is our level continue flag
@@ -324,16 +329,17 @@ sub play {
                     when (SDLK_f) {
                         SDL::Video::wm_toggle_fullscreen($app);
                     }
-                    when (SDLK_LEFT) {
-                        $ball->rotating(1);
+                    if ($beginner) {
+                        when (SDLK_LEFT) {
+                            $ball->rotating(1);
+                        }
+                        when (SDLK_RIGHT) {
+                            $ball->rotating(-1);
+                        }
                     }
-                    when (SDLK_RIGHT) {
-                        $ball->rotating(-1);
-                    }
-                    default {}
                 }
             }
-            elsif ( $event->type == SDL_KEYUP ) {
+            elsif ( $beginner and $event->type == SDL_KEYUP ) {
                 $ball->rotating(0);
             }
             warn 'event' if $DEBUG;
@@ -377,7 +383,7 @@ sub play {
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
-            my $effect = $ball->update( $dt, $level->wheels );
+            my $effect = $ball->update( $dt, $level->wheels, $beginner );
             Spinner::Wheel::update( $dt, $level->wheels);
 
             handle_chunk($bounce_chunk) if $effect == 1;
