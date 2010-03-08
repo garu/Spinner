@@ -278,7 +278,10 @@ sub play {
 
     # start the ball in a random wheel
     my $ball = Spinner::Ball->new(
-                  n_wheel  => int rand $particles_left,
+                  n_wheel  => ($level->starting_wheel == -1
+                               ? int rand $particles_left
+                               : $level->starting_wheel
+                              ),
                   rotating => ($beginner ? 0 : 1),
                );
     $ball->surface( $ball_image );

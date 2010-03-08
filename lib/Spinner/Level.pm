@@ -4,7 +4,7 @@ use JSON::Any;
 use Spinner::Wheel;
 
 has 'wheels'         => ( is => 'rw', isa => 'ArrayRef' );
-has 'starting_wheel' => ( is => 'rw', isa => 'Int', default => 1 );
+has 'starting_wheel' => ( is => 'rw', isa => 'Int', default => -1 );
 has 'number'         => ( is => 'rw', isa => 'Int', default => 1 );
 has 'name'           => ( is => 'rw', isa => 'Str', default => 'unknown' );
 
