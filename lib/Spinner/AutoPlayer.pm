@@ -16,36 +16,6 @@ has 'timeout'  => ( is => 'rw', isa => 'Int',
                   );
 
 my $DEBUG = 0;
-
-# Choose a next command
-# Returns an array 
-#
-#sub get_next_command
-#{ 
-#   my $self = shift;
-#
-#   if ($self->counter > 0)
-#   {
-#	$self->counter ( $self->counter - 1);
-#
-#	return $self->cmd();
-#   }
-#
-#   my @options = qw/ R L S/; # Right Left or Shoot
-#
-#   my $option = $options[ int ( rand( $#options + 1 )  ) ]; #get one of those options
-#
-#   my $counter = 1;
-#    $counter = int( rand(15) + 10 ) if ($option =~ /R|L/); #for how long
-#
-#
-#    $self->cmd( $option); $self->counter( $counter );
-#   
-#
-#    return   $option;
-#
-#}
-
 sub _attached
 {
     my $ball = shift;
@@ -82,15 +52,13 @@ sub _get_next_rad
     my $wheel_on = $targets->[ $ball->{n_wheel} ];
     
     my $x_diff = $wheel_on->x - $aim_at->x;
-    my $y_diff =  $wheel_on->y - $aim_at->x;
+    my $y_diff =  $wheel_on->y - $aim_at->y;
 
     # calculate angle between vertical down and vector between wheels
          ### tan( theta ) = x_diff / y_diff 
          # theta = atan2 ( x_diff/ y_diff);
     my $angle = rad2deg ( atan2(-$y_diff, $x_diff) + 270);
     $angle -= 360 while $angle > 360;
-
-
 	
     return ($angle, $aim_at);
 }
@@ -130,7 +98,7 @@ sub _handle_rotate {
     elsif ( $self->rotating != 0 ) {
         # we were rotating right
         if( $self->rotating == 1 && $ball_angle > $ang ) {
-            warn "Continue Right Trying to get to $ball_angle got to $ang"
+	warn "Continue Right Trying to get to $ball_angle got to $ang"
                 if $DEBUG;
             return 'R' #continue rotating
         }
