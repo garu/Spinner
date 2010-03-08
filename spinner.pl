@@ -88,13 +88,11 @@ my $score    = 0;
 my $lives    = 3;
 my $beginner = 0;
 
-if (!$AUTO) {
-    menu()
+if ($AUTO) {
+    auto_game();
 }
-
-while($AUTO) {
-	$AUTO = Spinner::AutoPlayer->new();
-	game();
+else {
+    menu();
 }
 
 SDL::Mixer::close_audio();
@@ -109,7 +107,7 @@ sub menu {
     while ( !$menu_quit ) {
         if (SDL::get_ticks() - $time > 10000) {
             $AUTO = Spinner::AutoPlayer->new;
-            game();
+            auto_game();
             $AUTO = undef;
             $time = SDL::get_ticks();
         }
@@ -240,11 +238,11 @@ sub high_scores {
 
 sub game {
     $quit = 0;
-    my $level = Spinner::Level->new(  );
+    my $level = Spinner::Level->new;
 
     $score = 0;
     $lives = 3;
-    while ( $level->load() ) {
+    while ( $level->load ) {
         if ( play($level) ) {
             $level->number( $level->number + 1 );
             $score += 1000;
@@ -265,6 +263,21 @@ sub game {
         }
         last if $quit;
     }
+}
+
+# auto_game plays a random level
+# while the user is idle
+sub auto_game {
+    $quit = 0;
+    $AUTO = Spinner::AutoPlayer->new;
+    my $level = Spinner::Level->new;
+
+    while ( !$quit ) {
+        $score = 0;
+        $level->randomize->load;
+        play($level);
+    }
+    $AUTO = undef;
 }
 
 # create the given level. returns true if level is over,
@@ -357,7 +370,7 @@ sub play {
                 $ball->rotating(0);
                 $particles_left = check_ball_release($ball, $level->wheels, $particles_left, $dt) 
             }
-            $AUTO = undef if $quit == 1;
+#$AUTO = undef if $quit == 1;
         }
 
         warn 'level' if $DEBUG;
