@@ -21,7 +21,7 @@ has 'image'   => ( is => 'ro', isa => 'SDL::Surface',
 has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 
 has 'speed' => ( is  => 'rw', isa => 'Num',
-              default => sub { return 0.3 + rand(0.3) } #return rand(0.7) + 0.3 }
+              default => sub { (0.08 + rand 0.15) * (int rand 2 ? 1 : -1) }
             );
 has 'gravity' => ( is => 'rw', isa => 'Int', default => -1 );
 
