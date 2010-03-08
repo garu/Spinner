@@ -105,7 +105,15 @@ sub menu {
     my $event   = SDL::Event->new();
     my $menu_quit = 0;
 
+    my $time = SDL::get_ticks();
     while ( !$menu_quit ) {
+        if (SDL::get_ticks() - $time > 10000) {
+            $AUTO = Spinner::AutoPlayer->new;
+            game();
+            $AUTO = undef;
+            $time = SDL::get_ticks();
+        }
+
         while ( SDL::Events::poll_event($event) )
         {    #Get all events from the event queue in our event
 
@@ -114,6 +122,8 @@ sub menu {
                 $menu_quit = 1;
             }
             elsif ( $event->type == SDL_KEYDOWN ) {
+                # reset our "demo" clock
+                $time = SDL::get_ticks();
 
                 $menu_quit = 1 if $event->key_sym == SDLK_ESCAPE;
                 SDL::Video::wm_toggle_fullscreen($app)
@@ -147,6 +157,9 @@ sub menu {
                     elsif ( $choice == 5 ) {
                         $menu_quit = 1;
                     }
+
+                    # reset our "demo" clock
+                    $time = SDL::get_ticks();
                 }
             }
         }
@@ -294,6 +307,10 @@ sub play {
                 $quit = 1;
             }
             elsif ( $event->type == SDL_KEYDOWN ) {
+                if ($AUTO) {
+                    $quit = 1;
+                    last;
+                }
                 given ( $event->key_sym ) {
                     when (SDLK_SPACE) {
                         $particles_left =
