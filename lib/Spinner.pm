@@ -51,4 +51,17 @@ sub set_camera {
 	$camera->x = $new_x;
 	$camera->y = $new_y;
 }
+
+sub load_image {
+    my (undef, $filename, $optimize) = @_;
+
+    my $loaded_img = SDL::Image::load($filename)
+        or croak SDL::get_error;
+    return $loaded_img unless $optimize;
+
+    my $opt_img = SDL::Video::display_format($loaded_img)
+        or croak SDL::get_error;
+    return $opt_img;
+}
+
 42;
