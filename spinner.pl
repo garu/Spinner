@@ -88,19 +88,13 @@ my $quit  = 0;
 my $score = 0;
 my $lives = 3;
 
-if (!$AUTO)
-{
-
-menu() 
-
+if (!$AUTO) {
+    menu()
 }
 
-while($AUTO)
-{
+while($AUTO) {
 	$AUTO = Spinner::AutoPlayer->new();
-  
 	game();
-
 }
 
 SDL::Mixer::close_audio();
@@ -110,6 +104,7 @@ sub menu {
     my @choices = ( 'New Game', 'Load Game', 'How to Play', 'High Scores', 'Options', 'Quit' );
     my $event   = SDL::Event->new();
     my $menu_quit = 0;
+
     while ( !$menu_quit ) {
         while ( SDL::Events::poll_event($event) )
         {    #Get all events from the event queue in our event
@@ -327,26 +322,19 @@ sub play {
             warn 'event' if $DEBUG;
         }
 
-	if ($AUTO && $frames > 0)
-	{
+        if ($AUTO && $frames > 0) {
+            my $cmd =  $AUTO->get_next_command($ball, $level->wheels);
 
-	  my $cmd =  $AUTO->get_next_command($ball, $level->wheels);
+            $ball->rotating(-1) if $cmd eq 'R';
 
-	  $ball->rotating(-1) if $cmd eq 'R';
+            $ball->rotating(1) if $cmd eq 'L';
 
-	  $ball->rotating(1) if $cmd eq 'L';
-
-  	  if ($cmd eq 'S')
-	  {
-		  $ball->rotating(0);
-
-		  $particles_left = check_ball_release($ball, $level->wheels, $particles_left, $dt) 
-	  }
-		$AUTO = undef if $quit == 1;
-           
-
-	}
-	
+            if ($cmd eq 'S') {
+                $ball->rotating(0);
+                $particles_left = check_ball_release($ball, $level->wheels, $particles_left, $dt) 
+            }
+            $AUTO = undef if $quit == 1;
+        }
 
         warn 'level' if $DEBUG;
 
