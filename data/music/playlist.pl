@@ -42,7 +42,7 @@ push @songs, File::Spec->catfile( $data_dir, $_);
 } @musics;
 
 
-SDL::Mixer::Music::volume_music( 0 );
+#SDL::Mixer::Music::volume_music( 0 );
 
 my $music_is_playing = 0;
 my $callback = sub { 
