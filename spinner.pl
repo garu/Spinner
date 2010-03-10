@@ -33,8 +33,6 @@ my $app = Spinner->init;
 
 Spinner::Sounds->init;
 Spinner::Sounds->start_music('data/bg.ogg');
-#my $grab_chunk     = Spinner::Sounds->load_sound('data/grab.ogg');
-#my $bounce_chunk   = Spinner::Sounds->load_sound('data/bounce.ogg');
 my $menu_sel_chunk = Spinner::Sounds->load_sound('data/menu_select.ogg');
 
 #Some global variables used thorugh out the game
@@ -425,11 +423,8 @@ sub init_bg_surf {
     return $bg;
 }
 
-sub show_win_message
-{
-    my $app        = shift;
-    my $init_time = shift;
-
+sub show_win_message {
+    my ($app, $init_time) = @_;
 
     my $secs_to_win = ( SDL::get_ticks() - $init_time / 1000 );
     my $str = sprintf( "Level completed in : %2d millisecs !!!", $secs_to_win );
@@ -450,8 +445,6 @@ sub show_win_message
 # FIXME: we return the number of particles left
 # which is silly
 sub check_ball_release {
-    
-    
     my ( $ball, $particles, $particles_left ) = @_;
    # warn $ball->ready;
     return  $particles_left if ! $ball->ready; #the ball is not ready to release yet 
