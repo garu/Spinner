@@ -53,7 +53,7 @@ my $callback = sub {
 
 SDL::Mixer::Music::hook_music_finished(	$callback );
 
-sort {$a cmp $b} @songs;
+@songs = sort { int( rand(2) - rand(2)) } @songs;
 
 foreach (@songs)
 {
