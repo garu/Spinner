@@ -22,6 +22,8 @@ use SDL::Event;
 use SDL::Color;
 use SDL::GFX::Primitives;
 use SDL::Image;
+use SDL::TTF;
+SDL::TTF::init();
 
 use Data::Dumper;
 use Carp;
@@ -67,6 +69,10 @@ sub menu {
     my @choices = ( 'New Game', 'Load Game', 'How to Play', 'High Scores', 'Options', 'Quit' );
     my $event   = SDL::Event->new();
     my $menu_quit = 0;
+
+    my $font = SDL::TTF::open_font('data/metro.ttf', 24)
+        or die 'open_font error: ' . SDL::get_error;
+
 
     my $time = SDL::get_ticks();
     while ( !$menu_quit ) {
@@ -140,32 +146,26 @@ sub menu {
             $spinner_menu, SDL::Rect->new( 0, 0, $spinner_menu->w, $spinner_menu->h ),
             $app,     SDL::Rect->new( 150, 0, $app->w,     $app->h )
         );
+
         my $h = 200;
-        #load_font('metro.fnt');
         foreach my $str (@choices) {
-            my $color = 0x00CC34DD;
-            $color = 0xFF0000FF if $choices[$choice] =~ /$str/;
-            SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
-                $h += 50, $str, $color );
+            my $font_color = SDL::Color->new(
+                             ($choices[$choice] =~ /$str/
+                              ? (2,200,5) : (5,2,200)
+                             )
+                           );
+
+            my $surf = SDL::TTF::render_text_blended(
+                        $font, $str, $font_color
+                     ) or die 'ttf render error: ' . SDL::get_error;
+
+            SDL::Video::blit_surface($surf, SDL::Rect->new(0,0,$surf->w,$surf->h), $app, SDL::Rect->new( $app->w / 2 - 70, $h += 50, $app->w, $app->h));
         }
 
         SDL::Video::flip($app);
     }
 }
 
-sub load_font {
-    my $font_name = shift;
-    my $filename = "data/$font_name";
-
-    my $font;
-    open my $fh, '<', $filename
-        or Carp::croak "error loading font '$filename': $!\n";
-    binmode $fh;
-    while (not eof $fh) { my $buf; read $fh, $buf, 4096; $font .= $buf }
-    close $fh;
-
-    SDL::GFX::Primitives::set_font($font, 20, 20);
-}
 
 sub high_scores {
     my $show = 1;
