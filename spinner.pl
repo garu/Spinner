@@ -7,6 +7,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 use Spinner;
+use Spinner::Sounds;
 use Spinner::Ball;
 use Spinner::Wheel;
 use Spinner::Level;
@@ -22,12 +23,6 @@ use SDL::Color;
 use SDL::GFX::Primitives;
 use SDL::Image;
 
-use SDL::Mixer;
-use SDL::Mixer::Music;
-use SDL::Mixer::Channels;
-use SDL::Mixer::Samples;
-use SDL::Mixer::MixChunk;
-
 use Data::Dumper;
 use Carp;
 my $DEBUG = 0;
@@ -36,30 +31,11 @@ my $AUTO = $ARGV[0];
 
 my $app = Spinner->init;
 
-SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
-
- my ($status, $freq, $format, $channels) = @{ SDL::Mixer::query_spec() };
-
- my $audiospec = sprintf("%s, %s, %s, %s\n", $status, $freq, $format, $channels);
- 
-carp  ' Asked for freq, format, channels ', join( ' ', ( 44100, AUDIO_S16, 2,) );
-carp  ' Got back status,  freq, format, channels ', join( ' ', ( $status, $freq, $format, $channels ) );
-
-
-#pre-load the effects
-
-my $grab_chunk  = SDL::Mixer::Samples::load_WAV('data/grab.ogg');
-my $bounce_chunk = SDL::Mixer::Samples::load_WAV('data/bounce.ogg');
-my $menu_sel_chunk =  SDL::Mixer::Samples::load_WAV('data/menu_select.ogg');
-my $music = SDL::Mixer::Music::load_MUS('data/bg.ogg');
-
-die 'Music not found: ' . SDL::get_error() if !$music;
-
-#only play music if our status indicates we go the capability
-if ($status == 1) { SDL::Mixer::Music::play_music( $music, -1 ); };
-
-SDL::Mixer::Music::volume_music(15);
-
+Spinner::Sounds->init;
+Spinner::Sounds->start_music('data/bg.ogg');
+my $grab_chunk     = Spinner::Sounds->load_sound('data/grab.ogg');
+my $bounce_chunk   = Spinner::Sounds->load_sound('data/bounce.ogg');
+my $menu_sel_chunk = Spinner::Sounds->load_sound('data/menu_select.ogg');
 
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
@@ -87,7 +63,6 @@ else {
     menu();
 }
 
-SDL::Mixer::close_audio();
 
 sub menu {
     my $choice  = 0;
@@ -121,14 +96,14 @@ sub menu {
 
                 if ( $event->key_sym == SDLK_DOWN ) {
                     $choice++;
-                    handle_chunk($menu_sel_chunk);
+                    Spinner::Sounds->play($menu_sel_chunk);
 
                     $choice = 0 if $choice > $#choices;
                 }
 
                 if ( $event->key_sym == SDLK_UP ) {
                     $choice--;
-                    handle_chunk($menu_sel_chunk);
+                    Spinner::Sounds->play($menu_sel_chunk);
 
                     $choice = $#choices if $choice < 0;
                 }
@@ -392,9 +367,9 @@ sub play {
             my $effect = $ball->update( $dt, $level->wheels, $beginner );
             Spinner::Wheel::update( $dt, $level->wheels);
 
-            handle_chunk($bounce_chunk) if $effect == 1;
+            Spinner::Sounds->play($bounce_chunk) if $effect == 1;
 
-            handle_chunk($grab_chunk) if $effect == 2;
+            Spinner::Sounds->play($grab_chunk) if $effect == 2;
 
             $on_last_ball = 1 if $effect == 3;
 
@@ -551,14 +526,4 @@ sub draw_to_screen {
     SDL::Video::flip($app);
 }
 
-
-sub handle_chunk
-{
-    my ($mix_chunk) = shift;
-    
-     my  $channel_number = SDL::Mixer::Channels::play_channel( -1, $mix_chunk, 0 );
-      SDL::Mixer::Channels::volume( $channel_number, 10) if ( $channel_number && $channel_number >= 0);
-
-#    SDL::Mixer::Channels::halt_channel ($chan_lock) ;
-}
 
