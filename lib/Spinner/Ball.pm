@@ -1,6 +1,7 @@
 package Spinner::Ball;
 use Mouse;
 use Spinner;
+use Spinner::Sounds;
 use Math::Trig;
 
 has 'x'        => ( is => 'rw', isa => 'Num', default => 0 );
@@ -19,7 +20,12 @@ has 'surface' => ( is => 'rw', isa => 'SDL::Surface' );
 has 'vx' => ( is => 'rw', isa => 'Num', default => 0 );
 has 'vy' => ( is => 'rw', isa => 'Num', default => 0 );
 
-
+has 'sounds' => ( is => 'ro', isa => 'HashRef', default => sub {
+        {
+            'grab'   => Spinner::Sounds->load_sound('data/grab.ogg'),
+            'bounce' => Spinner::Sounds->load_sound('data/bounce.ogg'),
+        }
+    });
 
 sub draw {
     my ( $ball ) = @_;
@@ -35,6 +41,10 @@ sub draw {
     SDL::Video::blit_surface($ball->surface, $new_part_rect, $app, $centered_rect);
 }
 
+
+# updates the ball. Returns 1 if we're on the last
+# wheel, undef otherwise (FIXME: this particular
+# logic shouldn't be here. Maybe inside $wheel?)
 sub update {
     my ($ball, $dt, $particles, $beginner) = @_;
     my $app = Spinner->app;
@@ -43,7 +53,7 @@ sub update {
 
     if ( $ball->n_wheel != -1 ) {    #stuck on a wheel
         my $wheel = $particles->[ $ball->n_wheel ];
-        return 0 unless $wheel;
+        return unless $wheel;
 
         # Rotate the ball on the wheel
         if ( $ball->rotating != 0 ) {
@@ -69,7 +79,8 @@ sub update {
             # if we bounce, we can go back to the previous wheel
             $ball->old_wheel(-1);
             $ball->vx( $ball->vx * -1 );
-            return 1;
+            Spinner::Sounds->play( $ball->sounds->{'bounce'} );
+            return;
         }
         if (   $ball->y > ( $app->h - $ball_radius ) && $ball->vy > 0
             || $ball->y < (       0 + $ball_radius ) && $ball->vy < 0 )
@@ -77,7 +88,8 @@ sub update {
             # if we bounce, we can go back to the previous wheel
             $ball->old_wheel(-1);
             $ball->vy( $ball->vy * -1 );
-            return 1;
+            Spinner::Sounds->play( $ball->sounds->{'bounce'} );
+            return;
         }
 
  
@@ -105,15 +117,20 @@ sub update {
                 push @{$ball->{visited}}, $_;
                # warn $#{$ball->{visited}} + 1;
               #  warn $#$particles ;
-                return 3 if $#$particles == $#{$ball->{visited}} + 1;
-                return 2;
+
+                # let the main app know if we're on the last wheel
+                # (winning condition). FIXME: move this logic elsewhere
+                return 1 if $#$particles == $#{$ball->{visited}} + 1;
+
+                Spinner::Sounds->play( $ball->sounds->{'grab'} );
+                return;
             }
          _gravity ( $p, $ball, $angle, $x_diff, 
                     $y_diff, $distance_squared, $dt
                   ) if( $p->gravity > 0);
         }
     }
-    return 0;
+    return;
 }
 
 #

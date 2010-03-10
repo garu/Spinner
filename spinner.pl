@@ -33,8 +33,8 @@ my $app = Spinner->init;
 
 Spinner::Sounds->init;
 Spinner::Sounds->start_music('data/bg.ogg');
-my $grab_chunk     = Spinner::Sounds->load_sound('data/grab.ogg');
-my $bounce_chunk   = Spinner::Sounds->load_sound('data/bounce.ogg');
+#my $grab_chunk     = Spinner::Sounds->load_sound('data/grab.ogg');
+#my $bounce_chunk   = Spinner::Sounds->load_sound('data/bounce.ogg');
 my $menu_sel_chunk = Spinner::Sounds->load_sound('data/menu_select.ogg');
 
 #Some global variables used thorugh out the game
@@ -357,21 +357,18 @@ sub play {
 
        #accumulate our delta_time. This is like our queue for back log animation
         $accumulator += $delta_time;
-        my $on_last_ball;
+        my $on_last_wheel;
         # release the time in $dt amount of time so we have smooth animations
         while ( $accumulator >= $dt && $continue ) {
 
             # update our particle locations base on dt time
             # (x,y) = dv*dt
             ######iterate_step($dt);
-            my $effect = $ball->update( $dt, $level->wheels, $beginner );
+            my $won = $ball->update( $dt, $level->wheels, $beginner );
             Spinner::Wheel::update( $dt, $level->wheels);
 
-            Spinner::Sounds->play($bounce_chunk) if $effect == 1;
-
-            Spinner::Sounds->play($grab_chunk) if $effect == 2;
-
-            $on_last_ball = 1 if $effect == 3;
+            # winning condition (FIXME: make this better)
+            $on_last_wheel = 1 if $won;
 
             # losing condition
             if ( $ball->n_wheel >= 0 
@@ -412,8 +409,7 @@ sub play {
         $frames++;
 
         # Check if we have won this level!
-        if ($on_last_ball)
-        {
+        if ($on_last_wheel) {
             show_win_message($app, $init_time);
             last;
         }
