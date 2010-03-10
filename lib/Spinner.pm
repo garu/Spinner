@@ -1,6 +1,10 @@
 package Spinner;
+use strict;
+use warnings;
+
 use Carp ();
 use JSON::Any;
+use SDL;
 use SDL::Video;
 
 my $SINGLETON = undef;
@@ -11,6 +15,16 @@ sub app { $SINGLETON or Carp::croak "Spinner->new wasn't called yet." }
 sub init {
     Carp::croak 'Spinner->init already called. Use Spinner->app' 
         if $SINGLETON;
+
+    # Initing video
+    # Die here if we cannot make video init
+    Carp::croak 'Cannot init  ' . SDL::get_error()
+        if ( SDL::init( SDL_INIT_VIDEO | SDL_INIT_VIDEO ) == -1 );
+
+    my $icon = SDL::Video::load_BMP("data/icon.bmp")
+        or Carp::croak SDL::get_error;
+
+    SDL::Video::wm_set_icon($icon);
 
     # Create our display window
     # This is our actual SDL application window
@@ -56,11 +70,11 @@ sub load_image {
     my (undef, $filename, $optimize) = @_;
 
     my $loaded_img = SDL::Image::load($filename)
-        or croak SDL::get_error;
+        or Carp::croak SDL::get_error;
     return $loaded_img unless $optimize;
 
     my $opt_img = SDL::Video::display_format($loaded_img)
-        or croak SDL::get_error;
+        or Carp::croak SDL::get_error;
     return $opt_img;
 }
 

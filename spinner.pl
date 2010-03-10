@@ -34,10 +34,7 @@ my $DEBUG = 0;
 
 my $AUTO = $ARGV[0];
 
-#Initing video
-#Die here if we cannot make video init
-croak 'Cannot init  ' . SDL::get_error()
-  if ( SDL::init( SDL_INIT_VIDEO | SDL_INIT_VIDEO ) == -1 );
+my $app = Spinner->init;
 
 SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
 
@@ -62,12 +59,7 @@ die 'Music not found: ' . SDL::get_error() if !$music;
 if ($status == 1) { SDL::Mixer::Music::play_music( $music, -1 ); };
 
 SDL::Mixer::Music::volume_music(15);
-my $icon = SDL::Video::load_BMP("data/icon.bmp");
-croak SDL::get_error if !$icon;
 
-SDL::Video::wm_set_icon($icon);
-
-my $app = Spinner->init;
 
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
