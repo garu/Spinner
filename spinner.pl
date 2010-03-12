@@ -12,6 +12,7 @@ use Spinner::Ball;
 use Spinner::Wheel;
 use Spinner::Level;
 use Spinner::AutoPlayer;
+use SDLx::Item::Menu;
 
 use SDL;
 use SDL::Video;
@@ -63,16 +64,22 @@ else {
     menu();
 }
 
-
 sub menu {
-    my $choice  = 0;
-    my @choices = ( 'New Game', 'Load Game', 'How to Play', 'High Scores', 'Options', 'Quit' );
-    my $event   = SDL::Event->new();
+    my $event = SDL::Event->new();
     my $menu_quit = 0;
 
-    my $font = SDL::TTF::open_font('data/metro.ttf', 24)
-        or die 'open_font error: ' . SDL::get_error;
-
+    my $menu = SDLx::Item::Menu->new(
+            font         => 'data/metro.ttf',
+            font_color   => [2, 200, 5],
+            select_color => [5, 2, 200],
+       )->items(
+            'New Game'    => \&game,
+            'Load Game'   => sub {},
+            'How to Play' => sub {},
+            'High Scores' => \&high_scores,
+            'Options'     => sub {},
+            'Quit'        => sub { $menu_quit = 1 },
+    );
 
     my $time = SDL::get_ticks();
     while ( !$menu_quit ) {
@@ -83,10 +90,11 @@ sub menu {
             $time = SDL::get_ticks();
         }
 
-        while ( SDL::Events::poll_event($event) )
-        {    #Get all events from the event queue in our event
+        #Get all events from the event queue in our event
+        while ( SDL::Events::poll_event($event) ) {
 
-            #If we have a quit event i.e click on [X] trigger the quit flage
+            # If we have a quit event (i.e player 
+            # clicks on [X]) we trigger the quit flag
             if ( $event->type == SDL_QUIT ) {
                 $menu_quit = 1;
             }
@@ -96,72 +104,34 @@ sub menu {
 
                 $menu_quit = 1 if $event->key_sym == SDLK_ESCAPE;
                 SDL::Video::wm_toggle_fullscreen($app)
-                  if $event->key_sym == SDLK_f;
-
-                if ( $event->key_sym == SDLK_DOWN ) {
-                    $choice++;
-                    Spinner::Sounds->play($menu_sel_chunk);
-
-                    $choice = 0 if $choice > $#choices;
-                }
-
-                if ( $event->key_sym == SDLK_UP ) {
-                    $choice--;
-                    Spinner::Sounds->play($menu_sel_chunk);
-
-                    $choice = $#choices if $choice < 0;
-                }
-
-                if (   $event->key_sym == (SDLK_RETURN)
-                    || $event->key_sym == (SDLK_KP_ENTER) )
-                {
-
-               #proally better to do this with a hash that holds the sub but meh
-                    if ( $choice == 0 ) {
-                        game();
-                    }
-                    elsif ( $choice == 3 ) {
-                        high_scores();
-                    }
-                    elsif ( $choice == 5 ) {
-                        $menu_quit = 1;
-                    }
-
-                    # reset our "demo" clock
-                    $time = SDL::get_ticks();
-                }
+                    if $event->key_sym == SDLK_f;
             }
+            elsif (   $event->key_sym == SDLK_RETURN
+                   or $event->key_sym == SDLK_KP_ENTER
+                  ) {
+
+                # reset our "demo" clock
+                $time = SDL::get_ticks();
+            }
+
+            # let our menu object have a go as well
+            $menu->event_hook($event);
         }
 
-         SDL::Video::fill_rect( $app, $app_rect,
-            SDL::Video::map_RGB( $app->format, 0, 0, 0 ) );
+        SDL::Video::fill_rect(
+            $app,
+            $app_rect,
+            SDL::Video::map_RGB( $app->format, 0, 0, 0 )
+        );
     
-        # Blit the back ground surface to the window
-#        SDL::Video::blit_surface(
-#            $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
-#            $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
-#        );
-
-         SDL::Video::blit_surface(
-            $spinner_menu, SDL::Rect->new( 0, 0, $spinner_menu->w, $spinner_menu->h ),
-            $app,     SDL::Rect->new( 150, 0, $app->w,     $app->h )
+        SDL::Video::blit_surface(
+            $spinner_menu,
+            SDL::Rect->new( 0, 0, $spinner_menu->w, $spinner_menu->h ),
+            $app,
+            SDL::Rect->new( 150, 0, $app->w, $app->h ),
         );
 
-        my $h = 200;
-        foreach my $str (@choices) {
-            my $font_color = SDL::Color->new(
-                             ($choices[$choice] =~ /$str/
-                              ? (2,200,5) : (5,2,200)
-                             )
-                           );
-
-            my $surf = SDL::TTF::render_text_blended(
-                        $font, $str, $font_color
-                     ) or die 'ttf render error: ' . SDL::get_error;
-
-            SDL::Video::blit_surface($surf, SDL::Rect->new(0,0,$surf->w,$surf->h), $app, SDL::Rect->new( $app->w / 2 - 70, $h += 50, $app->w, $app->h));
-        }
-
+        $menu->render($app);
         SDL::Video::flip($app);
     }
 }
