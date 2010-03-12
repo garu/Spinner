@@ -45,7 +45,7 @@ carp ' Asked for freq, format, channels ',
 carp ' Got back status, freq, format, channels ',
   join( ' ', ( $status, $freq, $format, $channels ) );
 
-my $data_dir = '../';
+my $data_dir = '.';
 
 opendir( my $DIR, $data_dir );
 my @musics = readdir($DIR);
@@ -56,6 +56,8 @@ map {
         push @songs, File::Spec->catfile( $data_dir, $_ );
     }
 } @musics;
+
+closedir $DIR;
 
 #SDL::Mixer::Music::volume_music( 0 );
 
