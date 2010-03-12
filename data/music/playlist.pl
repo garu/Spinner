@@ -46,18 +46,7 @@ carp ' Got back status, freq, format, channels ',
   join( ' ', ( $status, $freq, $format, $channels ) );
 
 my $data_dir = '.';
-
-opendir( my $DIR, $data_dir );
-my @musics = readdir($DIR);
-my @songs  = ();
-map {
-    if ( $_ =~ /\.ogg/ )
-    {    #print 'Found: '.$_."\n";
-        push @songs, File::Spec->catfile( $data_dir, $_ );
-    }
-} @musics;
-
-closedir $DIR;
+my @songs = glob <$data_dir/*.ogg>;
 
 #SDL::Mixer::Music::volume_music( 0 );
 
