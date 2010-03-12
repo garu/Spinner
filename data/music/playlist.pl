@@ -46,7 +46,7 @@ carp ' Got back status, freq, format, channels ',
   join( ' ', ( $status, $freq, $format, $channels ) );
 
 my $data_dir = '.';
-my @songs = glob <$data_dir/*.ogg>;
+my @songs = glob '*.ogg';
 
 #SDL::Mixer::Music::volume_music( 0 );
 
@@ -55,7 +55,7 @@ my $callback         = sub {
 
     $music_is_playing = 0;
 
-    #	print STDERR 'Going to next song'
+    	print STDERR 'Going to next song'
 };
 
 SDL::Mixer::Music::hook_music_finished($callback);
