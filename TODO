@@ -41,7 +41,20 @@ here as well.
 
 * High Score, with a Menu option showing it
 
+* Implement Camera
+  - Camera should be flexible for users screens
+  - Should follow the ball but not too much ( see zelda scroll )
+    - If ball is less then 1/2 the width or height from the center no scroll
+    - Start scrolling if getting close to the border
+  - http://lazfoo.net/SDL_tutorials/lesson21/index.php 
+
+* Make HUD better
+  - Show FPS if selected from options
+  - Show Level, and Ball Speed
+  - Show Mini-Map for bigger levels
+
 * Implement Bounding Walls
+  - Levels needs to be able to give level size
 
 * Implement different Wheels. Ideas:
 
