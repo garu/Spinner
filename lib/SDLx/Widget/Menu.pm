@@ -3,6 +3,11 @@ use SDL;
 use SDL::Video;
 use SDL::TTF;
 use SDL::Color;
+use SDL::Mixer;
+use SDL::Mixer::Music;
+use SDL::Mixer::Channels;
+use SDL::Mixer::Samples;
+use SDL::Mixer::MixChunk;
 use Carp ();
 use Mouse;
 
@@ -33,8 +38,8 @@ has '_items' => (is => 'rw', isa => 'ArrayRef', default => sub {[]} );
 has '_font'  => (is => 'rw', isa => 'SDL::TTF_Font' );
 has '_font_color'   => (is => 'rw', isa => 'SDL::Color' );
 has '_select_color' => (is => 'rw', isa => 'SDL::Color' );
-has '_change_sound' => (is => 'rw' );
-has '_select_sound' => (is => 'rw' );
+has '_change_sound' => (is => 'rw', isa => 'SDL::Mixer::MixChunk' );
+has '_select_sound' => (is => 'rw', isa => 'SDL::Mixer::MixChunk' );
 
 sub BUILD {
     my $self = shift;
@@ -72,8 +77,8 @@ sub _build_sound {
             $self->_select_sound( $sound );
         }
         if ($self->change_sound) {
-            my $sound = SDL::Mixer::Samples::load_WAV($self->_sound);
-            $self->_select_sound( $sound );
+            my $sound = SDL::Mixer::Samples::load_WAV($self->change_sound);
+            $self->_change_sound( $sound );
         }
     }
 }
@@ -99,14 +104,14 @@ sub event_hook {
 
         if ($key == SDLK_DOWN) {
             $self->current( ($self->current + 1) % @{$self->_items} );
-            $self->_play($self->change_sound);
+            $self->_play($self->_change_sound);
         }
         elsif ($key == SDLK_UP) {
             $self->current( ($self->current - 1) % @{$self->_items} );
-            $self->_play($self->change_sound);
+            $self->_play($self->_change_sound);
         }
         elsif ($key == SDLK_RETURN or $key == SDLK_KP_ENTER ) {
-            $self->_play($self->select_sound);
+            $self->_play($self->_select_sound);
             return $self->_items->[$self->current]->{trigger}->();
         }
     }
