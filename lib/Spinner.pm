@@ -51,6 +51,21 @@ sub load_data_file {
     return JSON::Any->from_json($json);
 }
 
+sub write_data_file {
+    my ($filename, $data) = @_;
+    return unless -r $filename and ref $data;
+
+    my $json = JSON::Any->to_json($data);
+
+    # save it into the file
+    open my $fh, '>', $filename
+        or Carp::croak "error writing to file '$filename': $!\n";
+    print $fh $json;
+    close $fh;
+
+    return 1;
+}
+
 sub get_camera {
 	if(!defined($camera)) {
 		die "Spinner::$camera is undefined, dying";
