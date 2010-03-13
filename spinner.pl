@@ -12,7 +12,7 @@ use Spinner::Ball;
 use Spinner::Wheel;
 use Spinner::Level;
 use Spinner::AutoPlayer;
-use SDLx::Item::Menu;
+use SDLx::Widget::Menu;
 
 use SDL;
 use SDL::Video;
@@ -68,7 +68,7 @@ sub menu {
     my $event = SDL::Event->new();
     my $menu_quit = 0;
 
-    my $menu = SDLx::Item::Menu->new(
+    my $menu = SDLx::Widget::Menu->new(
             font         => 'data/metro.ttf',
             font_color   => [2, 200, 5],
             select_color => [5, 2, 200],
