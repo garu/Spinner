@@ -141,6 +141,10 @@ sub high_scores {
     my $show = 1;
 
     my $high_score = Spinner::load_data_file('data/highscore.dat');
+    my $font = SDL::TTF::open_font('data/metro.ttf', 18)
+        or Carp::croak 'Error opening font: ' . SDL::get_error;
+    my $font_color = SDL::Color->new(100,255,100);
+    my $title_color = SDL::Color->new(235,30,30);
 
     # Get an event object to snapshot the SDL event queue
     my $event = SDL::Event->new();
@@ -159,12 +163,31 @@ sub high_scores {
             $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
         );
 
+        # blit the window title
+        my $title = SDL::TTF::render_text_blended(
+                $font, 'HIGH SCORES', $title_color
+                ) or Carp::croak 'TTF render error: ' . SDL::get_error;
+        SDL::Video::blit_surface(
+                $title,
+                SDL::Rect->new(0,0,$title->w, $title->h),
+                $app,
+                SDL::Rect->new($app->w / 2 - 100, 20, $app->w, $app->h),
+        );
+
+
         my $h = 30;
         foreach my $score ( @{$high_score} ) {
-            my $color = 0x00CC34DD;
-            my $str = $score->{name} . '     ' . $score->{score};
-            SDL::GFX::Primitives::string_color( $app, $app->w / 2 - 70,
-                $h += 50, $str, $color );
+            my $string = $score->{name} . '         ' . $score->{score};
+            my $surface = SDL::TTF::render_text_blended(
+                    $font, $string, $font_color
+                    ) or Carp::croak 'TTF render error: ' . SDL::get_error;
+            SDL::Video::blit_surface(
+                    $surface,
+                    SDL::Rect->new(0,0,$surface->w, $surface->h),
+                    $app,
+                    SDL::Rect->new($app->w / 2 - 230, $h += 50,
+                                   $app->w, $app->h ),
+            );
         }
 
         SDL::Video::flip($app);
