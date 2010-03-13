@@ -72,6 +72,7 @@ sub menu {
             font         => 'data/metro.ttf',
             font_color   => [2, 200, 5],
             select_color => [5, 2, 200],
+            change_sound => 'data/menu_select.ogg',
        )->items(
             'New Game'    => \&game,
             'Load Game'   => sub {},
