@@ -3,6 +3,7 @@ use SDL;
 use SDL::Video;
 use SDL::TTF;
 use SDL::Color;
+use Carp ();
 use Mouse;
 
 # TODO: add default values
@@ -23,17 +24,23 @@ has 'mouse'        => ( is => 'ro', isa => 'Bool');
 has 'change_sound' => ( is => 'ro', isa => 'Str' );
 has 'select_sound' => ( is => 'ro', isa => 'Str' );
 
+# private
+has 'has_audio' => ( is => 'rw', isa => 'Bool', default => 0,
+                     writer => '_has_audio' );
+
 # internal
 has '_items' => (is => 'rw', isa => 'ArrayRef', default => sub {[]} );
 has '_font'  => (is => 'rw', isa => 'SDL::TTF::Font' );
-
 has '_font_color'   => (is => 'rw', isa => 'SDL::Color' );
 has '_select_color' => (is => 'rw', isa => 'SDL::Color' );
+has '_change_sound' => (is => 'rw' );
+has '_select_sound' => (is => 'rw' );
 
 sub BUILD {
     my $self = shift;
 
     $self->_build_font;
+    $self->_build_sound;
 }
 
 sub _build_font {
@@ -47,6 +54,32 @@ sub _build_font {
     $self->_select_color( SDL::Color->new( @{$self->select_color} ) );
 }
 
+sub _build_sound {
+    my $self = shift;
+
+    # initializes sound if it's not already
+    my ($status) = @{ SDL::Mixer::query_spec() };
+    if ($status != 1) {
+        SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
+        ($status) = @{ SDL::Mixer::query_spec() };
+    }
+
+    # load sounds if audio is (or could be) initialized
+    if ( $status == 1 ) {
+        $self->_has_audio(1);
+        if ($self->select_sound) {
+            my $sound = SDL::Mixer::Samples::load_WAV($self->select_sound);
+            $self->_select_sound( $sound );
+        }
+        if ($self->change_sound) {
+            my $sound = SDL::Mixer::Samples::load_WAV($self->_sound);
+            $self->_select_sound( $sound );
+        }
+    }
+}
+
+# this is the method used to indicate
+# all menu items and their callbacks
 sub items {
     my ($self, @items) = @_;
 
@@ -66,20 +99,31 @@ sub event_hook {
 
         if ($key == SDLK_DOWN) {
             $self->current( ($self->current + 1) % @{$self->_items} );
-            # TODO: add change sound support
+            $self->_play($self->change_sound);
         }
         elsif ($key == SDLK_UP) {
             $self->current( ($self->current - 1) % @{$self->_items} );
-            # TODO: add change sound support
+            $self->_play($self->change_sound);
         }
         elsif ($key == SDLK_RETURN or $key == SDLK_KP_ENTER ) {
-            # TODO: add select sound support
+            $self->_play($self->select_sound);
             return $self->_items->[$self->current]->{trigger}->();
         }
     }
 
     return $self;
 }
+
+sub _play {
+    my ($self, $sound) = @_;
+    return unless $self->has_audio;
+
+    my $channel = SDL::Mixer::Channels::play_channel(-1, $sound, 0 );
+    if ( $channel ) {
+        SDL::Mixer::Channels::volume( $channel, 10 );
+    }
+}
+
 
 # NOTE: the update() call is here just as an example.
 # SDLx::* calls should likely implement those whenever
