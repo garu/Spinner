@@ -256,6 +256,9 @@ sub play {
     #Keep a count of number of frames
     my $frames = 0;
 
+    # gotta give the player *something* :)
+    my $extra_live_at = $score + 10_000;
+
     #Our level game loop
     while ( $continue && !$quit ) {
 
@@ -356,6 +359,10 @@ sub play {
             #update how much real time we have animated
             $t += $dt;
             warn 'acc' if $DEBUG;
+        }
+        if ( $score >= $extra_live_at ) {
+            $lives++;
+            $extra_live_at = $score + 10_000;
         }
 
         #Checkout our frames per seconds
