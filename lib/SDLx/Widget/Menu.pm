@@ -119,7 +119,7 @@ sub event_hook {
         }
     }
 
-    return $self;
+    return;
 }
 
 sub _play {
