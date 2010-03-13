@@ -3,11 +3,6 @@ use SDL;
 use SDL::Video;
 use SDL::TTF;
 use SDL::Color;
-use SDL::Mixer;
-use SDL::Mixer::Music;
-use SDL::Mixer::Channels;
-use SDL::Mixer::Samples;
-use SDL::Mixer::MixChunk;
 use Carp ();
 use Mouse;
 
@@ -62,23 +57,31 @@ sub _build_font {
 sub _build_sound {
     my $self = shift;
 
-    # initializes sound if it's not already
-    my ($status) = @{ SDL::Mixer::query_spec() };
-    if ($status != 1) {
-        SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
-        ($status) = @{ SDL::Mixer::query_spec() };
-    }
+    if ($self->select_sound or $self->change_sound ) {
+        require SDL::Mixer;
+        require SDL::Mixer::Music;
+        require SDL::Mixer::Channels;
+        require SDL::Mixer::Samples;
+        require SDL::Mixer::MixChunk;
 
-    # load sounds if audio is (or could be) initialized
-    if ( $status == 1 ) {
-        $self->_has_audio(1);
-        if ($self->select_sound) {
-            my $sound = SDL::Mixer::Samples::load_WAV($self->select_sound);
-            $self->_select_sound( $sound );
+        # initializes sound if it's not already
+        my ($status) = @{ SDL::Mixer::query_spec() };
+        if ($status != 1) {
+            SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
+            ($status) = @{ SDL::Mixer::query_spec() };
         }
-        if ($self->change_sound) {
-            my $sound = SDL::Mixer::Samples::load_WAV($self->change_sound);
-            $self->_change_sound( $sound );
+
+        # load sounds if audio is (or could be) initialized
+        if ( $status == 1 ) {
+            $self->_has_audio(1);
+            if ($self->select_sound) {
+                my $sound = SDL::Mixer::Samples::load_WAV($self->select_sound);
+                $self->_select_sound( $sound );
+            }
+            if ($self->change_sound) {
+                my $sound = SDL::Mixer::Samples::load_WAV($self->change_sound);
+                $self->_change_sound( $sound );
+            }
         }
     }
 }
