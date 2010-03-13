@@ -115,7 +115,7 @@ sub menu {
             }
 
             # let our menu object have a go as well
-            $menu->event_hook($event);
+            $time = SDL::get_ticks() if $menu->event_hook($event);
         }
 
         SDL::Video::fill_rect(
@@ -169,6 +169,9 @@ sub high_scores {
 
         SDL::Video::flip($app);
     }
+
+    # return positive to reset demo timer
+    return 1;
 }
 
 sub game {
@@ -198,6 +201,8 @@ sub game {
         }
         last if $quit;
     }
+    # return positive to reset demo timer
+    return 1;
 }
 
 # auto_game plays a random level
