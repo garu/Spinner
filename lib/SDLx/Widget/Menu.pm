@@ -45,6 +45,8 @@ sub BUILD {
 
 sub _build_font {
     my $self = shift;
+
+    SDL::TTF::init;
     $self->_font( SDL::TTF::open_font( $self->font, $self->font_size ) );
 
     Carp::croak 'Error opening font: ' . SDL::get_error
