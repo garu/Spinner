@@ -13,11 +13,12 @@ sub new {
 sub run {
     my $self = shift;
     $self->{quit} = 0;
+    my $delta_ticks = 0;
 
     while ( !$self->{quit} ) {
         $self->_event;
 
-        $self->_move($delta_tick);
+        $self->_move($delta_ticks);
 
         $self->_show();
 
