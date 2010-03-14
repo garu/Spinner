@@ -1,33 +1,52 @@
 package SDLx::Game;
+use strict;
+use warnings;
 
 
 sub new
 {
+  my $class = shift;
+  my $self = bless { @_ }, $class;
 
+  return $self;
 
 }
 
 sub run
 {
+	my $self = shift;
 
 }
 
 
-sub _event
+sub on_move
 {
 
+	my $self = shift;
+
+	push @{$self->{on_move}} , shift ;
 }
 
 
-sub _move
+
+sub on_event
 {
+	my $self = shift;
+
+	push @{$self->{on_event}} , shift ;
 
 }
 
-sub _show
+
+
+sub on_show
 {
+ 	my $self = shift;
 
+	push @{$self->{on_show}} , shift ;
+	
 }
+
 
 
 
@@ -49,9 +68,19 @@ Using http://www.lazyfoo.net/SDL_tutorials/lesson32/index.php as our base
 
 =head2 run
 
-=head2 move_callback 
+=head2 on_move
 
-=head2 render_callback
+Register a  callback to update objects
+
+=head2 on_show
+
+Register a  callback to render objects
+
+
+=head2 on_event
+
+Register a callback to handle events SDL or game like
+
 
 =head2 current_fps
 
