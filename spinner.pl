@@ -34,8 +34,8 @@ my $AUTO = $ARGV[0];
 
 my $app = Spinner->init;
 
-#Spinner::Sounds->init;
-#Spinner::Sounds->start_music('data/bg.ogg');
+Spinner::Sounds->init;
+Spinner::Sounds->start_music('data/bg.ogg');
 
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
