@@ -53,7 +53,7 @@ sub load_data_file {
 
 sub write_data_file {
     my ($filename, $data) = @_;
-    return unless -r $filename and ref $data;
+    return unless defined $filename and ref $data;
 
     my $json = JSON::Any->to_json($data);
 

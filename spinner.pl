@@ -139,15 +139,18 @@ sub menu {
 sub enter_highscore {
     # check if player made a high score
     my $high_score = Spinner::load_data_file('data/highscore.dat');
+    if (not defined $high_score) {
+        push @{$high_score}, { name => 'SpinnerMaster', score => 0 }
+            foreach 0..9
+    }
     my $rank = 0;
     while (exists $high_score->[$rank]) {
         last if $score > $high_score->[$rank]->{score};
         $rank++;
     }
-    if ($rank >= 10 )
-    {
-	warn 'Haha! Don\'t meet top 10! ';
-	return	
+    if ($rank >= 10 ) {
+	    warn 'Haha! Don\'t meet top 10! ';
+    	return;
     }
 
     # remove last entry
@@ -218,6 +221,11 @@ sub high_scores {
     my $show = 1;
 
     my $high_score = Spinner::load_data_file('data/highscore.dat');
+    if (not defined $high_score) {
+        push @{$high_score}, { name => 'SpinnerMaster', score => 0 }
+            foreach 0..9
+    }
+
     my $font = SDL::TTF::open_font('data/metro.ttf', 18)
         or Carp::croak 'Error opening font: ' . SDL::get_error;
     my $font_color = SDL::Color->new(100,255,100);
