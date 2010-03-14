@@ -27,14 +27,23 @@ sub run {
 }
 
 sub _event {
+   my $self = shift;
+
+   $self->{event} = SDL::Event->new() unless $self->{event};
+   foreach my $event_handler ( @ { $self->{on_event} } ) 
+	{
+		$self->quit if !(  &$event_handler );
+	}
 
 }
 
 sub _move {
+   my $self = shift;
 
 }
 
 sub _show {
+  my $self = shift;
 
 }
 

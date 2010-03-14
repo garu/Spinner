@@ -19,7 +19,7 @@ sub init {
     # Initing video
     # Die here if we cannot make video init
     Carp::croak 'Cannot init  ' . SDL::get_error()
-        if ( SDL::init( SDL_INIT_VIDEO | SDL_INIT_VIDEO ) == -1 );
+        if ( SDL::init( SDL_INIT_VIDEO ) == -1 );
 
     my $icon = SDL::Video::load_BMP("data/icon.bmp")
         or Carp::croak SDL::get_error;
