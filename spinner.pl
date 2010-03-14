@@ -34,8 +34,8 @@ my $AUTO = $ARGV[0];
 
 my $app = Spinner->init;
 
-Spinner::Sounds->init;
-Spinner::Sounds->start_music('data/bg.ogg');
+#Spinner::Sounds->init;
+#Spinner::Sounds->start_music('data/bg.ogg');
 
 #Some global variables used thorugh out the game
 my $app_rect = SDL::Rect->new( 0, 0, 800, 600 );
@@ -144,7 +144,11 @@ sub enter_highscore {
         last if $score > $high_score->[$rank]->{score};
         $rank++;
     }
-    return unless $rank < 10;
+    if ($rank >= 10 )
+    {
+	warn 'Haha! Don\'t meet top 10! ';
+	return	
+    }
 
     # remove last entry
     pop @{$high_score};
@@ -199,6 +203,7 @@ sub enter_highscore {
         );
 
         SDL::Video::flip($app);
+
     }
 
     # add the new score to the table
@@ -292,6 +297,8 @@ sub game {
                 SDL::Video::flip($app);
                 SDL::delay(1000);
                 enter_highscore();
+		SDL::delay(1000);
+
                 last;
             }
         }
