@@ -2,56 +2,70 @@ package SDLx::Game;
 use strict;
 use warnings;
 
+sub new {
+    my $class = shift;
+    my $self = bless {@_}, $class;
 
-sub new
-{
-  my $class = shift;
-  my $self = bless { @_ }, $class;
-
-  return $self;
+    return $self;
 
 }
 
-sub run
-{
-	my $self = shift;
+sub run {
+    my $self = shift;
+    $self->{quit} = 0;
+
+    while ( !$self->{quit} ) {
+        $self->_event;
+
+        $self->_move($delta_tick);
+
+        $self->_show();
+
+    }
 
 }
 
-
-sub on_move
-{
-
-	my $self = shift;
-
-	push @{$self->{on_move}} , shift ;
-}
-
-
-
-sub on_event
-{
-	my $self = shift;
-
-	push @{$self->{on_event}} , shift ;
+sub _event {
 
 }
 
+sub _move {
 
-
-sub on_show
-{
- 	my $self = shift;
-
-	push @{$self->{on_show}} , shift ;
-	
 }
 
+sub _show {
 
+}
 
+sub quit {
+    my $self = shift;
 
+    $self->{quit} = 1;
 
-1; #not 42 man!
+}
+
+sub on_move {
+
+    my $self = shift;
+
+    push @{ $self->{on_move} }, shift;
+}
+
+sub on_event {
+    my $self = shift;
+
+    push @{ $self->{on_event} }, shift;
+
+}
+
+sub on_show {
+    my $self = shift;
+
+    push @{ $self->{on_show} }, shift;
+
+}
+
+1;    #not 42 man!
 
 =pod 
 
