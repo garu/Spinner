@@ -54,6 +54,7 @@ my $on_move = sub
 	$ball->{x} += $ball->{x_vel} * $dt;
 
 	$ball->{y} += $ball->{y_vel} * $dt;
+	
 
 	return 1;
 };
@@ -68,9 +69,8 @@ my $on_event = sub
 		if( $event->type == SDL_KEYDOWN )
 		{
 			my $key = $event->key_sym;
-			warn $key;
 			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_UP;
-			$ball->{y_vel} += $ball->{vel} if $key == SDLK_UP;
+			$ball->{y_vel} += $ball->{vel} if $key == SDLK_DOWN;
 			$ball->{x_vel} += $ball->{vel} if $key == SDLK_LEFT;
 			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_RIGHT;
 
@@ -79,7 +79,7 @@ my $on_event = sub
 		{
 			my $key = $event->key_sym;
 			$ball->{y_vel} += $ball->{vel} if $key == SDLK_UP;
-			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_UP;
+			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_DOWN;
 			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_LEFT;
 			$ball->{x_vel} += $ball->{vel} if $key == SDLK_RIGHT;
 

@@ -1,13 +1,14 @@
 package SDLx::Game;
 use strict;
 use warnings;
-
+use SDLx::Game::Timer;
 
 
 sub new {
     my $class = shift;
     my $self = bless {@_}, $class;
-
+    $self->{delta} = SDLx::Game::Timer->new();
+    $self->{delta}->start(); # should do this after on_load
     return $self;
 
 }
@@ -15,14 +16,15 @@ sub new {
 sub run {
     my $self = shift;
     $self->{quit} = 0;
-    my $delta_ticks = 0;
 
     while ( !$self->{quit} ) {
         $self->_event;
 
-        $self->_move($delta_ticks);
+        $self->_move($self->{delta}->get_ticks());
+	$self->{delta}->start();
 
         $self->_show();
+
 
     }
 
