@@ -110,9 +110,9 @@ sub on_show {
 };
 
 
-$game->on_move( \&on_move );
-$game->on_event( \&on_event );
-$game->on_show( \&on_show );
+$game->add_move_handler( \&on_move );
+$game->add_event_handler( \&on_event );
+$game->add_show_handler( \&on_show );
 
 $game->run();
 

@@ -34,7 +34,7 @@ sub _event {
    my $self = shift;
 
    $self->{event} = SDL::Event->new() unless $self->{event};
-   foreach my $event_handler ( @ { $self->{on_event} } ) 
+   foreach my $event_handler ( @ { $self->{event_handlers} } ) 
 	{
 		$self->quit if !(  $event_handler->($self->{event}) );
 	}
@@ -44,7 +44,7 @@ sub _event {
 sub _move {
    my $self = shift;
    my $delta_ticks = shift;
-   foreach my $event_handler ( @ { $self->{on_move} } ) 
+   foreach my $event_handler ( @ { $self->{move_handlers} } ) 
 	{
 		 $event_handler->($delta_ticks) ;
 	}
@@ -54,7 +54,7 @@ sub _move {
 sub _show {
   my $self = shift;
    my $delta_ticks = shift;
-   foreach my $event_handler ( @ { $self->{on_show} } ) 
+   foreach my $event_handler ( @ { $self->{show_handlers} } ) 
 	{
 	     $event_handler->($delta_ticks) ;
 	}
@@ -69,24 +69,24 @@ sub quit {
 
 }
 
-sub on_move {
+sub add_move_handler {
 
     my $self = shift;
 
-    push @{ $self->{on_move} }, shift;
+    push @{ $self->{move_handlers} }, shift;
 }
 
-sub on_event {
+sub add_event_handler {
     my $self = shift;
 
-    push @{ $self->{on_event} }, shift;
+    push @{ $self->{event_handlers} }, shift;
 
 }
 
-sub on_show {
+sub add_show_handler {
     my $self = shift;
 
-    push @{ $self->{on_show} }, shift;
+    push @{ $self->{show_handlers} }, shift;
 
 }
 
@@ -108,16 +108,16 @@ Using http://www.lazyfoo.net/SDL_tutorials/lesson32/index.php as our base
 
 =head2 run
 
-=head2 on_move
+=head2 add_move_handler
 
 Register a  callback to update objects
 
-=head2 on_show
+=head2 add_show_handler
 
 Register a  callback to render objects
 
 
-=head2 on_event
+=head2 add_event_handler
 
 Register a callback to handle events SDL or game like
 
