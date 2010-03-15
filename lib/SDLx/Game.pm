@@ -2,6 +2,8 @@ package SDLx::Game;
 use strict;
 use warnings;
 
+
+
 sub new {
     my $class = shift;
     my $self = bless {@_}, $class;
@@ -85,6 +87,7 @@ sub on_show {
     push @{ $self->{on_show} }, shift;
 
 }
+
 
 1;    #not 42 man!
 
