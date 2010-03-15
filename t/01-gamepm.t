@@ -45,7 +45,7 @@ sub init {
 
 
 
-my $game = SDLx::Game->new( event => SDL::Event->new() );
+my $game = SDLx::Game->new();
 
 sub on_move {
 	my $dt= shift;
@@ -60,32 +60,23 @@ sub on_move {
 sub on_event {
 	my $event = shift;
 
-	while( SDL::Events::poll_event($event) )
-	{
+    if( $event->type == SDL_KEYDOWN ) {
+		my $key = $event->key_sym;
+		$ball->{y_vel} -= $ball->{vel} if $key == SDLK_UP;
+		$ball->{y_vel} += $ball->{vel} if $key == SDLK_DOWN;
+		$ball->{x_vel} -= $ball->{vel} if $key == SDLK_LEFT;
+		$ball->{x_vel} += $ball->{vel} if $key == SDLK_RIGHT;
+	}
+	elsif ( $event->type == SDL_KEYUP ) {
+		my $key = $event->key_sym;
+		$ball->{y_vel} += $ball->{vel} if $key == SDLK_UP;
+		$ball->{y_vel} -= $ball->{vel} if $key == SDLK_DOWN;
+		$ball->{x_vel} += $ball->{vel} if $key == SDLK_LEFT;
+		$ball->{x_vel} -= $ball->{vel} if $key == SDLK_RIGHT;
 
-		if( $event->type == SDL_KEYDOWN )
-		{
-			my $key = $event->key_sym;
-			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_UP;
-			$ball->{y_vel} += $ball->{vel} if $key == SDLK_DOWN;
-			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_LEFT;
-			$ball->{x_vel} += $ball->{vel} if $key == SDLK_RIGHT;
-
-		}
-		elsif ( $event->type == SDL_KEYUP )
-		{
-			my $key = $event->key_sym;
-			$ball->{y_vel} += $ball->{vel} if $key == SDLK_UP;
-			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_DOWN;
-			$ball->{x_vel} += $ball->{vel} if $key == SDLK_LEFT;
-			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_RIGHT;
-
-		}
-		elsif ($event->type == SDL_QUIT)
-		{
-			return 0;
-		}
-
+	}
+	elsif ($event->type == SDL_QUIT) {
+		return 0;
 	}
 
 	return 1;

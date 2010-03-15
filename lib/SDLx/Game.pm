@@ -10,7 +10,6 @@ sub new {
     $self->{delta} = SDLx::Game::Timer->new();
     $self->{delta}->start(); # should do this after on_load
     return $self;
-
 }
 
 sub run {
@@ -33,12 +32,13 @@ sub run {
 sub _event {
    my $self = shift;
 
-   $self->{event} = SDL::Event->new() unless $self->{event};
-   foreach my $event_handler ( @ { $self->{on_event} } ) 
-	{
-		$self->quit if !(  $event_handler->($self->{event}) );
-	}
+    $self->{event} = SDL::Event->new() unless $self->{event};
 
+    while ( SDL::Events::poll_event($self->{event}) ) {
+        foreach my $event_handler ( @{ $self->{on_event} } ) {
+		    $self->quit unless $event_handler->( $self->{event} );
+        }
+	}
 }
 
 sub _move {
