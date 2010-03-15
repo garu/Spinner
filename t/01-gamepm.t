@@ -47,20 +47,17 @@ sub init {
 
 my $game = SDLx::Game->new( event => SDL::Event->new() );
 
-my $on_move = sub 
-{
+sub on_move {
 	my $dt= shift;
 	$dt = $dt/1000;
 	$ball->{x} += $ball->{x_vel} * $dt;
 
 	$ball->{y} += $ball->{y_vel} * $dt;
 	
-
 	return 1;
-};
+}
 
-my $on_event = sub 
-{
+sub on_event {
 	my $event = shift;
 
 	while( SDL::Events::poll_event($event) )
@@ -94,8 +91,7 @@ my $on_event = sub
 	return 1;
 }; 
 
-my $on_show = sub
-{
+sub on_show {
         SDL::Video::fill_rect(
             $app,
             SDL::Rect->new(0,0,$app->w, $app->h),
@@ -114,12 +110,9 @@ my $on_show = sub
 };
 
 
-$game->on_move( $on_move );
-$game->on_event( $on_event );
-$game->on_show( $on_show );
+$game->on_move( \&on_move );
+$game->on_event( \&on_event );
+$game->on_show( \&on_show );
 
 $game->run();
-
-
-
 
