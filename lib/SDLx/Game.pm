@@ -32,19 +32,29 @@ sub _event {
    $self->{event} = SDL::Event->new() unless $self->{event};
    foreach my $event_handler ( @ { $self->{on_event} } ) 
 	{
-		die $event_handler;
-		$self->quit if !(  &{$event_handler}($self->{event}) );
+		$self->quit if !(  $event_handler->($self->{event}) );
 	}
 
 }
 
 sub _move {
    my $self = shift;
+   my $delta_ticks = shift;
+   foreach my $event_handler ( @ { $self->{on_move} } ) 
+	{
+		 $event_handler->($delta_ticks) ;
+	}
 
 }
 
 sub _show {
   my $self = shift;
+   my $delta_ticks = shift;
+   foreach my $event_handler ( @ { $self->{on_show} } ) 
+	{
+	     $event_handler->($delta_ticks) ;
+	}
+
 
 }
 

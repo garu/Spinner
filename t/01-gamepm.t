@@ -52,7 +52,6 @@ my $on_move = sub
 {
   my $delta_time = shift;
 
-  carp 'Move';
 
   return 1;
 };
@@ -60,7 +59,6 @@ my $on_move = sub
 my $on_event = sub 
 {
    my $event = shift;
- warn 'Event: '.$event->type;
 
    while( SDL::Events::poll_event($event) )
    {
