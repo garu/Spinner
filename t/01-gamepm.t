@@ -71,8 +71,8 @@ my $on_event = sub
 			my $key = $event->key_sym;
 			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_UP;
 			$ball->{y_vel} += $ball->{vel} if $key == SDLK_DOWN;
-			$ball->{x_vel} += $ball->{vel} if $key == SDLK_LEFT;
-			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_RIGHT;
+			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_LEFT;
+			$ball->{x_vel} += $ball->{vel} if $key == SDLK_RIGHT;
 
 		}
 		elsif ( $event->type == SDL_KEYUP )
@@ -80,8 +80,8 @@ my $on_event = sub
 			my $key = $event->key_sym;
 			$ball->{y_vel} += $ball->{vel} if $key == SDLK_UP;
 			$ball->{y_vel} -= $ball->{vel} if $key == SDLK_DOWN;
-			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_LEFT;
-			$ball->{x_vel} += $ball->{vel} if $key == SDLK_RIGHT;
+			$ball->{x_vel} += $ball->{vel} if $key == SDLK_LEFT;
+			$ball->{x_vel} -= $ball->{vel} if $key == SDLK_RIGHT;
 
 		}
 		elsif ($event->type == SDL_QUIT)
