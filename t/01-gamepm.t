@@ -79,6 +79,12 @@ sub on_event {
 
     if ( $event->type == SDL_KEYDOWN ) {
         my $key = $event->key_sym;
+		if($key == SDLK_PRINT)
+		{
+			my $screen_shot_index = 1;
+			map{$screen_shot_index = $1 + 1 if $_ =~ /Shot(\d+)\.bmp/ && $1 >= $screen_shot_index} <Shot*\.bmp>;
+			SDL::Video::save_BMP($app, sprintf("Shot%04d.bmp", $screen_shot_index ));
+		}
         $ball->{y_vel} -= $ball->{vel} if $key == SDLK_UP;
         $ball->{y_vel} += $ball->{vel} if $key == SDLK_DOWN;
         $ball->{x_vel} -= $ball->{vel} if $key == SDLK_LEFT;
