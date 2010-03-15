@@ -32,7 +32,8 @@ sub _event {
    $self->{event} = SDL::Event->new() unless $self->{event};
    foreach my $event_handler ( @ { $self->{on_event} } ) 
 	{
-		$self->quit if !(  &$event_handler );
+		die $event_handler;
+		$self->quit if !(  &{$event_handler}($self->{event}) );
 	}
 
 }

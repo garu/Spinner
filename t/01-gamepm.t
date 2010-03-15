@@ -7,7 +7,7 @@ use SDL::Surface;
 
 use SDL::Event;
 use SDL::Events;
-
+use Data::Dumper;
 
 use lib 'lib';
 use SDLx::Game;
@@ -48,39 +48,44 @@ sub init {
 
 my $game = SDLx::Game->new( event => SDL::Event->new() );
 
-$game->on_move( \&move );
-$game->on_event( \&event );
-
-$game->run();
-sub move
+my $on_move = sub 
 {
   my $delta_time = shift;
 
   carp 'Move';
 
   return 1;
-}
+};
 
-sub event
+my $on_event = sub 
 {
    my $event = shift;
+ warn 'Event: '.$event->type;
+
    while( SDL::Events::poll_event($event) )
    {
-	 warn 'Event: '.$event->type;
 	return 0 if $event->type == SDL_QUIT
 
    }
 
    return 1;
-} 
+}; 
 
-sub show
+ my $on_show = sub
 {
 
+  return 0;
+};
 
-}
 
+$game->on_move( $on_move );
+$game->on_event( $on_event );
 
+warn Dumper $on_event;
+
+warn Dumper $game->{on_event};
+
+$game->run();
 
 
 
