@@ -43,6 +43,7 @@ sub _event {
 
     $self->{event} = SDL::Event->new() unless $self->{event};
     while ( SDL::Events::poll_event( $self->{event} ) ) {
+	SDL::Events::pump_events();
         foreach my $event_handler ( @{ $self->{event_handlers} } ) {
             $self->quit unless $event_handler->( $self->{event} );
         }
