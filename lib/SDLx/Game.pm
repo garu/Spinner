@@ -135,7 +135,7 @@ and
 
 http://gafferongames.com/game-physics/fix-your-timestep/
 
-for timning
+for timing
 
 
 =head1 METHODS
