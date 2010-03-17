@@ -3,6 +3,7 @@ use SDL;
 use SDL::Video;
 use SDL::TTF;
 use SDL::Color;
+use SDL::Rect;
 use Carp ();
 use Mouse;
 
