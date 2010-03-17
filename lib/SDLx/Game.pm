@@ -1,6 +1,9 @@
 package SDLx::Game;
 use strict;
 use warnings;
+use SDL;
+use SDL::Event;
+use SDL::Events;
 use SDLx::Game::Timer;
 use Data::Dumper;
 
