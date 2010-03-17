@@ -131,6 +131,13 @@ SDLx::Game - Handles the game loop
 
 Using http://www.lazyfoo.net/SDL_tutorials/lesson32/index.php as our base
 
+and
+
+http://gafferongames.com/game-physics/fix-your-timestep/
+
+for timning
+
+
 =head1 METHODS
 
 
