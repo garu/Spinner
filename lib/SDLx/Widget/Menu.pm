@@ -4,6 +4,7 @@ use SDL::Video;
 use SDL::TTF;
 use SDL::Color;
 use SDL::Rect;
+use SDL::Event;
 use Carp ();
 use Mouse;
 
@@ -103,7 +104,6 @@ sub items {
 
 sub event_hook {
     my ($self, $event) = @_;
-
     # TODO: add mouse hooks
     if ( $event->type == SDL_KEYDOWN ) {
         my $key = $event->key_sym;

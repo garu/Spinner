@@ -23,10 +23,12 @@ $menu->items(
         'New Game'  => sub {},
         'Load Game' => sub {},
         'Options'   => sub {},
-        'Quit'      => sub { SDL::quit && exit },
+        'Quit'      => sub { $menu->{exit} = 1;  }, #return the of this in event loop
 );
 
-$game->add_event_handler( sub { $menu->event_hook(@_) } );
-$game->add_show_handler( sub { $menu->render($display) } );
+
+$game->add_event_handler( sub { return 0 if $_[0]->type == SDL_QUIT; return 1; } ); #failsafe
+$game->add_event_handler( sub { $menu->event_hook($_[0]); return !$menu->{exit};} );
+$game->add_show_handler( sub { $menu->render($display); SDL::Video::flip($display); return 1;} );
 
 $game->run;
