@@ -12,7 +12,7 @@ sub new {
     my $self = bless {@_}, $class;
     $self->{delta} = SDLx::Game::Timer->new();
     $self->{delta}->start();    # should do this after on_load
-    $self->{dt} = 0.01;
+    $self->{dt} = 0.1 unless $self->{dt};
 
     return $self;
 }
