@@ -32,7 +32,7 @@ has 'has_audio' => ( is => 'rw', isa => 'Bool', default => 0,
 
 # internal
 has '_items' => (is => 'rw', isa => 'ArrayRef', default => sub {[]} );
-has '_font'  => (is => 'rw', isa => 'SDL::TTF_Font' );
+has '_font'  => (is => 'rw', isa => 'SDL::TTF::Font' );
 has '_font_color'   => (is => 'rw', isa => 'SDL::Color' );
 has '_select_color' => (is => 'rw', isa => 'SDL::Color' );
 has '_change_sound' => (is => 'rw', isa => 'SDL::Mixer::MixChunk' );
