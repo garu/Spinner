@@ -5,6 +5,7 @@ use warnings;
 
 use Carp ();
 use SDL;
+use SDL::Audio ':all';
 use SDL::Mixer;
 use SDL::Mixer::Music;
 use SDL::Mixer::Channels;
@@ -14,11 +15,11 @@ use SDL::Mixer::MixChunk;
 my $audio_ok = undef;
 
 sub init {
-    SDL::Mixer::open_audio( 44100, AUDIO_S16, 2, 4096 );
+    SDL::Mixer::open_audio( 44100, AUDIO_S16SYS, 2, 4096 );
 
     my ($status, $freq, $format, $channels) = @{ SDL::Mixer::query_spec() };
 
-    Carp::carp ' Asked for freq, format, channels ' . join( ' ', ( 44100, AUDIO_S16, 2,) );
+    Carp::carp ' Asked for freq, format, channels ' . join( ' ', ( 44100, AUDIO_S16SYS, 2,) );
     Carp::carp  ' Got back status,  freq, format, channels ' . join( ' ', ( $status, $freq, $format, $channels ) );
 
     $audio_ok = 1 if $status == 1;

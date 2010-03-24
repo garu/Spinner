@@ -14,16 +14,16 @@ use Spinner::Level;
 use Spinner::AutoPlayer;
 use SDLx::Widget::Menu;
 
-use SDL;
-use SDL::Video;
+use SDL ':all';
+use SDL::Video ':all';
 use SDL::Surface;
 use SDL::Rect;
-use SDL::Events;
+use SDL::Events ':all';
 use SDL::Event;
 use SDL::Color;
 use SDL::GFX::Primitives;
 use SDL::Image;
-use SDL::TTF;
+use SDL::TTF ':all';
 SDL::TTF::init();
 
 use Data::Dumper;
