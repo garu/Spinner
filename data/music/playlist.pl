@@ -11,7 +11,7 @@ use SDL::Video;
 use SDL::Event;
 use SDL::Events;
 use SDL::Surface;
-
+use SDL::Audio;
 use SDL::Mixer;
 use SDL::Mixer::Music;
 use SDL::Mixer::Effects;
