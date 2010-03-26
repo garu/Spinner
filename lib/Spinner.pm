@@ -4,11 +4,27 @@ use warnings;
 
 use Carp ();
 use JSON::Any;
-use SDL;
-use SDL::Video;
+use SDL ':all';
+use SDL::Video ':all';
 
 my $SINGLETON = undef;
 my $camera = undef;
+my $player_data = {};
+
+sub player {
+    my $self = shift;
+    if (@_ == 1) {
+        return $player_data->{ $_[0] };
+    }
+    elsif (@_ > 1) {
+        my %args = @_;
+        foreach my $key ( keys %args ) {
+            $player_data->{$key} = $args{$key};
+        }
+    }
+    return $player_data;
+}
+
 
 sub app { $SINGLETON or Carp::croak "Spinner->new wasn't called yet." }
 
@@ -24,12 +40,13 @@ sub init {
     my $icon = SDL::Video::load_BMP("data/icon.bmp")
         or Carp::croak SDL::get_error;
 
-    SDL::Video::wm_set_icon($icon);
-
     # Create our display window
     # This is our actual SDL application window
     $SINGLETON = SDL::Video::set_video_mode( 800, 600, 32,
                     SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL );
+
+    SDL::Video::wm_set_icon($icon);
+    SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
 
     Carp::croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() 
         unless $SINGLETON;

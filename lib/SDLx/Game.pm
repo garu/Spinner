@@ -12,7 +12,7 @@ sub new {
     my $self = bless {@_}, $class;
     $self->{delta} = SDLx::Game::Timer->new();
     $self->{delta}->start();    # should do this after on_load
-    $self->{dt} = 0.01;
+    $self->{dt} = 0.1 unless $self->{dt};
 
     return $self;
 }
@@ -121,6 +121,13 @@ sub remove_event_handler {
 sub remove_show_handler {
     return _remove_handler( $_[0]->{show_handlers}, $_[1] );
 }
+
+sub remove_all_handlers {
+    $_[0]->{move_handlers}  = [];
+    $_[0]->{event_handlers} = [];
+    $_[0]->{show_handlers}  = [];
+}
+
 
 1;    #not 42 man!
 

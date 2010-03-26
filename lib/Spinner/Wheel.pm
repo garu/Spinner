@@ -2,7 +2,7 @@ package Spinner::Wheel;
 use Mouse;
 use SDL;
 use SDL::Image;
-use SDL::Video;
+use SDL::Video ':all';
 use SDL::Surface;
 use SDL::GFX::Primitives;
 use Spinner;

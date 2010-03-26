@@ -1,8 +1,9 @@
 use strict;
 use warnings;
 use Carp 'croak';
-use SDL;
-use SDL::Video;
+use SDL ':all';
+use SDL::Events ':all';
+use SDL::Video ':all';
 use SDL::Surface;
 
 use lib 'lib';

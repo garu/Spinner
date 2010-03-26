@@ -1,12 +1,12 @@
 use strict;
 use warnings;
 use Carp;
-use SDL;
-use SDL::Video;
+use SDL ':all';
+use SDL::Video ':all';
 use SDL::Surface;
 use SDL::Rect;
 use SDL::Event;
-use SDL::Events;
+use SDL::Events ':all';
 use Data::Dumper;
 use Math::Trig;
 
