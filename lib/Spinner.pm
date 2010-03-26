@@ -40,12 +40,13 @@ sub init {
     my $icon = SDL::Video::load_BMP("data/icon.bmp")
         or Carp::croak SDL::get_error;
 
-    SDL::Video::wm_set_icon($icon);
-
     # Create our display window
     # This is our actual SDL application window
     $SINGLETON = SDL::Video::set_video_mode( 800, 600, 32,
                     SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_HWACCEL );
+
+    SDL::Video::wm_set_icon($icon);
+    SDL::Video::wm_set_caption( 'Spinner', 'spinner' );
 
     Carp::croak 'Cannot init video mode 800x600x32: ' . SDL::get_error() 
         unless $SINGLETON;
