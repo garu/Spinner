@@ -124,7 +124,7 @@ sub event_hook {
         }
     }
 
-    return;
+    return 1;
 }
 
 sub _play {
