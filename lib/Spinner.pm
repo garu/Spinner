@@ -9,6 +9,22 @@ use SDL::Video ':all';
 
 my $SINGLETON = undef;
 my $camera = undef;
+my $player_data = {};
+
+sub player {
+    my $self = shift;
+    if (@_ == 1) {
+        return $player_data->{ $_[0] };
+    }
+    elsif (@_ > 1) {
+        my %args = @_;
+        foreach my $key ( keys %args ) {
+            $player_data->{$key} = $args{$key};
+        }
+    }
+    return $player_data;
+}
+
 
 sub app { $SINGLETON or Carp::croak "Spinner->new wasn't called yet." }
 
