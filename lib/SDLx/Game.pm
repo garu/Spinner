@@ -122,6 +122,13 @@ sub remove_show_handler {
     return _remove_handler( $_[0]->{show_handlers}, $_[1] );
 }
 
+sub remove_all_handlers {
+    $_[0]->{move_handlers}  = [];
+    $_[0]->{event_handlers} = [];
+    $_[0]->{show_handlers}  = [];
+}
+
+
 1;    #not 42 man!
 
 =pod 
