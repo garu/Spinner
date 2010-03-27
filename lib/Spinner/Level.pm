@@ -43,6 +43,7 @@ sub load_level {
     my $self = shift;
     my $level = $self->{data};
     $level->load;
+    warn "+++ " . scalar @{$level->wheels} . "(0.." . $#{ $level->wheels} ;
 
     $self->{particles_left} = scalar @{$level->wheels};
     $self->{ball} = Spinner::Ball->new(
@@ -248,8 +249,8 @@ sub check_ball_release {
     }
 
     # ball gets new speed
-    $ball->vx( sin( $ball->rad * 3.14 / 180 ) * 0.5 );
-    $ball->vy( cos( $ball->rad * 3.14 / 180 ) * 0.5 );
+    $ball->vx( sin( $ball->rad * 3.14 / 180 ) * 0.8 );
+    $ball->vy( cos( $ball->rad * 3.14 / 180 ) * 0.8 );
 
     $ball->old_wheel( $ball->n_wheel );
     $ball->n_wheel(-1);
