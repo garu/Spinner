@@ -62,6 +62,8 @@ SDL::Mixer::Music::hook_music_finished($callback);
 
 @songs = sort { int( rand(2) - rand(2) ) } @songs;
 
+warn 'Found '.$#songs.' song(s) to play in directory '.$data_dir;
+
 my $event = SDL::Event->new();
 
 my $process_thread;
