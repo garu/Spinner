@@ -5,7 +5,7 @@ use threads;
 use threads::shared;
 
 use SDL;
-
+use Cwd;
 use SDL::Rect;
 use SDL::Video;
 use SDL::Event;
@@ -62,7 +62,7 @@ SDL::Mixer::Music::hook_music_finished($callback);
 
 @songs = sort { int( rand(2) - rand(2) ) } @songs;
 
-warn 'Found '.$#songs.' song(s) to play in directory '.$data_dir;
+warn 'Found '.($#songs + 1 ).' song(s) to play in directory '.cwd();
 
 my $event = SDL::Event->new();
 
