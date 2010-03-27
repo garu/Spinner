@@ -50,15 +50,14 @@ my @songs = glob '*.ogg';
 
 #SDL::Mixer::Music::volume_music( 0 );
 
-my $music_is_playing = 0;
-my $callback         = sub {
+my $music_is_playing :shared = 0;
+sub callback{
 
     $music_is_playing = 0;
 
-    	print STDERR 'Going to next song'
+    warn "Going to next song \n"
 };
 
-SDL::Mixer::Music::hook_music_finished($callback);
 
 @songs = sort { int( rand(2) - rand(2) ) } @songs;
 
@@ -73,7 +72,9 @@ my $quit_processing : shared = 0;
 
 foreach (@songs) {
     warn 'Playing ' . $_;
+
     my $song = SDL::Mixer::Music::load_MUS($_);
+    SDL::Mixer::Music::hook_music_finished('main::callback');
     SDL::Mixer::Music::play_music( $song, 0 );
     my $effect_id =
       SDL::Mixer::Effects::register( MIX_CHANNEL_POST, "main::spiffy",
@@ -93,7 +94,7 @@ foreach (@songs) {
             elsif ( $event->type == SDL_KEYDOWN ) {
 
                 if ( $event->key_sym == SDLK_DOWN ) {
-                    &$callback();
+                    callback();
                 }
             }
 
