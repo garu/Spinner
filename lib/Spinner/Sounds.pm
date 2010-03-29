@@ -5,7 +5,7 @@ use warnings;
 
 use Carp ();
 use SDL;
-use SDL::Audio ':all';
+use SDL::Audio;
 use SDL::Mixer;
 use SDL::Mixer::Music;
 use SDL::Mixer::Channels;

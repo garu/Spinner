@@ -4,8 +4,8 @@ use warnings;
 
 use Carp ();
 use JSON::Any;
-use SDL ':all';
-use SDL::Video ':all';
+use SDL;
+use SDL::Video;
 
 my $SINGLETON = undef;
 my $camera = undef;
