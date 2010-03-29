@@ -1,12 +1,12 @@
 package SDLx::Widget::Menu;
 use SDL;
-use SDL::Audio ':all';
+use SDL::Audio;
 use SDL::Video;
 use SDL::TTF;
 use SDL::Color;
 use SDL::Rect;
 use SDL::Event;
-use SDL::Events ':all';
+use SDL::Events;
 use Carp ();
 use Mouse;
 
