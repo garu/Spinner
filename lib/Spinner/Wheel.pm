@@ -78,7 +78,7 @@ sub patrol_up {
     my $y_diff = $self->y - $get_to->{y};
 #   warn 'To get_to '. $x_diff. ' ' . -$y_diff;
 
-    my $next_tick = 0.4;
+    my $next_tick = 0.04;
 
     if  (  abs($x_diff) < $next_tick && abs($y_diff) < $next_tick) #if we are going to be at the place snap int and  increment patrol_to
     {
