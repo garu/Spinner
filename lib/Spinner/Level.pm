@@ -12,15 +12,14 @@ use SDL::Event;
 use SDL::Events;
 use SDL::Video;
 
-
 sub load {
-    my ($class, $game) = @_;
+    my ( $class, $game ) = @_;
     my $self = bless {}, $class;
 
     # load out background
-    $self->{background} = Spinner->load_image('data/bg.png', 1);
+    $self->{background} = Spinner->load_image( 'data/bg.png', 1 );
 
-    $self->{data} = Spinner::LevelData->new;
+    $self->{data}       = Spinner::LevelData->new;
     $self->{ball_image} = Spinner->load_image('data/ball.png');
 
     $self->{extra_life_at} = 10_000;
@@ -28,9 +27,9 @@ sub load {
     #TODO: should we take 'dt' out of the picture as legacy?
     $self->{dt} = $game->{dt};
 
-    $self->{move_id}  = $game->add_move_handler( sub {$self->on_move(@_)} );
-    $self->{event_id} = $game->add_event_handler( sub {$self->on_event(@_)} );
-    $self->{show_id}  = $game->add_show_handler( sub {$self->on_show(@_)} );
+    $self->{move_id}  = $game->add_move_handler( sub  { $self->on_move(@_) } );
+    $self->{event_id} = $game->add_event_handler( sub { $self->on_event(@_) } );
+    $self->{show_id}  = $game->add_show_handler( sub  { $self->on_show(@_) } );
 
     Spinner->player( score => 0, lives => 3 );
 
@@ -40,19 +39,20 @@ sub load {
 }
 
 sub load_level {
-    my $self = shift;
+    my $self  = shift;
     my $level = $self->{data};
     $level->load;
-    warn "+++ " . scalar @{$level->wheels} . "(0.." . $#{ $level->wheels} ;
+    warn "+++ " . scalar @{ $level->wheels } . "(0.." . $#{ $level->wheels };
 
-    $self->{particles_left} = scalar @{$level->wheels};
-    $self->{ball} = Spinner::Ball->new(
-                  n_wheel  => ($level->starting_wheel == -1
-                               ? int rand $self->{particles_left}
-                               : $level->starting_wheel
-                              ),
-                  rotating => (Spinner->player('beginner') ? 0 : 1),
-               );
+    $self->{particles_left} = scalar @{ $level->wheels };
+    $self->{ball}           = Spinner::Ball->new(
+        n_wheel => (
+            $level->starting_wheel == -1
+            ? int rand $self->{particles_left}
+            : $level->starting_wheel
+        ),
+        rotating => ( Spinner->player('beginner') ? 0 : 1 ),
+    );
 
     $self->{ball}->surface( $self->{ball_image} );
     $self->{init_time} = SDL::get_ticks();
@@ -66,10 +66,8 @@ sub on_move {
     my $ball  = $self->{ball};
 
     # winning condition
-    my $won = $ball->update( $self->{dt},
-                             $level->wheels,
-                             Spinner->player('beginner')
-                           );
+    my $won =
+      $ball->update( $self->{dt}, $level->wheels, Spinner->player('beginner') );
     if ($won) {
         $self->show_win_message;
         $level->number( $level->number + 1 );
@@ -77,19 +75,22 @@ sub on_move {
         $self->load_level;
     }
 
-    Spinner::Wheel::update( $self->{dt}, $level->wheels);
-
     # losing condition
-    if ( $ball->n_wheel >= 0
-        and $level->wheels->[ $ball->n_wheel ]->visited
-    ) {
+    if (    $ball->n_wheel >= 0
+        and $level->wheels->[ $ball->n_wheel ]->visited )
+    {
         Spinner->player->{lives} -= 1;
-        if (Spinner->player('lives') == 0) {
+        if ( Spinner->player('lives') == 0 ) {
             $self->{next} = 'back';
             return;
         }
+        else {
+            $self->load_level;
+			return;
+        }
     }
 
+    Spinner::Wheel::update( $self->{dt}, $level->wheels );
 
     if ( Spinner->player('score') >= $self->{extra_life_at} ) {
         Spinner->player->{lives} += 1;
@@ -99,7 +100,7 @@ sub on_move {
 }
 
 sub on_event {
-    my ($self, $event) = @_;
+    my ( $self, $event ) = @_;
     my $app   = Spinner->app;
     my $ball  = $self->{ball};
     my $level = $self->{data};
@@ -123,9 +124,8 @@ sub on_event {
         given ( $event->key_sym ) {
             when (SDLK_SPACE) {
                 $self->{particles_left} =
-                    $self->check_ball_release( $ball,  $level->wheels,
-                                        $self->{particles_left}
-                                      );
+                  $self->check_ball_release( $ball, $level->wheels,
+                    $self->{particles_left} );
             }
             when (SDLK_ESCAPE) {
                 $self->{next} = 'back';
@@ -134,7 +134,7 @@ sub on_event {
             when (SDLK_f) {
                 SDL::Video::wm_toggle_fullscreen($app);
             }
-            if (Spinner->player('beginner')) {
+            if ( Spinner->player('beginner') ) {
                 when (SDLK_LEFT) {
                     $ball->rotating(1);
                 }
@@ -178,7 +178,7 @@ sub on_show {
 
     # Blit the back ground surface to the window
     #TODO: optimize so we can show bg
-     SDL::Video::blit_surface(
+    SDL::Video::blit_surface(
         $bg_surf, SDL::Rect->new( 0, 0, $bg_surf->w, $bg_surf->h ),
         $app,     SDL::Rect->new( 0, 0, $app->w,     $app->h )
     );
@@ -186,17 +186,16 @@ sub on_show {
     #make a string with the FPS and level
     my $pfps = sprintf(
         "Level:%s Wheel [%2d, speed:%.2f] Left:%d Score: %d Lives: %d",
-        $level->name, $ball->n_wheel,
-        $level->wheels->[ $ball->n_wheel ]->speed,
-        $self->{particles_left}, Spinner->player('score'),
-        Spinner->player('lives'),
+        $level->name,                              $ball->n_wheel,
+        $level->wheels->[ $ball->n_wheel ]->speed, $self->{particles_left},
+        Spinner->player('score'),                  Spinner->player('lives'),
     );
 
     #write our string to the window
     SDL::GFX::Primitives::string_color( $app, 3, 3, $pfps, 0x00FF00FF );
 
     #Draw each particle
-    $_->draw foreach ( @{$level->wheels} );
+    $_->draw foreach ( @{ $level->wheels } );
 
     $ball->draw;
 
@@ -206,17 +205,17 @@ sub on_show {
 }
 
 sub show_win_message {
-    my $self = shift;
-    my $app = Spinner->app;
+    my $self      = shift;
+    my $app       = Spinner->app;
     my $init_time = $self->{init_time};
 
     my $secs_to_win = ( SDL::get_ticks() - $init_time / 1000 );
     my $str = sprintf( "Level completed in : %2d millisecs !!!", $secs_to_win );
     SDL::GFX::Primitives::string_color(
-            $app,
-            $app->w / 2 - 150,
-            $app->h / 2 - 4,
-            $str, 0x00FF00FF
+        $app,
+        $app->w / 2 - 150,
+        $app->h / 2 - 4,
+        $str, 0x00FF00FF
     );
 
     SDL::Video::flip($app);
@@ -224,15 +223,16 @@ sub show_win_message {
     return 1;
 }
 
-
 # Release ball from wheel (if possible)
 # FIXME: we return the number of particles left
 # which is silly
 sub check_ball_release {
     my ( $self, $ball, $particles, $particles_left ) = @_;
-   # warn $ball->ready;
-    return  $particles_left if ! $ball->ready; #the ball is not ready to release yet
-    # we can't release the ball if it isn't attached to a wheel
+
+    # warn $ball->ready;
+    return $particles_left
+      if !$ball->ready;    #the ball is not ready to release yet
+        # we can't release the ball if it isn't attached to a wheel
     return $particles_left if $ball->n_wheel == -1;
 
     my $w = $particles->[ $ball->n_wheel ];
@@ -257,7 +257,5 @@ sub check_ball_release {
 
     return $particles_left;
 }
-
-
 
 42;
