@@ -42,8 +42,6 @@ sub load_level {
     my $self  = shift;
     my $level = $self->{data};
     $level->load;
-    warn "+++ " . scalar @{ $level->wheels } . "(0.." . $#{ $level->wheels };
-
     $self->{particles_left} = scalar @{ $level->wheels };
     $self->{ball}           = Spinner::Ball->new(
         n_wheel => (
@@ -65,15 +63,8 @@ sub on_move {
     my $level = $self->{data};
     my $ball  = $self->{ball};
 
-    # winning condition
     my $won =
       $ball->update( $self->{dt}, $level->wheels, Spinner->player('beginner') );
-    if ($won) {
-        $self->show_win_message;
-        $level->number( $level->number + 1 );
-        Spinner->player->{score} += 1000;
-        $self->load_level;
-    }
 
     # losing condition
     if (    $ball->n_wheel >= 0
@@ -86,8 +77,16 @@ sub on_move {
         }
         else {
             $self->load_level;
-			return;
+            return;
         }
+    }
+
+    # winning condition
+    if ($won) {
+        $self->show_win_message;
+        $level->number( $level->number + 1 );
+        Spinner->player->{score} += 1000;
+        $self->load_level;
     }
 
     Spinner::Wheel::update( $self->{dt}, $level->wheels );
