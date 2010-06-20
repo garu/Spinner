@@ -63,7 +63,7 @@ sub on_move {
     my $level = $self->{data};
     my $ball  = $self->{ball};
 
-    my $won =
+    my $touched =
       $ball->update( $self->{dt}, $level->wheels, Spinner->player('beginner') );
 
     # losing condition
@@ -81,12 +81,18 @@ sub on_move {
         }
     }
 
-    # winning condition
-    if ($won) {
-        $self->show_win_message;
-        $level->number( $level->number + 1 );
-        Spinner->player->{score} += 1000;
-        $self->load_level;
+    # ball touched a wheel
+    if ($touched) {
+        # winning condition
+        if ($touched == 1) {
+            $self->show_win_message;
+            $level->number( $level->number + 1 );
+            Spinner->player->{score} += 1000;
+            $self->load_level;
+        }
+        else {
+            Spinner->player->{score} += 300;
+        }
     }
 
     Spinner::Wheel::update( $self->{dt}, $level->wheels );
@@ -244,7 +250,6 @@ sub check_ball_release {
 
         $w->visited(1);
         $particles_left--;
-        Spinner->player->{'score'} += 300;
     }
 
     # ball gets new speed

@@ -43,8 +43,9 @@ sub draw {
 
 
 # updates the ball. Returns 1 if we're on the last
-# wheel, undef otherwise (FIXME: this particular
-# logic shouldn't be here. Maybe inside $wheel?)
+# wheel, 2 if we touched a ball, and undef otherwise
+# (FIXME: this particular logic shouldn't be here.
+# Maybe inside $wheel?)
 sub update {
     my ($ball, $dt, $particles, $beginner) = @_;
     my $app = Spinner->app;
@@ -123,7 +124,7 @@ sub update {
                 return 1 if $#$particles == $#{$ball->{visited}} + 1;
 
                 Spinner::Sounds->play( $ball->sounds->{'grab'} );
-                return;
+                return 2;
             }
          _gravity ( $p, $ball, $angle, $x_diff, 
                     $y_diff, $distance_squared, $dt
