@@ -62,6 +62,7 @@ sub on_move {
     my $self  = shift;
     my $level = $self->{data};
     my $ball  = $self->{ball};
+    return unless Spinner->player('lives');
 
     my $touched =
       $ball->update( $self->{dt}, $level->wheels, Spinner->player('beginner') );
@@ -73,6 +74,10 @@ sub on_move {
         Spinner->player->{lives} -= 1;
         if ( Spinner->player('lives') == 0 ) {
             $self->{next} = 'back';
+            # force an event for game over
+            my $event = SDL::Event->new;
+            $event->type( SDL_USEREVENT );
+            SDL::Events::push_event($event);
             return;
         }
         else {
