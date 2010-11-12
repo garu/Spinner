@@ -7,7 +7,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib";
 
-use SDLx::Widget::Controller;
+use SDLx::Controller;
 use Spinner;
 use Spinner::MainMenu;
 use Spinner::HighScore;
@@ -36,7 +36,7 @@ my $gameflow = {
 };
 
 Spinner->init;
-my $game = SDLx::Widget::Controller->new;
+my $game = SDLx::Controller->new;
 my $current_class = 'Spinner::MainMenu';
 
 while (1) {
