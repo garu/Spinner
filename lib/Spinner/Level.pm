@@ -25,7 +25,7 @@ sub load {
     $self->{extra_life_at} = 10_000;
 
     #TODO: should we take 'dt' out of the picture as legacy?
-    $self->{dt} = $game->{dt};
+    $self->{dt} = $game->dt * 100;
 
     $self->{move_id}  = $game->add_move_handler( sub  { $self->on_move(@_) } );
     $self->{event_id} = $game->add_event_handler( sub { $self->on_event(@_) } );
@@ -110,24 +110,26 @@ sub on_move {
 }
 
 sub on_event {
-    my ( $self, $event ) = @_;
+    my ( $self, $event, $controller ) = @_;
     my $app   = Spinner->app;
     my $ball  = $self->{ball};
     my $level = $self->{data};
 
     # if 'next' was set on other places,
     # we catch it here:
-    return if $self->{next};
+    return $controller->stop() if $self->{next};
 
     # If we have a quit event (i.e player
     # clicks on [X]) we trigger the quit flag
     if ( $event->type == SDL_QUIT ) {
         $self->{next} = 'back';
+        $controller->stop();
         return;
     }
     elsif ( $event->type == SDL_KEYDOWN ) {
         if ( Spinner->player('autoplay') ) {
             $self->{next} = 'back';
+            $app->controller();
             return;
         }
 
@@ -139,6 +141,7 @@ sub on_event {
             }
             when (SDLK_ESCAPE) {
                 $self->{next} = 'back';
+                $app->controller();
                 return;
             }
             when (SDLK_f) {
