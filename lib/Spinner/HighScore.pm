@@ -43,10 +43,11 @@ sub load {
 sub next { return shift->{next} }
 
 sub on_event {
-    my ($self, $event) = @_;
+    my ($self, $event, $controller) = @_;
 
     if ($event->type == SDL_QUIT or $event->type == SDL_KEYDOWN) {
         $self->{next} = 'back';
+        $controller->stop();
         return;
     }
     return 1;

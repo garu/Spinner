@@ -22,12 +22,12 @@ sub load {
             select_color => [5, 2, 200],
             change_sound => 'data/menu_select.ogg',
     )->items(
-            'New Game'    => sub { $self->{next} = 'new_game'   ; 0 },
-            'Load Game'   => sub { $self->{next} = 'load_game'  ; 0 },
-            'How to Play' => sub { $self->{next} = 'howto'      ; 0 },
-            'High Scores' => sub { $self->{next} = 'high_scores'; 0 },
-            'Options'     => sub { $self->{next} = 'options'    ; 0 },
-            'Quit'        => sub { return               },
+            'New Game'    => sub { $self->{next} = 'new_game'   ; $game->stop },
+            'Load Game'   => sub { $self->{next} = 'load_game'  ; $game->stop },
+            'How to Play' => sub { $self->{next} = 'howto'      ; $game->stop },
+            'High Scores' => sub { $self->{next} = 'high_scores'; $game->stop },
+            'Options'     => sub { $self->{next} = 'options'    ; $game->stop },
+            'Quit'        => sub {                                $game->stop },
     );
 
     $self->{'time'}   = SDL::get_ticks();
@@ -53,12 +53,13 @@ sub on_move {
 }
 
 sub on_event {
-    my ($self, $event) = @_;
+    my ($self, $event, $controller) = @_;
 
     # If we have a quit event (i.e player 
     # clicks on [X]) we trigger the quit flag
     if ( $event->type == SDL_QUIT ) {
-        return;
+        $controller->stop();
+        return
     }
     elsif ( $event->type == SDL_KEYDOWN ) {
         # reset our "demo" clock
