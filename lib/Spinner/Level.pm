@@ -129,7 +129,7 @@ sub on_event {
     elsif ( $event->type == SDL_KEYDOWN ) {
         if ( Spinner->player('autoplay') ) {
             $self->{next} = 'back';
-            $app->controller();
+            $controller->stop();
             return;
         }
 
@@ -141,7 +141,7 @@ sub on_event {
             }
             when (SDLK_ESCAPE) {
                 $self->{next} = 'back';
-                $app->controller();
+                $controller->stop();
                 return;
             }
             when (SDLK_f) {
